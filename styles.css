@@ -117,13 +117,13 @@ body {
   white-space: normal;
 }
 
-.quiz__question-text,
-.quiz__question-translation {
+.quiz__question-text {
   display: block;
 }
 
 .quiz__question-translation {
-  margin-top: 6px;
+  display: block;
+  margin-top: 10px;
   font-size: 0.95rem;
   color: #566473;
 }
@@ -147,13 +147,13 @@ body {
   transition: border-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
 }
 
-.quiz__option-text,
-.quiz__option-translation {
+.quiz__option-text {
   display: block;
 }
 
 .quiz__option-translation {
-  margin-top: 6px;
+  display: block;
+  margin-top: 10px;
   font-size: 0.92rem;
   color: #52606d;
 }

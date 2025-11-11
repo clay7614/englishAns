@@ -441,8 +441,7 @@
       let markup = `<span class="quiz__question-text">${formatText(question.question)}</span>`;
       const translationText = question.translation.question;
       if (showTranslations && hasMeaningfulText(translationText)) {
-        // insert an explicit line break between English and Japanese
-        markup += '<br>' + `<span class="quiz__question-translation">${formatText(translationText)}</span>`;
+        markup += `<span class="quiz__question-translation">${formatText(translationText)}</span>`;
       }
       questionEl.innerHTML = markup;
     }
@@ -454,8 +453,7 @@
         const translationText = question.translation.options[index];
         let optionMarkup = `<span class="quiz__option-text">${formatText(optionText)}</span>`;
         if (showTranslations && hasMeaningfulText(translationText)) {
-          // insert line break between English option text and its Japanese translation
-          optionMarkup += '<br>' + `<span class="quiz__option-translation">${formatText(translationText)}</span>`;
+          optionMarkup += `<span class="quiz__option-translation">${formatText(translationText)}</span>`;
         }
         button.innerHTML = optionMarkup;
         button.dataset.index = String(index);
