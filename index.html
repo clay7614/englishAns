@@ -301,6 +301,7 @@
     let totalCount = 0;
     let showTranslations = false;
     let quizStarted = false;
+  let autoAdvanceTimer = null;
 
     translationChoiceSection?.addEventListener('click', handleTranslationChoice);
     nextButton.addEventListener('click', handleNextClick);
@@ -420,6 +421,10 @@
     }
 
     function showNextQuestion() {
+      if (autoAdvanceTimer !== null) {
+        window.clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
       if (!questions.length) {
         return;
       }
@@ -490,9 +495,18 @@
 
       nextButton.disabled = false;
       updateScoreboard();
+
+      autoAdvanceTimer = window.setTimeout(() => {
+        autoAdvanceTimer = null;
+        showNextQuestion();
+      }, 600);
     }
 
     function handleNextClick() {
+      if (autoAdvanceTimer !== null) {
+        window.clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
       showNextQuestion();
     }
 
