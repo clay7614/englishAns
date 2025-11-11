@@ -78,7 +78,7 @@
       let rawText;
       try {
         const buffer = await response.arrayBuffer();
-        const decoder = new TextDecoder('shift-jis');
+        const decoder = new TextDecoder('shift_jis');
         rawText = decoder.decode(buffer);
       } catch (decodeError) {
         console.warn('Shift_JISとしてのデコードに失敗しました。UTF-8で再試行します。', decodeError);
