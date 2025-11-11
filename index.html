@@ -75,7 +75,15 @@
       if (!response.ok) {
         throw new Error(`CSVの取得に失敗しました (HTTP ${response.status})`);
       }
-      const rawText = await response.text();
+      let rawText;
+      try {
+        const buffer = await response.arrayBuffer();
+        const decoder = new TextDecoder('shift-jis');
+        rawText = decoder.decode(buffer);
+      } catch (decodeError) {
+        console.warn('Shift_JISとしてのデコードに失敗しました。UTF-8で再試行します。', decodeError);
+        rawText = await response.text();
+      }
       const rows = parseCsv(rawText);
       const header = rows[0] || [];
       const hasHeader = header.map((cell) => cell.trim()).join(',').toLowerCase().includes('anum');
