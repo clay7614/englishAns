@@ -24,7 +24,10 @@
       <div class="quiz__question" data-question></div>
       <div class="quiz__options" data-options></div>
       <div class="quiz__feedback" data-feedback></div>
-      <button type="button" class="quiz__next" data-next disabled>次の問題へ</button>
+      <div class="quiz__controls">
+        <button type="button" class="quiz__toggle-timer" data-toggle-timer>自動で進む: ON</button>
+        <button type="button" class="quiz__next" data-next disabled>次の問題へ</button>
+      </div>
     </section>
   </main>
 
@@ -287,7 +290,8 @@
     const questionEl = document.querySelector('[data-question]');
     const optionsEl = document.querySelector('[data-options]');
     const feedbackEl = document.querySelector('[data-feedback]');
-    const nextButton = document.querySelector('[data-next]');
+  const nextButton = document.querySelector('[data-next]');
+  const toggleTimerButton = document.querySelector('[data-toggle-timer]');
     const correctEl = document.querySelector('[data-correct]');
     const totalEl = document.querySelector('[data-total]');
     const optionTemplate = document.getElementById('option-button-template');
@@ -302,9 +306,11 @@
     let showTranslations = false;
     let quizStarted = false;
   let autoAdvanceTimer = null;
+  let autoAdvanceEnabled = true;
 
     translationChoiceSection?.addEventListener('click', handleTranslationChoice);
     nextButton.addEventListener('click', handleNextClick);
+  toggleTimerButton?.addEventListener('click', handleToggleTimer);
 
     init().catch((error) => {
       console.error(error);
@@ -411,6 +417,7 @@
       correctCount = 0;
       totalCount = 0;
       updateScoreboard();
+      updateTimerToggleLabel();
       showNextQuestion();
     }
 
@@ -495,11 +502,12 @@
 
       nextButton.disabled = false;
       updateScoreboard();
-
-      autoAdvanceTimer = window.setTimeout(() => {
-        autoAdvanceTimer = null;
-        showNextQuestion();
-      }, 600);
+      if (autoAdvanceEnabled) {
+        autoAdvanceTimer = window.setTimeout(() => {
+          autoAdvanceTimer = null;
+          showNextQuestion();
+        }, 600);
+      }
     }
 
     function handleNextClick() {
@@ -508,6 +516,22 @@
         autoAdvanceTimer = null;
       }
       showNextQuestion();
+    }
+
+    function handleToggleTimer() {
+      autoAdvanceEnabled = !autoAdvanceEnabled;
+      updateTimerToggleLabel();
+      if (!autoAdvanceEnabled && autoAdvanceTimer !== null) {
+        window.clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
+    }
+
+    function updateTimerToggleLabel() {
+      if (!toggleTimerButton) {
+        return;
+      }
+      toggleTimerButton.textContent = `自動で進む: ${autoAdvanceEnabled ? 'ON' : 'OFF'}`;
     }
 
     function updateScoreboard() {
