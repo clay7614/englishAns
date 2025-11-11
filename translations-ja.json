@@ -1,0 +1,1370 @@
+﻿[
+    {
+        "question":  "「一日中気分が悪いんです。」「----- を受診すべきです。」",
+        "options":  [
+                        "エンジニア",
+                        "事務員",
+                        "先生",
+                        "医師"
+                    ]
+    },
+    {
+        "question":  "彼女は夜遅くまで ----- 働き続けました。",
+        "options":  [
+                        "続けた",
+                        "？",
+                        "？",
+                        "？"
+                    ]
+    },
+    {
+        "question":  "----- で飛ばされそうなものはすべて固定してください。",
+        "options":  [
+                        "嵐",
+                        "光線",
+                        "温度",
+                        "影"
+                    ]
+    },
+    {
+        "question":  "そのカゴはリンゴで ---- です",
+        "options":  [
+                        "少ない",
+                        "いっぱい",
+                        "から",
+                        "いくつかの"
+                    ]
+    },
+    {
+        "question":  "来週、会議に来て ---- ですか？",
+        "options":  [
+                        "実際に",
+                        "できる",
+                        "特に",
+                        "ほとんど~ない"
+                    ]
+    },
+    {
+        "question":  "隣人ともう ----- なりましたか？",
+        "options":  [
+                        "親しくなる",
+                        "？",
+                        "？",
+                        "確かめる"
+                    ]
+    },
+    {
+        "question":  "私の友達は私の髪形を-----",
+        "options":  [
+                        "連絡を保った",
+                        "続いた",
+                        "からかった",
+                        "決心した"
+                    ]
+    },
+    {
+        "question":  "過去数日間で ----- が急増しています。",
+        "options":  [
+                        "大気",
+                        "温度",
+                        "枝",
+                        "地震"
+                    ]
+    },
+    {
+        "question":  "この市場では-----魚を買うことができます。",
+        "options":  [
+                        "プロの",
+                        "新鮮な",
+                        "澄んだ",
+                        "賢い"
+                    ]
+    },
+    {
+        "question":  "私たちはローマで ----- を雇いました。",
+        "options":  [
+                        "砂漠",
+                        "野原",
+                        "ガイド",
+                        "嵐"
+                    ]
+    },
+    {
+        "question":  "山の桜は今、----- が見頃です。",
+        "options":  [
+                        "野原",
+                        "影",
+                        "枝",
+                        "（果樹の）花"
+                    ]
+    },
+    {
+        "question":  "喫煙が健康にとって危険であるというのは ----- です。",
+        "options":  [
+                        "権威者",
+                        "澄んだ",
+                        "事実",
+                        "賢い"
+                    ]
+    },
+    {
+        "question":  "彼女は ----- の指輪をしていました。",
+        "options":  [
+                        "宝石",
+                        "興奮して",
+                        "銀",
+                        "驚くべき"
+                    ]
+    },
+    {
+        "question":  "彼女はミュージカルの ----- になるためにニューヨークへ行きました。",
+        "options":  [
+                        "医師",
+                        "アナウンサー",
+                        "乗客",
+                        "俳優"
+                    ]
+    },
+    {
+        "question":  "地球の ----- は何マイルもの厚さがあります。",
+        "options":  [
+                        "嵐",
+                        "温度",
+                        "大気",
+                        "特徴"
+                    ]
+    },
+    {
+        "question":  "私は不注意な間違いを -----。",
+        "options":  [
+                        "？",
+                        "成し遂げる",
+                        "得た",
+                        "作った"
+                    ]
+    },
+    {
+        "question":  "彼は ----- 本を読みました。一部だけではありません",
+        "options":  [
+                        "全体",
+                        "いっぱいの",
+                        "いくつかの",
+                        "余分な"
+                    ]
+    },
+    {
+        "question":  "金曜日に会いましょう、もし ----- でしたら。",
+        "options":  [
+                        "都合のよい",
+                        "よく知られた",
+                        "からの",
+                        "貴重な"
+                    ]
+    },
+    {
+        "question":  "私はあなたが ----- 選択をしたと思います。",
+        "options":  [
+                        "真実",
+                        "意味",
+                        "賢い",
+                        "いくつかの"
+                    ]
+    },
+    {
+        "question":  "試験を受ける前に、教科書をカバンに-----必要があります。",
+        "options":  [
+                        "？",
+                        "？",
+                        "片付け",
+                        "？"
+                    ]
+    },
+    {
+        "question":  "いくつかのバクテリアは、-----な植物や動物に生息しています。",
+        "options":  [
+                        "死んだ",
+                        "気づいて",
+                        "できない",
+                        "~と違って"
+                    ]
+    },
+    {
+        "question":  "「これはあなたの車ですか、-----？」と警察官が尋ねた。彼女は「はい、私のものです」と言いました。",
+        "options":  [
+                        "間違いない、確信",
+                        "あなた自身",
+                        "先生",
+                        "奥様"
+                    ]
+    },
+    {
+        "question":  "誰もチェスで彼に-----ことはできません。",
+        "options":  [
+                        "噛む",
+                        "打ち負かす",
+                        "殴る",
+                        "配達する"
+                    ]
+    },
+    {
+        "question":  "トヨタは自動車ショーで最新の-----を発表しました。",
+        "options":  [
+                        "模型",
+                        "大気",
+                        "（果樹の）花",
+                        "ガイド"
+                    ]
+    },
+    {
+        "question":  "彼女は深刻な状況に----していた。",
+        "options":  [
+                        "怒って",
+                        "気づいて",
+                        "殴る",
+                        "うんざり"
+                    ]
+    },
+    {
+        "question":  "多くの人々が地域の平和を-----しようとしています。",
+        "options":  [
+                        "満たす",
+                        "入れた",
+                        "支払う",
+                        "もたらす"
+                    ]
+    },
+    {
+        "question":  "うるさくて眠るのが-----でした。",
+        "options":  [
+                        "ほとんど~ない",
+                        "できる",
+                        "できない",
+                        "ほとんど"
+                    ]
+    },
+    {
+        "question":  "今週末スキーに行くかどうか、まだ-----していません。",
+        "options":  [
+                        "決心する",
+                        "？",
+                        "からかう",
+                        "確かめ"
+                    ]
+    },
+    {
+        "question":  "私たちにとって-----をコントロールすることは重要です。",
+        "options":  [
+                        "あなた自身",
+                        "自分自身",
+                        "怒って",
+                        "我々自身-"
+                    ]
+    },
+    {
+        "question":  "私の母は、私がお気に入りのカップを割ったので、私に -----。",
+        "options":  [
+                        "怒って",
+                        "弱い",
+                        "打ち負かされた",
+                        "不公平な"
+                    ]
+    },
+    {
+        "question":  "咳をするときは、口元に手を-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "あなたはこの種の機械に-----ですか？",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私は果物が好きです、-----熟したもの。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "席を交換するのを-----ですか？通路側の席の方がいいです。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "将来海外に行くときには、この教訓を心に-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "貧困は多くの社会問題を-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼らはその知らせを聞いて-----でした。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "良い天気が3日間-----続いた。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "セールスマンは私たちに車の多くの-----について説明しました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼らは野鳥を-----ために森へ行った。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "壁に梯子が-----立てかけてあった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私は仕事が-----なので、何か違うことをしたかった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は現代建築における最高の-----だ。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私の祖父は戦時中に-----を過ごした。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  null,
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "ひとりのおばあさんを除いて、バスは-----だった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "何かを書く前に、事実を-----するべきだ。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "南カリフォルニアには大規模な-----がある。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は時の-----である。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "誰も私に-----な注意を払わなかった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "質問するときは手を-----なさい。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私は海外での仕事に-----があります。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "提案を-----もいいですか？",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "その建物は畑に長い-----を落とした。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "コーヒーを無料で-----できる。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "キャンプするときは、きれいな-----の飲料水を見つけるようにしてください。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "ハワイのいとこから手紙を-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は愚かに見えるが、-----そうではない。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼に辞書を-----ように頼んだ。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女に-----を伝えたのは勇敢だった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女は足を-----て机に座った。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "「1時間以内に私に報告して、ポール」「はい、-----。」",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は会議中ずっと-----静かだった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "昨夜UFOを見た。それは丸い-----だった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私たちは今、100年前には存在しなかった病気から-----いる。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "メールであなたに-----する。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "1945年には、アフリカ全土がヨーロッパ人によって-----された。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼の本の結論は非常に-----だとわかった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "テーブルの上に-----冊の本がある。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女は人の名前を覚えるのがとても-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "-----あなた、私は素晴らしいダンサーではありません。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は両親を尊敬するように-----られた。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女は-----の力が強い。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "湖の水はとても-----だった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "化学記号「Ag」は-----を表す。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "この理論の-----を説明できますか？",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "教授は自分の理論を証明するために-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "自転車のタイヤのインナー-----を交換してもらった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "京都に新しい店がオープンすることを-----喜んでいる。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  null,
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は財布をポケットに-----た。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "「私のコンピューターを見て、どこが悪いか教えてください」「-----、私には画面に問題があるように見えます。」",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "一部の昆虫は非常に小さいので、-----見ることができる。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼が私を助けに来てくれることを-----している。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "会議中に電話が-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "車が-----状態だったので嬉しかった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "そのニュースはなんて-----なんだ！",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "学生の皆さんは-----を誇りに思うべきだ。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼はインドを一人で旅行するにはあまりにも-----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "汚れた靴を部屋に-----持ち込まないでください。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "大雨のせいで私たちは外出を-----された。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "カーテンには花が-----られている。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私の母は店のシャツ売り場の-----だ。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼らは1日2回新聞を-----る。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "女性は職場で完全な-----をまだ達成していない。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女はドアを-----開けた。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼らはアレルギー検査のために血液を-----た。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "その夜、蚊にひどく-----された。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "その都市は先週の-----以来、恐怖の中で暮らしている。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "とても疲れていたので、集中することが-----なかった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私はアフリカのドラムのビートの-----リズムを楽しみました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "世界のニュースに-----しておく必要があります。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女はビーチパラソルの-----に座りました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "食べ過ぎて少し-----と感じました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼らはその部署に新しい秘書を2人-----しました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私はそれを-----までにやらなければなりません。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "あなたがそのような素晴らしいコースを受講できるのは-----です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼らは地下トンネルを-----ことで脱出しました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "一部の人々は常に犯罪の-----の中で生活しています。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "とても寒いです。コートを-----べきです。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私の兄は電気-----です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "台風がその都市を-----しました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女はハンカチで目を-----ました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼はリンゴの木に登り、果物が落ちるように-----を揺らしました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "-----な聴衆は拍手と歓声を送り始めました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "あなたは-----塩を食べるべきです。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼が私を-----してくれるので、私は彼が好きです。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "そのウイルスは当時、医者にとって-----でした。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼らは野鳥を-----ために森へ行きたがっています。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "ろうそくを-----てください。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "あなたのために花をいくつか-----しました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は-----と感じ、学校に行かないことにしました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "金と銀は-----な金属です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "兄はとても速く歩くので、私は彼に-----ことができません。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女は外出する前にいつも鏡で-----を見ます。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私たちの庭ではバラが満開に-----です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "会議を来週の金曜日まで-----にしていただけますか？",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私はその書類のコピーを-----しました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "その建物は兵士たちの-----に取り憑かれていると言われています。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私たちは-----でピクニックを楽しみました。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私のパソコンは現在-----です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "昨日の事故で誰も-----しなかったのは幸運でした。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "働く主な-----は、生活のためにお金を稼ぐことです。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "座席の-----をまっすぐにしてください。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "アムステルダムは運河で-----です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "お知らせが掲示-----に張り出されます。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "マーティン・ルーサー・キング・ジュニアは、アメリカの公民権運動の----の一人でした。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "この仕事をするには専門的な----が必要です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は----レベルでテニスをします。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "犬は鋭い嗅覚の----を持っています。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私の母は電気----です。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "カーテンの隙間から細い----の光が差し込んでいた。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "アメリカ合衆国の次の----は誰になるでしょうか？",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "来週、水曜日の----に電話します。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼女はタンクを水で----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "私のノートを----てください。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "クレジットカードで----できますか？",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "休憩なしで1時間でそこまで歩くのは----ですか？",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "電車は多くの乗客を----。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼は図書館から本を----。",
+        "options":  [
+                        null,
+                        null,
+                        "借りた",
+                        null
+                    ]
+    },
+    {
+        "question":  "私はこれほど----映画を見たことがありません。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    },
+    {
+        "question":  "彼がそう言ったのは----だった。",
+        "options":  [
+                        null,
+                        null,
+                        null,
+                        null
+                    ]
+    }
+]

@@ -12,6 +12,13 @@
       <h1>英語4択ドリル</h1>
       <p class="app__status" data-status>問題を読み込み中...</p>
     </header>
+    <section class="translation-toggle" data-translation-choice hidden>
+      <p class="translation-toggle__prompt">日本語訳を表示しますか？</p>
+      <div class="translation-toggle__buttons">
+        <button type="button" class="translation-toggle__button" data-translation-option="show">表示する</button>
+        <button type="button" class="translation-toggle__button translation-toggle__button--secondary" data-translation-option="hide">表示しない</button>
+      </div>
+    </section>
     <section class="quiz" data-quiz hidden>
       <div class="quiz__score"><span data-correct>0</span> / <span data-total>0</span> 正解</div>
       <div class="quiz__question" data-question></div>
@@ -26,9 +33,256 @@
   </template>
 
   <script type="module">
-    const CSV_FILE_PATH = '601~750.csv';
+    const CSV_FILE_PATH = '601~750_en.csv';
+    const TRANSLATIONS_FILE_PATH = 'translations-ja.json';
+
+    const OPTION_TRANSLATION_FALLBACKS = new Map([
+      ['', '（空欄）'],
+      ['about', '～について'],
+      ['Actually', '実は'],
+      ['actually', '実際に'],
+      ['able', 'できる'],
+      ['Almost', 'ほとんど'],
+      ['almost', 'ほとんど'],
+      ['aluminium', 'アルミニウム'],
+      ['an eye on', '見張る'],
+      ['announce', '発表する'],
+      ['announcement', '発表'],
+      ['announcer', 'アナウンサー'],
+      ['announcing', '発表している'],
+      ['at', '～で'],
+      ['atmosphere', '大気'],
+      ['authority', '権威'],
+      ['aware', '気づいている'],
+      ['away', '離れて'],
+      ['away from', '～から離れて'],
+      ['back', '戻って'],
+      ['bit', '少し'],
+      ['bitten', '噛まれた'],
+      ['bloom', '花が咲く'],
+      ['bloomed', '花が咲いた'],
+      ['blooms', '花'],
+      ['blossom', '花が咲く'],
+      ['blossoms', '花々'],
+      ['board', '板'],
+      ['bored', '退屈した'],
+      ['boring', '退屈な'],
+      ['borrow', '借りる'],
+      ['borrowing', '借りること'],
+      ['branch', '枝'],
+      ['branches', '枝'],
+      ['bring', '持ってくる'],
+      ['Bring', '持ってきて'],
+      ['certain', '確かな'],
+      ['Certain', '確かな'],
+      ['Certainly', '確かに'],
+      ['clear', '明確な'],
+      ['Clear', 'はっきりさせる'],
+      ['clerk', '事務員'],
+      ['Clerks', '事務員たち'],
+      ['convenient', '都合がよい'],
+      ['copper', '銅'],
+      ['dead', '死んだ'],
+      ['deliver', '配達する'],
+      ['delivered', '配達した'],
+      ['desert', '砂漠'],
+      ['did', 'した'],
+      ['digging', '掘っている'],
+      ['doctor', '医者'],
+      ['Doctors', '医者たち'],
+      ['down', '下へ'],
+      ['dug', '掘った'],
+      ['earthquake', '地震'],
+      ['earthquakes', '地震'],
+      ['ectra', '余分な（誤字）'],
+      ['empty', '空の'],
+      ['engineer', '技師'],
+      ['equal', '等しい'],
+      ['equality', '平等'],
+      ['equally', '均等に'],
+      ['Especially', '特に'],
+      ['especially', '特に'],
+      ['excited', '興奮した'],
+      ['exciting', 'わくわくさせる'],
+      ['extra', '余分な'],
+      ['fail', '失敗する'],
+      ['failed', '失敗した'],
+      ['failing', '失敗すること'],
+      ['familiar', 'よく知っている'],
+      ['famous', '有名な'],
+      ['fear', '恐れ'],
+      ['feature', '特徴'],
+      ['features', '特徴'],
+      ['field', '野原'],
+      ['filled', '満たした'],
+      ['for', '～のために'],
+      ['fresh', '新鮮な'],
+      ['friends with', '～と友達になる'],
+      ['from', '～から'],
+      ['full', 'いっぱいの'],
+      ['fun of', '～をからかう'],
+      ['ghosts', '幽霊'],
+      ['gold', '金'],
+      ['guide', '案内人'],
+      ['hardly', 'ほとんど～ない'],
+      ['Hardly', 'ほとんど～ない'],
+      ['her', '彼女を'],
+      ['herself', '彼女自身'],
+      ['himself', '彼自身'],
+      ['hire', '雇う'],
+      ['hired', '雇った'],
+      ['hit', '打つ'],
+      ['hunt', '狩る'],
+      ['hunted', '狩った'],
+      ['ill', '病気の'],
+      ['impossible', '不可能な'],
+      ['in', '～の中で'],
+      ['in torch with', '連絡を取る（誤記）'],
+      ['injured', 'けがをした'],
+      ['injuring', 'けがをさせること'],
+      ['interested', '興味がある'],
+      ['interesting', '興味深い'],
+      ['interestingly', '興味深いことに'],
+      ['keep', '保つ'],
+      ['keep an eye on', '見張る'],
+      ['keep in touch with', '連絡を取り合う'],
+      ['keep on', '～し続ける'],
+      ['keep up with', '遅れずについていく'],
+      ['keeping', '保つこと'],
+      ['kept', '保った'],
+      ['knowledge', '知識'],
+      ['laugh', '笑う'],
+      ['laughed', '笑った'],
+      ['laughing', '笑っている'],
+      ['leader', '指導者'],
+      ['leaders', '指導者たち'],
+      ['leadership', '指導力'],
+      ['lean', 'もたれる'],
+      ['leaned', 'もたれた'],
+      ['leaning', 'もたれている'],
+      ['least', '最も少ない'],
+      ['lend', '貸す'],
+      ['lending', '貸すこと'],
+      ['lent', '貸した'],
+      ['less', 'より少ない'],
+      ['luck', '運'],
+      ['luckily', '幸運にも'],
+      ['luckless', '不運な'],
+      ['lucky', '幸運な'],
+      ["ma'am", '奥様'],
+      ['made', '作った'],
+      ['make', '作る'],
+      ['Maybe', 'たぶん'],
+      ['maybe', 'たぶん'],
+      ['me', '私を'],
+      ['meaning', '意味'],
+      ['memory', '記憶'],
+      ['meself', '自分自身（方言）'],
+      ['Mind', '心'],
+      ['mind', '心'],
+      ['mineself', '自分自身（方言）'],
+      ['model', '模型'],
+      ['myself', '自分自身'],
+      ['off', '離れて'],
+      ['on', '～の上で'],
+      ['oneself', '自分自身'],
+      ['order', '注文'],
+      ['ordered', '注文した'],
+      ['out', '外へ'],
+      ['paid', '支払った'],
+      ['passenger', '乗客'],
+      ['passengers', '乗客たち'],
+      ['Passengers', '乗客たち'],
+      ['patter', '模様（誤字）'],
+      ['pattern', '模様'],
+      ['pay', '支払う'],
+      ['perfect', '完璧な'],
+      ['perfectly', '完璧に'],
+      ['Perhaps', 'おそらく'],
+      ['perhaps', 'おそらく'],
+      ['pick', '拾う'],
+      ['picked', '拾った'],
+      ['picking', '拾っている'],
+      ['possible', '可能な'],
+      ['precious', '貴重な'],
+      ['president', '大統領'],
+      ['presidents', '大統領たち'],
+      ['probably', 'たぶん'],
+      ['professional', '専門家'],
+      ['pulled', '引いた'],
+      ['pulling', '引いている'],
+      ['put', '置く'],
+      ['Put', '置く'],
+      ['rang', '鳴った'],
+      ['ray', '光線'],
+      ['reason', '理由'],
+      ['receive', '受け取る'],
+      ['received', '受け取った'],
+      ['relative', '親戚'],
+      ['relatives', '親戚たち'],
+      ['Relatives', '親戚たち'],
+      ['ring', '鳴る'],
+      ['ringing', '鳴っている'],
+      ['rub', 'こする'],
+      ['rubbed', 'こすった'],
+      ['rubbing', 'こすっている'],
+      ['rung', '鳴らされた'],
+      ['sample', '標本'],
+      ['sense', '感覚'],
+      ['senses', '感覚'],
+      ['several', 'いくつかの'],
+      ['shade', '日陰'],
+      ['shades', '日陰'],
+      ['shadow', '影'],
+      ['shape', '形'],
+      ['sick', '病気の'],
+      ['silver', '銀'],
+      ['sir', '旦那様'],
+      ['source', '源'],
+      ['sources', '源'],
+      ['spirit', '精神'],
+      ['suffer', '苦しむ'],
+      ['suffered', '苦しんだ'],
+      ['suffering', '苦しむこと'],
+      ['sure of', '～を確信している'],
+      ['surprised', '驚いた'],
+      ['surprising', '驚くべき'],
+      ['surprisingly', '驚くほど'],
+      ['swimming', '泳ぐこと'],
+      ['swing', '揺らす'],
+      ['swinging', '揺れている'],
+      ['swung', '揺らした'],
+      ['tempreature', '温度'],
+      ['themselves', '彼ら自身'],
+      ['to laugh', '笑うこと'],
+      ['truth', '真実'],
+      ['tube', '管'],
+      ['unable', 'できない'],
+      ['Unfair', '不公平な'],
+      ['unfair', '不公平な'],
+      ['Unknown', '未知の'],
+      ['unknown', '未知の'],
+      ['Unlike', '～と違って'],
+      ['unlike', '～と違って'],
+      ['up', '上へ'],
+      ['up for', '～に備えて'],
+      ['up with', '～と一緒に'],
+      ['up your mind', '決心する'],
+      ['weak', '弱い'],
+      ['whole', '全体の'],
+      ['wise', '賢い'],
+      ['with', '～と一緒に'],
+      ['yourself', 'あなた自身'],
+      ['yourselves', 'あなたがた自身'],
+      ['youth', '若者'],
+    ]);
+
+    const QUESTION_TRANSLATION_FALLBACKS = new Map([
+      ['#NAME?', '（問題文が壊れています）'],
+    ]);
 
     const statusEl = document.querySelector('[data-status]');
+    const translationChoiceSection = document.querySelector('[data-translation-choice]');
     const quizSection = document.querySelector('[data-quiz]');
     const questionEl = document.querySelector('[data-question]');
     const optionsEl = document.querySelector('[data-options]');
@@ -45,6 +299,11 @@
     let answered = false;
     let correctCount = 0;
     let totalCount = 0;
+    let showTranslations = false;
+    let quizStarted = false;
+
+    translationChoiceSection?.addEventListener('click', handleTranslationChoice);
+    nextButton.addEventListener('click', handleNextClick);
 
     init().catch((error) => {
       console.error(error);
@@ -54,44 +313,219 @@
 
     async function init() {
       try {
-        const data = await loadQuestions(CSV_FILE_PATH);
-        if (!data.length) {
+        const [questionRows, translationRows] = await Promise.all([
+          loadQuestionRows(CSV_FILE_PATH),
+          loadTranslationRows(TRANSLATIONS_FILE_PATH),
+        ]);
+        const merged = mergeQuestionData(questionRows, translationRows);
+        if (!merged.length) {
           throw new Error('問題が1問も読み込めませんでした。');
         }
-        questions = data;
+        questions = merged;
         prepareOrder();
-        quizSection.hidden = false;
-        statusEl.textContent = `全 ${questions.length} 問から出題します。`;
         updateScoreboard();
-        showNextQuestion();
-        nextButton.addEventListener('click', handleNextClick);
+        statusEl.textContent = '日本語訳を表示するか選んでください。';
+        if (translationChoiceSection) {
+          translationChoiceSection.hidden = false;
+        }
       } catch (error) {
         throw error;
       }
     }
 
-    async function loadQuestions(path) {
+    async function loadQuestionRows(path) {
       const response = await fetch(path, { cache: 'no-store' });
       if (!response.ok) {
         throw new Error(`CSVの取得に失敗しました (HTTP ${response.status})`);
       }
-      let rawText;
-      try {
-        const buffer = await response.arrayBuffer();
-        const decoder = new TextDecoder('shift_jis');
-        rawText = decoder.decode(buffer);
-      } catch (decodeError) {
-        console.warn('Shift_JISとしてのデコードに失敗しました。UTF-8で再試行します。', decodeError);
-        rawText = await response.text();
-      }
+      const rawText = await response.text();
       const rows = parseCsv(rawText);
       const header = rows[0] || [];
-      const hasHeader = header.map((cell) => cell.trim()).join(',').toLowerCase().includes('anum');
+      const hasHeader = header.map((cell) => cell.trim().toLowerCase()).includes('anum');
       const questionRows = hasHeader ? rows.slice(1) : rows;
-
       return questionRows
         .map((cols) => normalizeRow(cols))
         .filter((item) => item !== null);
+    }
+
+    async function loadTranslationRows(path) {
+      const response = await fetch(path, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`翻訳データの取得に失敗しました (HTTP ${response.status})`);
+      }
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error('翻訳データの形式が正しくありません。');
+      }
+      return data;
+    }
+
+    function mergeQuestionData(englishRows, translationRows) {
+      const merged = [];
+      const limit = englishRows.length;
+      for (let index = 0; index < limit; index += 1) {
+        const english = englishRows[index];
+        if (!english || !english.question || english.question.includes('#NAME?')) {
+          continue;
+        }
+        const translation = translationRows[index] ?? {};
+        const questionTranslation = resolveQuestionTranslation(english.question, translation.question);
+        const optionTranslations = english.options.map((optionText, optionIndex) => {
+          const rawTranslation = translation.options?.[optionIndex] ?? null;
+          return resolveOptionTranslation(optionText, rawTranslation);
+        });
+        merged.push({
+          question: english.question,
+          options: english.options,
+          answerIndex: english.answerIndex,
+          translation: {
+            question: questionTranslation,
+            options: optionTranslations,
+          },
+        });
+      }
+      return merged;
+    }
+
+    function handleTranslationChoice(event) {
+      const button = event.target.closest('button[data-translation-option]');
+      if (!button || quizStarted || !questions.length) {
+        return;
+      }
+      const { translationOption } = button.dataset;
+      if (!translationOption) {
+        return;
+      }
+      startQuiz(translationOption === 'show');
+    }
+
+    function startQuiz(enableTranslations) {
+      showTranslations = enableTranslations;
+      quizStarted = true;
+      if (translationChoiceSection) {
+        translationChoiceSection.hidden = true;
+      }
+      quizSection.hidden = false;
+      statusEl.textContent = `全 ${questions.length} 問から出題します。`;
+      correctCount = 0;
+      totalCount = 0;
+      updateScoreboard();
+      showNextQuestion();
+    }
+
+    function prepareOrder() {
+      order = Array.from({ length: questions.length }, (_, index) => index);
+      shuffle(order);
+      orderPointer = 0;
+    }
+
+    function showNextQuestion() {
+      if (!questions.length) {
+        return;
+      }
+      if (orderPointer >= order.length) {
+        shuffle(order);
+        orderPointer = 0;
+      }
+      const questionIndex = order[orderPointer++];
+      currentQuestion = questions[questionIndex];
+      answered = false;
+      nextButton.disabled = true;
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'quiz__feedback';
+      renderQuestion(currentQuestion);
+      renderOptions(currentQuestion);
+    }
+
+    function renderQuestion(question) {
+      let markup = `<span class="quiz__question-text">${formatText(question.question)}</span>`;
+      const translationText = question.translation.question;
+      if (showTranslations && hasMeaningfulText(translationText)) {
+        markup += `<span class="quiz__question-translation">${formatText(translationText)}</span>`;
+      }
+      questionEl.innerHTML = markup;
+    }
+
+    function renderOptions(question) {
+      optionsEl.innerHTML = '';
+      question.options.forEach((optionText, index) => {
+        const button = optionTemplate.content.firstElementChild.cloneNode(true);
+        const translationText = question.translation.options[index];
+        let optionMarkup = `<span class="quiz__option-text">${formatText(optionText)}</span>`;
+        if (showTranslations && hasMeaningfulText(translationText)) {
+          optionMarkup += `<span class="quiz__option-translation">${formatText(translationText)}</span>`;
+        }
+        button.innerHTML = optionMarkup;
+        button.dataset.index = String(index);
+        button.addEventListener('click', () => handleOptionClick(button, index));
+        optionsEl.appendChild(button);
+      });
+    }
+
+    function handleOptionClick(button, selectedIndex) {
+      if (answered) {
+        return;
+      }
+      answered = true;
+      totalCount += 1;
+      const isCorrect = selectedIndex === currentQuestion.answerIndex;
+      if (isCorrect) {
+        correctCount += 1;
+        feedbackEl.textContent = '正解！';
+        feedbackEl.classList.add('quiz__feedback--correct');
+      } else {
+        feedbackEl.textContent = '残念！正答を確認しましょう。';
+        feedbackEl.classList.add('quiz__feedback--wrong');
+      }
+
+      [...optionsEl.children].forEach((optionButton, index) => {
+        optionButton.disabled = true;
+        if (index === currentQuestion.answerIndex) {
+          optionButton.classList.add('quiz__option--correct');
+        }
+        if (index === selectedIndex && !isCorrect) {
+          optionButton.classList.add('quiz__option--wrong');
+        }
+      });
+
+      nextButton.disabled = false;
+      updateScoreboard();
+    }
+
+    function handleNextClick() {
+      showNextQuestion();
+    }
+
+    function updateScoreboard() {
+      correctEl.textContent = String(correctCount);
+      totalEl.textContent = String(totalCount);
+    }
+
+    function resolveQuestionTranslation(englishText, rawTranslation) {
+      if (hasMeaningfulText(rawTranslation)) {
+        return rawTranslation.trim();
+      }
+      const key = (englishText ?? '').trim();
+      return QUESTION_TRANSLATION_FALLBACKS.get(key) ?? null;
+    }
+
+    function resolveOptionTranslation(englishText, rawTranslation) {
+      if (hasMeaningfulText(rawTranslation)) {
+        return rawTranslation.trim();
+      }
+      const key = (englishText ?? '').trim();
+      return OPTION_TRANSLATION_FALLBACKS.get(key) ?? null;
+    }
+
+    function hasMeaningfulText(value) {
+      if (value === null || value === undefined) {
+        return false;
+      }
+      const trimmed = String(value).trim();
+      if (!trimmed) {
+        return false;
+      }
+      return trimmed !== '?' && trimmed !== '？';
     }
 
     function normalizeRow(cols) {
@@ -170,78 +604,6 @@
       }
 
       return rows.filter((r) => r.some((cell) => cell.trim() !== ''));
-    }
-
-    function prepareOrder() {
-      order = Array.from({ length: questions.length }, (_, index) => index);
-      shuffle(order);
-      orderPointer = 0;
-    }
-
-    function showNextQuestion() {
-      if (orderPointer >= order.length) {
-        shuffle(order);
-        orderPointer = 0;
-      }
-      const questionIndex = order[orderPointer++];
-      currentQuestion = questions[questionIndex];
-      answered = false;
-      nextButton.disabled = true;
-      feedbackEl.textContent = '';
-      feedbackEl.className = 'quiz__feedback';
-
-      questionEl.innerHTML = formatText(currentQuestion.question);
-      renderOptions(currentQuestion);
-    }
-
-    function renderOptions(question) {
-      optionsEl.innerHTML = '';
-      question.options.forEach((optionText, index) => {
-        const button = optionTemplate.content.firstElementChild.cloneNode(true);
-        button.innerHTML = formatText(optionText);
-        button.dataset.index = String(index);
-        button.addEventListener('click', () => handleOptionClick(button, index));
-        optionsEl.appendChild(button);
-      });
-    }
-
-    function handleOptionClick(button, selectedIndex) {
-      if (answered) {
-        return;
-      }
-      answered = true;
-      totalCount += 1;
-      const isCorrect = selectedIndex === currentQuestion.answerIndex;
-      if (isCorrect) {
-        correctCount += 1;
-        feedbackEl.textContent = '正解！';
-        feedbackEl.classList.add('quiz__feedback--correct');
-      } else {
-        feedbackEl.textContent = '残念！正答を確認しましょう。';
-        feedbackEl.classList.add('quiz__feedback--wrong');
-      }
-
-      [...optionsEl.children].forEach((optionButton, index) => {
-        optionButton.disabled = true;
-        if (index === currentQuestion.answerIndex) {
-          optionButton.classList.add('quiz__option--correct');
-        }
-        if (index === selectedIndex && !isCorrect) {
-          optionButton.classList.add('quiz__option--wrong');
-        }
-      });
-
-      nextButton.disabled = false;
-      updateScoreboard();
-    }
-
-    function handleNextClick() {
-      showNextQuestion();
-    }
-
-    function updateScoreboard() {
-      correctEl.textContent = String(correctCount);
-      totalEl.textContent = String(totalCount);
     }
 
     function shuffle(array) {
