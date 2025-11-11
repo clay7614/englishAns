@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英語4択ドリル</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="app__header">
+      <h1>英語4択ドリル</h1>
+      <p class="app__status" data-status>問題を読み込み中...</p>
+    </header>
+    <section class="quiz" data-quiz hidden>
+      <div class="quiz__score"><span data-correct>0</span> / <span data-total>0</span> 正解</div>
+      <div class="quiz__question" data-question></div>
+      <div class="quiz__options" data-options></div>
+      <div class="quiz__feedback" data-feedback></div>
+      <button type="button" class="quiz__next" data-next disabled>次の問題へ</button>
+    </section>
+  </main>
+
+  <template id="option-button-template">
+    <button type="button" class="quiz__option"></button>
+  </template>
+
+  <script type="module">
+    const CSV_FILE_PATH = '601~750.csv';
+
+    const statusEl = document.querySelector('[data-status]');
+    const quizSection = document.querySelector('[data-quiz]');
+    const questionEl = document.querySelector('[data-question]');
+    const optionsEl = document.querySelector('[data-options]');
+    const feedbackEl = document.querySelector('[data-feedback]');
+    const nextButton = document.querySelector('[data-next]');
+    const correctEl = document.querySelector('[data-correct]');
+    const totalEl = document.querySelector('[data-total]');
+    const optionTemplate = document.getElementById('option-button-template');
+
+    let questions = [];
+    let order = [];
+    let orderPointer = 0;
+    let currentQuestion = null;
+    let answered = false;
+    let correctCount = 0;
+    let totalCount = 0;
+
+    init().catch((error) => {
+      console.error(error);
+      statusEl.textContent = `読み込み中に問題が発生しました: ${error.message}`;
+      statusEl.classList.add('app__status--error');
+    });
+
+    async function init() {
+      try {
+        const data = await loadQuestions(CSV_FILE_PATH);
+        if (!data.length) {
+          throw new Error('問題が1問も読み込めませんでした。');
+        }
+        questions = data;
+        prepareOrder();
+        quizSection.hidden = false;
+        statusEl.textContent = `全 ${questions.length} 問から出題します。`;
+        updateScoreboard();
+        showNextQuestion();
+        nextButton.addEventListener('click', handleNextClick);
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async function loadQuestions(path) {
+      const response = await fetch(path, { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`CSVの取得に失敗しました (HTTP ${response.status})`);
+      }
+      const rawText = await response.text();
+      const rows = parseCsv(rawText);
+      const header = rows[0] || [];
+      const hasHeader = header.map((cell) => cell.trim()).join(',').toLowerCase().includes('anum');
+      const questionRows = hasHeader ? rows.slice(1) : rows;
+
+      return questionRows
+        .map((cols) => normalizeRow(cols))
+        .filter((item) => item !== null);
+    }
+
+    function normalizeRow(cols) {
+      if (!cols || cols.length < 6) {
+        return null;
+      }
+      const [rawQuestion, ...optionAndAnswer] = cols;
+      const options = optionAndAnswer.slice(0, 4);
+      const answerRaw = optionAndAnswer[4];
+      const answerIndex = Number.parseInt(answerRaw, 10) - 1;
+      if (Number.isNaN(answerIndex) || answerIndex < 0 || answerIndex > 3) {
+        return null;
+      }
+      return {
+        question: rawQuestion.trim(),
+        options: options.map((option) => option.trim()),
+        answerIndex,
+      };
+    }
+
+    function parseCsv(text) {
+      if (!text) {
+        return [];
+      }
+      const rows = [];
+      let row = [];
+      let value = '';
+      let insideQuotes = false;
+      let i = 0;
+
+      if (text.charCodeAt(0) === 0xfeff) {
+        text = text.slice(1);
+      }
+
+      while (i < text.length) {
+        const char = text[i];
+
+        if (char === '"') {
+          const peek = text[i + 1];
+          if (insideQuotes && peek === '"') {
+            value += '"';
+            i += 2;
+            continue;
+          }
+          insideQuotes = !insideQuotes;
+          i += 1;
+          continue;
+        }
+
+        if (char === ',' && !insideQuotes) {
+          row.push(value);
+          value = '';
+          i += 1;
+          continue;
+        }
+
+        if ((char === '\n' || char === '\r') && !insideQuotes) {
+          if (char === '\r' && text[i + 1] === '\n') {
+            i += 1;
+          }
+          row.push(value);
+          rows.push(row);
+          row = [];
+          value = '';
+          i += 1;
+          continue;
+        }
+
+        value += char;
+        i += 1;
+      }
+
+      if (value.length > 0 || row.length > 0) {
+        row.push(value);
+        rows.push(row);
+      }
+
+      return rows.filter((r) => r.some((cell) => cell.trim() !== ''));
+    }
+
+    function prepareOrder() {
+      order = Array.from({ length: questions.length }, (_, index) => index);
+      shuffle(order);
+      orderPointer = 0;
+    }
+
+    function showNextQuestion() {
+      if (orderPointer >= order.length) {
+        shuffle(order);
+        orderPointer = 0;
+      }
+      const questionIndex = order[orderPointer++];
+      currentQuestion = questions[questionIndex];
+      answered = false;
+      nextButton.disabled = true;
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'quiz__feedback';
+
+      questionEl.innerHTML = formatText(currentQuestion.question);
+      renderOptions(currentQuestion);
+    }
+
+    function renderOptions(question) {
+      optionsEl.innerHTML = '';
+      question.options.forEach((optionText, index) => {
+        const button = optionTemplate.content.firstElementChild.cloneNode(true);
+        button.innerHTML = formatText(optionText);
+        button.dataset.index = String(index);
+        button.addEventListener('click', () => handleOptionClick(button, index));
+        optionsEl.appendChild(button);
+      });
+    }
+
+    function handleOptionClick(button, selectedIndex) {
+      if (answered) {
+        return;
+      }
+      answered = true;
+      totalCount += 1;
+      const isCorrect = selectedIndex === currentQuestion.answerIndex;
+      if (isCorrect) {
+        correctCount += 1;
+        feedbackEl.textContent = '正解！';
+        feedbackEl.classList.add('quiz__feedback--correct');
+      } else {
+        feedbackEl.textContent = '残念！正答を確認しましょう。';
+        feedbackEl.classList.add('quiz__feedback--wrong');
+      }
+
+      [...optionsEl.children].forEach((optionButton, index) => {
+        optionButton.disabled = true;
+        if (index === currentQuestion.answerIndex) {
+          optionButton.classList.add('quiz__option--correct');
+        }
+        if (index === selectedIndex && !isCorrect) {
+          optionButton.classList.add('quiz__option--wrong');
+        }
+      });
+
+      nextButton.disabled = false;
+      updateScoreboard();
+    }
+
+    function handleNextClick() {
+      showNextQuestion();
+    }
+
+    function updateScoreboard() {
+      correctEl.textContent = String(correctCount);
+      totalEl.textContent = String(totalCount);
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function formatText(text) {
+      return escapeHtml(text).replace(/\r?\n/g, '<br>');
+    }
+
+    function escapeHtml(text) {
+      const safeText = String(text ?? '');
+      return safeText.replace(/[&<>"']/g, (char) => {
+        switch (char) {
+          case '&':
+            return '&amp;';
+          case '<':
+            return '&lt;';
+          case '>':
+            return '&gt;';
+          case '"':
+            return '&quot;';
+          case '\'':
+            return '&#39;';
+          default:
+            return char;
+        }
+      });
+    }
+  </script>
+</body>
+</html>

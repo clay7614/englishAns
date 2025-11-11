@@ -1,0 +1,909 @@
+Q,A1,A2,A3,A4,Anum
+"""I have felt sick all day."" ""You Should see a  -----""
+「一日中気分が悪いんです。」「----- を受診すべきです。」","engineer
+エンジニア","clerk
+事務員","sir
+先生","doctor
+医師",4
+"She kept ----- working until late at night.
+彼女は夜遅くまで ----- 働き続けました。","on
+続けた","with
+？","in
+？","from
+？",1
+"Tie down anything that might blow away in the ------.
+----- で飛ばされそうなものはすべて固定してください。","storm
+嵐","ray
+光線","tempreature
+温度","shadow
+影",1
+"The basket is ----- of apples.
+そのカゴはリンゴで ---- です","less
+少ない","full
+いっぱい","empty
+から","several
+いくつかの",2
+"Will you be ----- to come to a meeting next week?
+来週、会議に来て ---- ですか？","actually
+実際に","able
+できる","especially
+特に","hardly
+ほとんど~ない",2
+"Have you made ----- your neighbors yet?
+隣人ともう ----- なりましたか？","friends with
+親しくなる","up
+？","me
+？","sure of
+確かめる",1
+"My friends ----- my hairstyle.
+私の友達は私の髪形を-----","kept in touch with
+連絡を保った","kept up with
+続いた","made fun of
+からかった","made up their mind
+決心した",3
+"There has been a sudden rise in ----- over the past few days.
+過去数日間で ----- が急増しています。","atmosphere
+大気","tempreature
+温度","branch
+枝","earthquake
+地震",2
+"We can buy ----- fish in this market.
+この市場では-----魚を買うことができます。","professional
+プロの","fresh
+新鮮な","clear
+澄んだ","wise
+賢い",2
+"We hired a ----- in Rome.
+私たちはローマで ----- を雇いました。","desert
+砂漠","field
+野原","guide
+ガイド","storm
+嵐",3
+"Cherry ----- are at their best now in the mountains.
+山の桜は今、----- が見頃です。","fields
+野原","shadows
+影","branches
+枝","blossoms
+（果樹の）花",4
+"It is a ----- that smoking is a danger to health.
+喫煙が健康にとって危険であるというのは ----- です。","authority
+権威者","clear
+澄んだ","fact
+事実","wise
+賢い",3
+"She wore a ring with a -----.
+彼女は ----- の指輪をしていました。","jewel
+宝石","excited
+興奮して","silver
+銀","surprising
+驚くべき",1
+"She went to New York to become a musical -----.
+彼女はミュージカルの ----- になるためにニューヨークへ行きました。","doctor
+医師","anoouncer
+アナウンサー","passenger
+乗客","actor
+俳優",4
+"The earth's ----- is many miles thick.
+地球の ----- は何マイルもの厚さがあります。","storm
+嵐","tempreature
+温度","atmosphere
+大気","feature
+特徴",3
+"I ----- a careless mistake.
+私は不注意な間違いを -----。","did
+？","achieved
+成し遂げる","got
+得た","made
+作った",4
+"He read the ----- book, not just a part of it.
+彼は ----- 本を読みました。一部だけではありません","whole
+全体","full
+いっぱいの","several
+いくつかの","extra
+余分な",1
+"Let's meet on Friday if it's ----- of you.
+金曜日に会いましょう、もし ----- でしたら。","convenient
+都合のよい","femiliar
+よく知られた","empty
+からの","precious
+貴重な",1
+"I think you made a ----- choice.
+私はあなたが ----- 選択をしたと思います。","truth
+真実","meaning
+意味","wise
+賢い","several
+いくつかの",3
+"You must put your textbook ----- in your bag before taking the exam.
+試験を受ける前に、教科書をカバンに-----必要があります。","off
+？","up
+？","away
+片付け","in
+？",3
+"Some bacteria live on ----- plants and animals.
+いくつかのバクテリアは、-----な植物や動物に生息しています。","dead
+死んだ","aware
+気づいて","unable
+できない","unlike
+~と違って",1
+"""Is this your car, -----?"" asked the policeman. She said ""Yes, it's mine.""
+「これはあなたの車ですか、-----？」と警察官が尋ねた。彼女は「はい、私のものです」と言いました。","certain
+間違いない、確信","yourself
+あなた自身","sir
+先生","madam
+奥様",4
+"No one can ----- him at chess.
+誰もチェスで彼に-----ことはできません。","bite
+噛む","beat
+打ち負かす","hit
+殴る","deliver
+配達する",2
+"Toyota introduced the latest ----- at the car show.
+トヨタは自動車ショーで最新の-----を発表しました。","model
+模型","atmosphere
+大気","blossom
+（果樹の）花","guide
+ガイド",1
+"She was ----- of the serious situation.
+彼女は深刻な状況に----していた。","angry
+怒って","aware
+気づいて","hit
+殴る","sick
+うんざり",2
+"A lot of people try to ----- peace in the region.
+多くの人々が地域の平和を-----しようとしています。","fill
+満たす","put
+入れた","pay
+支払う","bring
+もたらす",4
+"It was ----- to sleep because of the noise.
+うるさくて眠るのが-----でした。","hardly
+ほとんど~ない","able
+できる","impossible
+できない","almost
+ほとんど",3
+"I haven't made ------ whether I will go skiing this weekend?
+今週末スキーに行くかどうか、まだ-----していません。","up my mind
+決心する","in torch with
+？","fun of
+からかう","sure of
+確かめ",1
+"It is important for us to control -----.
+私たちにとって-----をコントロールすることは重要です。","yourself
+あなた自身","oneself
+自分自身","angry
+怒って","ourselves
+我々自身-",4
+"My mother got ----- with me for breaking her favorite cup.
+私の母は、私がお気に入りのカップを割ったので、私に -----。","angry
+怒って","weak
+弱い","beaten
+打ち負かされた","unfair
+不公平な",1
+"----- your hand over your mouth when you cough.
+咳をするときは、口元に手を-----。","Bring
+","Clear
+","Mind
+","Put
+",4
+"Are you ----- with this type of machine?
+あなたはこの種の機械に-----ですか？","wise
+","lucky
+","familiar
+","fresh
+",3
+"I like fruits, ----- ripe ones.
+私は果物が好きです、-----熟したもの。","able
+","possible
+","especially
+","hardly
+",3
+"Would you ----- exchanging seats? I prefer the aisle seat.
+席を交換するのを-----ですか？通路側の席の方がいいです。","put
+","bring
+","mind
+","lend
+",3
+"Keep this lesson -----mind when you go abroad in the future.
+将来海外に行くときには、この教訓を心に-----。","with
+","in
+","at
+","for
+",2
+"Poverty brings ----- many social problems.
+貧困は多くの社会問題を-----。","about
+","up
+","at
+","back
+",1
+"They were ----- to hear the news.
+彼らはその知らせを聞いて-----でした。","surprising
+","unlike
+","surprised
+","unknown
+",3
+"The fine weather kept ----- for three days.
+良い天気が3日間-----続いた。","in
+","with
+","up
+","from
+",3
+"The salesperson described to us the car's many -----.
+セールスマンは私たちに車の多くの-----について説明しました。","earthquakes
+","branches
+","features
+","sources
+",3
+"They went to the forest to ----- wild birds.
+彼らは野鳥を-----ために森へ行った。","dead
+","hire
+","hunt
+","certain
+",3
+"There was a ladder ----- against the wall.
+壁に梯子が-----立てかけてあった。","ringing
+","pulling
+","leaning
+","picking
+",3
+"I was ----- with work and wanted to do something different.
+私は仕事が-----なので、何か違うことをしたかった。","boring
+","interesting
+","interested
+","bored
+",4
+"He is the highest ----- on modern architecture.
+彼は現代建築における最高の-----だ。","mind
+","wise
+","authority
+","professional
+",3
+"My grandfather spent his ----- during wartime.
+私の祖父は戦時中に-----を過ごした。","pattern
+","board
+","youth
+","shape
+",3
+#NAME?,"Almost
+","Especially
+","Hardly
+","Perhaps
+",4
+"Except for one old lady, the bus was -----.
+ひとりのおばあさんを除いて、バスは-----だった。","full
+","precious
+","empty
+","equal
+",3
+"You should make ----- the facts before you write something.
+何かを書く前に、事実を-----するべきだ。","sure of
+","up your mind
+","friends with
+","fun of
+",1
+"Southern California has a large -----.
+南カリフォルニアには大規模な-----がある。","fail
+","actually
+","suffer
+","desert
+",4
+"He is a distant ----- of time.
+彼は時の-----である。","leader
+","youth
+","relative
+","clerk
+",3
+"Nobody paid the ----- attention to me.
+誰も私に-----な注意を払わなかった。","several
+","whole
+","less
+","least
+",4
+"Put ----- your hand when you ask a question.
+質問するときは手を-----なさい。","on
+","up
+","away
+","back
+",2
+"I'm ----- in working abroad.
+私は海外での仕事に-----があります。","unable
+","interested
+","unlike
+","interesting
+",2
+"Can I ----- a suggestion?
+提案を-----もいいですか？","keep
+","lean
+","pick
+","make
+",4
+"The building cast a long ----- on the field.
+その建物は畑に長い-----を落とした。","shadow
+","bloom
+","tempreature
+","desert
+",1
+"You can have coffee at no ----- change.
+コーヒーを無料で-----できる。","equal
+","extra
+","convenient
+","several
+",2
+"When camping, make sure you find a clean ----- of drinking water.
+キャンプするときは、きれいな-----の飲料水を見つけるようにしてください。","ray
+","tempreature
+","source
+","model
+",3
+"I ----- a letter from my cousin in Hawaii.
+ハワイのいとこから手紙を-----。","rang
+","pulled
+","received
+","swung
+",3
+"He looks like a fool, but ----- he is not.
+彼は愚かに見えるが、-----そうではない。","actually
+","especially
+","hardly
+","almost
+",1
+"I asked him to ----- me his dictionaly.
+彼に辞書を-----ように頼んだ。","pay
+","borrow
+","receive
+","lend
+",4
+"It was brave of you to tell her the -----.
+彼女に-----を伝えたのは勇敢だった。","truth
+","precious
+","mind
+","authority
+",1
+"She sat on the desk ----- her legs.
+彼女は足を-----て机に座った。","digging
+","borrowing
+","swinging
+","lending
+",3
+"""Report back to me in an hour, Paul."" ""Yes, -----.""
+「1時間以内に私に報告して、ポール」「はい、-----。」","passenger
+","sir
+","certain
+","youth
+",2
+"He ----- quiet throughout the meeting.
+彼は会議中ずっと-----静かだった。","rang
+","kept
+","pulled
+","made
+",2
+"I saw a UFO last night, It had a round -----.
+昨夜UFOを見た。それは丸い-----だった。","shape
+","silver
+","pattern
+","surprising
+",1
+"We are now ----- from diseases that didn't exist 100 years ago.
+私たちは今、100年前には存在しなかった病気から-----いる。","failing
+","suffering
+","keeping
+","injuring
+",2
+"I'll ----- you by email.
+メールであなたに-----する。","keep an eye on
+","keep in touch with
+","keep up with
+","keep on
+",2
+"In 1945 ----- all of Africa was ruled by Europeans.
+1945年には、アフリカ全土がヨーロッパ人によって-----された。","able
+","hardly
+","possible
+","almost
+",4
+"I found the conclusion of his book very -----.
+彼の本の結論は非常に-----だとわかった。","interested
+","surprised
+","surprisingly
+","interesting
+",4
+"There are ----- books on the table.
+テーブルの上に-----冊の本がある。","wise
+","empty
+","several
+","perfectly
+",3
+"She has a very good ----- for people's names.
+彼女は人の名前を覚えるのがとても-----。","extra
+","fear
+","memory
+","reason
+",3
+" ----- you, I'm not a great dancer.
+-----あなた、私は素晴らしいダンサーではありません。","Unfair
+","Certain
+","Unlike
+","Unknown
+",3
+"He was brought ----- to respect his parents.
+彼は両親を尊敬するように-----られた。","about
+","in
+","up
+","back
+",3
+"She has great strength of -----.
+彼女は-----の力が強い。","certain
+","aware
+","hit
+","spirit
+",4
+"The water of the lake was very -----.
+湖の水はとても-----だった。","meaning
+","clear
+","full
+","wise
+",2
+"The chemical symbol ""Ag"" stands for -----.
+化学記号「Ag」は-----を表す。","aluminium
+","gold
+","silver
+","copper
+",3
+"Can you explain the ----- of this word?
+この理論の-----を説明できますか？","convenient
+","fresh
+","meaning
+","memory
+",3
+"The professor ----- to prove his theory.
+教授は自分の理論を証明するために-----。","failed
+","suffered
+","injured
+","leaned
+",1
+"I got the inner ----- of my bicycle tire replaced.
+自転車のタイヤのインナー-----を交換してもらった。","board
+","tube
+","shape
+","patter
+",2
+"We are pleased to ----- the opening of a new shop in Kyoto.
+京都に新しい店がオープンすることを-----喜んでいる。","announcing
+","announcer
+","announcement
+","announce
+",4
+#NAME?,"Passengers
+","Doctors
+","Clerks
+","Relatives
+",1
+"He put a wallet ----- the pocket.
+彼は財布をポケットに-----た。","off
+","up
+","in
+","out
+",3
+"""Please take a look at my computer and tell me what is wrong."" ""-----, To me, it looks like there is a problem with the screen.""
+「私のコンピューターを見て、どこが悪いか教えてください」「-----、私には画面に問題があるように見えます。」","Certainly
+","Actually
+","Maybe
+","Perhaps
+",2
+"Some insects are so small that you can ----- see them.
+一部の昆虫は非常に小さいので、-----見ることができる。","impossible
+","hardly
+","maybe
+","almost
+",2
+"I'm ----- he'll come to rescue me.
+彼が私を助けに来てくれることを-----している。","certain
+","unknown
+","hunted
+","bitten
+",1
+"We were in the middle of a meeting when the phone -----.
+会議中に電話が-----。","rung
+","ringing
+","rang
+","ring
+",3
+"I was glad that the car was in ----- condition.
+車が-----状態だったので嬉しかった。","ectra
+","whole
+","equal
+","perfect
+",4
+"How ----- that news is!
+そのニュースはなんて-----なんだ！","interestingly
+","surprising
+","interested
+","surprised
+",2
+"You students ought to be proud of -----.
+学生の皆さんは-----を誇りに思うべきだ。","themselves
+","yourself
+","yourselves
+","himself
+",3
+"He is too ----- to travel alone in India.
+彼はインドを一人で旅行するにはあまりにも-----。","hit
+","unfair
+","fear
+","weak
+",4
+"Don't bring those dirty shoes ----- the room.
+汚れた靴を部屋に-----持ち込まないでください。","in
+","up
+","about
+","back
+",1
+"The heavy rain kept us ----- going out.
+大雨のせいで私たちは外出を-----された。","with
+","up
+","from
+","on
+",3
+"The curtains have a ----- of flowers on them.
+カーテンには花が-----られている。","tube
+","shape
+","board
+","pattern
+",4
+"My mother is a ----- in the store's shirt department.
+私の母は店のシャツ売り場の-----だ。","ma'am
+","president
+","clerk
+","relative
+",3
+"They ----- newspapers twice a day.
+彼らは1日2回新聞を-----る。","deliver
+","hire
+","shape
+","themselves
+",1
+"Women have yet to achieve full ----- in the workspace.
+女性は職場で完全な-----をまだ達成していない。",,"equally
+","equality
+","equal
+",3
+"She ----- the door open.
+彼女はドアを-----開けた。","pulled
+","picked
+","bloomed
+","rang
+",1
+"They took a blood ----- to test for allergies.
+彼らはアレルギー検査のために血液を-----た。","feature
+","source
+","sample
+","reason
+",3
+"I was badly ----- by mosquitoes that night.
+その夜、蚊にひどく-----された。","bitten
+","ordered
+","hunted
+","hired
+",1
+"The city has been living in fear since las week's -----.
+その都市は先週の-----以来、恐怖の中で暮らしている。","atmosphere
+","ray
+","desert
+","earthquake
+",4
+"I was ----- to concentrate because I was so tired.
+とても疲れていたので、集中することが-----なかった。","unknown
+","unfair
+","unable
+","unlike
+",3
+"I enjoyed the ----- rhythms of African drum beats.
+私はアフリカのドラムのビートの-----リズムを楽しみました。","exciting
+","excited
+","boring
+","bored
+",1
+"It is necessary to keep ----- world news.
+世界のニュースに-----しておく必要があります。","up with
+","away from
+","an eye on
+","up for
+",1
+"She sat in the ----- of a beach umbrella.
+彼女はビーチパラソルの-----に座りました。","blossom
+","desert
+","tempreature
+","shade
+",4
+"I felt a little ----- after eating too much.
+食べ過ぎて少し-----と感じました。","unable
+","sick
+","unknown
+","aware
+",2
+"They ----- two new secretaries in the department.
+彼らはその部署に新しい秘書を2人-----しました。","hunted
+","hired
+","delivered
+","unknown
+",2
+"I must do it by -----.
+私はそれを-----までにやらなければなりません。","oneself
+","mineself
+","meself
+","myself
+",4
+"You are ----- to take such wonderful courses.
+あなたがそのような素晴らしいコースを受講できるのは-----です。","luckily
+","luck
+","lucky
+","luckless
+",3
+"They escaped by ----- an underground tunnel.
+彼らは地下トンネルを-----ことで脱出しました。","rubbing
+","ringing
+","digging
+","swimming
+",3
+"Some people live in constant ----- of crime.
+一部の人々は常に犯罪の-----の中で生活しています。","equal
+","authority
+","fear
+","empty
+",3
+"It's very cold. You Should put ----- your coat.
+とても寒いです。コートを-----べきです。","off
+","up
+","in
+","on
+",4
+"My brother is an electrical -----.
+私の兄は電気-----です。","clerk
+","engineer
+","relative
+","professional
+",2
+"A typhoon ----- the city.
+台風がその都市を-----しました。","hunted
+","hired
+","hit
+","bit
+",3
+"She ----- her eyes with a handkerchief.
+彼女はハンカチで目を-----ました。","dug
+","received
+","filled
+","rubbed
+",4
+"He climbed into the apple tree and shook the ----- so that the fruit feel down.
+彼はリンゴの木に登り、果物が落ちるように-----を揺らしました。","blossoms
+","blooms
+","shades
+","branches
+",4
+"The ----- audience began clapping and cheering
+-----な聴衆は拍手と歓声を送り始めました。","interesting
+","interested
+","exciting
+","excited
+",4
+"You should eat ---- salt.
+あなたは-----塩を食べるべきです。","least
+","whole
+","less
+","empty
+",3
+"I like him because he makes me -----.
+彼が私を-----してくれるので、私は彼が好きです。","to laugh
+","laughed
+","laughing
+","laugh
+",4
+"The virus was ----- to doctors then.
+そのウイルスは当時、医者にとって-----でした。","unable
+","aware
+","unknown
+","unlike
+",3
+"They want to the forest to ----- wild birds.
+彼らは野鳥を-----ために森へ行きたがっています。","dead
+","certain
+","hire
+","hunt
+",4
+"Please put ----- the  candle.
+ろうそくを-----てください。","in
+","off
+","on
+","out
+",4
+"I've ----- some flowers for you.
+あなたのために花をいくつか-----しました。","rung
+","bloomed
+","leaned
+","picked
+",4
+"He felt ----- and decided not to go to school.
+彼は-----と感じ、学校に行かないことにしました。","unlike
+","ill
+","himself
+","unable
+",2
+"Gold and silver are ----- metals.
+金と銀は-----な金属です。","clear
+","precious
+","authority
+","full
+",2
+"My brother walks so fast that I can't keep ----- him.
+兄はとても速く歩くので、私は彼に-----ことができません。","away from
+","up
+","on
+","up with
+",4
+"She always looks at ----- in a mirror before going out.
+彼女は外出する前にいつも鏡で-----を見ます。","oneself
+","her
+","himself
+","herself
+",4
+"The roses are in full ----- in our garden.
+私たちの庭ではバラが満開に-----です。","shade
+","desert
+","bloom
+","branch
+",3
+"Could you put ----- the meeting until next Friday?
+会議を来週の金曜日まで-----にしていただけますか？","off
+","out
+","down
+","away
+",1
+"I ----- a photocopy of the document.
+私はその書類のコピーを-----しました。","rang
+","kept
+","made
+","failed
+",3
+"That building is said to be haunted by the ----- of soldiers.
+その建物は兵士たちの-----に取り憑かれていると言われています。","ghosts
+","senses
+","fear
+","dead
+",1
+"We enjoyed a picnic in the -----.
+私たちは-----でピクニックを楽しみました。","guide
+","atmosphere
+","ray
+","field
+",4
+"My personal computer is out of ----- at the moment.
+私のパソコンは現在-----です。","order
+","spirit
+","deliver
+","dead
+",1
+"It was lucky that nobody was ----- in the accident yesterday.
+昨日の事故で誰も-----しなかったのは幸運でした。","suffered
+","injured
+","picked
+","failed
+",2
+"The major ----- for working is to make money to live.
+働く主な-----は、生活のためにお金を稼ぐことです。","perfect
+","reason
+","knowledge
+","fear
+",2
+"Put your seat ----- upright, please.
+座席の-----をまっすぐにしてください。","away
+","back
+","down
+","out
+",2
+"Amsterdam is ----- for its canals.
+アムステルダムは運河で-----です。","wise
+","famous
+","clear
+","familiar
+",2
+"Notices are put up onto the bulletin ------.
+お知らせが掲示-----に張り出されます。","board
+","shape
+","tube
+","patter
+",1
+"Martin Luther King, Jr. was one of the ---- of the civil rights movement in America.
+マーティン・ルーサー・キング・ジュニアは、アメリカの公民権運動の----の一人でした。","relatives
+","passengers
+","leaders
+","presidents
+",3
+"You need specialist ---- to do this job.
+この仕事をするには専門的な----が必要です。","knowledge
+","wise
+",truth,"reason
+",1
+"He plays tennis at the ---- level.
+彼は----レベルでテニスをします。","extra
+","professional
+","whole
+","several
+",2
+"Dogs have a keen ---- of smell.
+犬は鋭い嗅覚の----を持っています。","professional
+","fear
+","mind
+","sense
+",4
+"My mother is an electrical ----.
+私の母は電気----です。","engineer
+","relative
+","clerk
+","professional
+",1
+"A thin ---- of light shone through a crack in the curtains.
+カーテンの隙間から細い----の光が差し込んでいた。","field
+","shade
+","shadow
+","ray
+",4
+"Who will be the next ---- of the United States?
+アメリカ合衆国の次の----は誰になるでしょうか？","leadership
+","president
+","doctor
+","clerk
+",2
+"I'll phone next week, ---- on Wednesday.
+来週、水曜日の----に電話します。","hardly
+","possible
+","probably
+","especially
+",3
+"She ---- a tank with water.
+彼女はタンクを水で----。","paid
+","filled
+","received
+","dug
+",2
+"Bring my notebook ---- to me, please.
+私のノートを----てください。","back
+","about
+","up 
+","in
+",1
+"Can I ---- by credit card?
+クレジットカードで----できますか？","lend
+","pay
+","rub
+","swing
+",2
+"Is it ---- to walk there in an hour without rest?
+休憩なしで1時間でそこまで歩くのは----ですか？","perhaps
+","actually
+","especially
+","possible
+",4
+"The train put ---- many passengers.
+電車は多くの乗客を----。","away
+","in
+","down
+","on
+",3
+"He ---- a book from the library.
+彼は図書館から本を----。","rubbed
+","dug
+","borrowed
+借りた","lent
+",3
+"I've never seen such a ---- film as this.
+私はこれほど----映画を見たことがありません。","boring
+","exciting
+","bored
+","excited
+",1
+"It was ---- of him to say that.
+彼がそう言ったのは----だった。","unknown
+","unlike
+","unable
+","unfair
+",4
