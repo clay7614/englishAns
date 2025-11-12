@@ -17,6 +17,7 @@ const quizSection = document.querySelector('[data-quiz]');
 const questionEl = document.querySelector('[data-question]');
 const optionsEl = document.querySelector('[data-options]');
 const feedbackEl = document.querySelector('[data-feedback]');
+const resultEl = document.querySelector('[data-result]');
 const nextButton = document.querySelector('[data-next]');
 const toggleTranslationButton = document.querySelector('[data-toggle-translation]');
 const toggleModeButton = document.querySelector('[data-toggle-mode]');
@@ -45,7 +46,6 @@ let orderPointer = 0;
 let currentQuestion = null;
 let currentQuestionIndex = null;
 let answered = false;
-let correctCount = 0;
 let totalCount = 0;
 let showTranslations = false;
 let quizStarted = false;
@@ -57,6 +57,7 @@ let questionLimit = 0;
 let questionsAsked = 0;
 let servedQuestionIds = new Set();
 let settingsPanelOpen = false;
+let correctCount = 0;
 
 translationChoiceSection?.addEventListener('click', handleTranslationChoice);
 nextButton.addEventListener('click', handleNextClick);
@@ -217,6 +218,8 @@ function startQuiz(enableTranslations) {
   quizSection.hidden = false;
   correctCount = 0;
   totalCount = 0;
+  resetResultPanel();
+  hideWrongOnlyControl();
   updateScoreboard();
   updateTranslationToggleLabel();
   updateAutoAdvanceControl();
@@ -291,6 +294,44 @@ function prepareOrder(poolIndexes) {
   updateShuffleButtonState();
 }
 
+function resetResultPanel() {
+  if (!resultEl) {
+    return;
+  }
+  resultEl.hidden = true;
+  resultEl.textContent = '';
+}
+
+function renderResultPanel() {
+  if (!resultEl) {
+    return;
+  }
+  const totalAnswered = totalCount;
+  const correct = correctCount;
+  const wrong = Math.max(0, totalAnswered - correct);
+  const percent = totalAnswered > 0 ? Math.round((correct / totalAnswered) * 100) : 0;
+  const summary = `結果: ${totalAnswered}問中${correct}問正解（${percent}%）`;
+  const detail = wrong > 0 ? `誤答: ${wrong}問（誤答のみモードで復習できます）` : '全問正解です！お疲れさまでした。';
+  resultEl.innerHTML = `<strong>${summary}</strong><br>${detail}`;
+  resultEl.hidden = false;
+}
+
+function hideWrongOnlyControl() {
+  if (!toggleModeButton) {
+    return;
+  }
+  toggleModeButton.hidden = true;
+  toggleModeButton.disabled = true;
+  updateModeToggleLabel();
+}
+
+function showWrongOnlyControl() {
+  if (!toggleModeButton) {
+    return;
+  }
+  toggleModeButton.hidden = false;
+  updateModeToggleLabel();
+}
 function showNextQuestion() {
   if (autoAdvanceTimer !== null) {
     window.clearTimeout(autoAdvanceTimer);
@@ -457,6 +498,9 @@ function handleToggleTranslation() {
 }
 
 function handleToggleMode() {
+  if (!toggleModeButton || toggleModeButton.hidden) {
+    return;
+  }
   const targetMode = quizMode === 'all' ? 'wrong-only' : 'all';
   const changed = setQuizMode(targetMode);
   if (targetMode === 'all' && !changed) {
@@ -499,10 +543,6 @@ function openSettingsPanel() {
   settingsPanel.hidden = false;
   settingsPanelOpen = true;
   settingsButton?.setAttribute('aria-expanded', 'true');
-  const focusTarget = settingsPanel.querySelector('input, button');
-  if (focusTarget) {
-    focusTarget.focus();
-  }
   document.addEventListener('click', handleDocumentClick);
   document.addEventListener('keydown', handleSettingsKeydown);
 }
@@ -570,6 +610,11 @@ function syncTranslationVisibility() {
 
 function updateModeToggleLabel() {
   if (!toggleModeButton) {
+    return;
+  }
+  if (toggleModeButton.hidden) {
+    toggleModeButton.textContent = '誤答のみ: OFF';
+    toggleModeButton.disabled = true;
     return;
   }
   const isWrongOnly = quizMode === 'wrong-only';
@@ -678,6 +723,9 @@ function finishSession() {
   order = [];
   orderPointer = 0;
   updateShuffleButtonState();
+  renderResultPanel();
+  showWrongOnlyControl();
+  updateModeToggleLabel();
 }
 
 function getSelectedDuplicateMode() {
