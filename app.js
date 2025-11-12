@@ -2,7 +2,7 @@ const QUESTION_DATASETS = [
   {
     id: 'set-601-750',
     title: '英語4択 601-750',
-    questionFile: '601~750_en.csv',
+  questionFile: '601-750_en.csv',
     translationFile: 'translations-ja.json',
   },
 ];
