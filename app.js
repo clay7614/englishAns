@@ -59,10 +59,20 @@ let allowDuplicates = false;
 let questionLimit = 0;
 let questionsAsked = 0;
 let servedQuestionIds = new Set();
+let servedQuestionKeys = new Set();
 let settingsPanelOpen = false;
 let correctCount = 0;
 
 startButton?.addEventListener('click', handleStartButtonClick);
+translationChoiceSection?.addEventListener('click', (event) => {
+  if (quizStarted) {
+    return;
+  }
+  const startControl = event.target.closest('[data-start-quiz]');
+  if (startControl) {
+    handleStartButtonClick();
+  }
+});
 startTranslationToggle?.addEventListener('change', updateStartTranslationState);
 nextButton.addEventListener('click', handleNextClick);
 toggleTranslationButton?.addEventListener('click', handleToggleTranslation);
@@ -211,6 +221,7 @@ function startQuiz(enableTranslations) {
   questionLimit = desiredQuestionCount;
   questionsAsked = 0;
   servedQuestionIds = new Set();
+  servedQuestionKeys = new Set();
 
   showTranslations = enableTranslations;
   quizStarted = true;
@@ -362,6 +373,7 @@ function showNextQuestion() {
     prepareOrder(poolIndexes);
   }
   if (!order.length) {
+    finishSession();
     return;
   }
   const questionIndex = order[orderPointer];
@@ -371,6 +383,7 @@ function showNextQuestion() {
   if (quizMode === 'all') {
     if (!allowDuplicates) {
       servedQuestionIds.add(currentQuestion.id);
+      servedQuestionKeys.add(getQuestionKey(currentQuestion));
     }
     questionsAsked += 1;
   }
@@ -651,7 +664,20 @@ function updateShuffleButtonState() {
 }
 
 function getAllQuestionIndexes() {
-  return allQuestions.map((_, index) => index);
+  if (allowDuplicates) {
+    return allQuestions.map((_, index) => index);
+  }
+  const seenKeys = new Set();
+  const uniqueIndexes = [];
+  allQuestions.forEach((question, index) => {
+    const key = getQuestionKey(question);
+    if (key && seenKeys.has(key)) {
+      return;
+    }
+    seenKeys.add(key);
+    uniqueIndexes.push(index);
+  });
+  return uniqueIndexes;
 }
 
 function getWrongQuestionIndexes() {
@@ -706,6 +732,9 @@ function buildOrderForAllMode(poolIndexes, targetLength) {
   }
 
   let candidateIndexes = poolIndexes.filter((index) => !servedQuestionIds.has(allQuestions[index].id));
+  if (!allowDuplicates) {
+    candidateIndexes = candidateIndexes.filter((index) => !servedQuestionKeys.has(getQuestionKey(allQuestions[index])));
+  }
   if (candidateIndexes.length > 1 && currentQuestionIndex !== null) {
     const filtered = candidateIndexes.filter((index) => index !== currentQuestionIndex);
     if (filtered.length) {
@@ -716,6 +745,17 @@ function buildOrderForAllMode(poolIndexes, targetLength) {
     return [];
   }
   const shuffled = shuffle(candidateIndexes);
+    if (!allowDuplicates) {
+      const seenKeys = new Set();
+      return shuffled.filter((index) => {
+        const key = getQuestionKey(allQuestions[index]);
+        if (seenKeys.has(key)) {
+          return false;
+        }
+        seenKeys.add(key);
+        return true;
+      }).slice(0, targetLength);
+    }
   if (targetLength >= shuffled.length) {
     return shuffled;
   }
@@ -757,6 +797,10 @@ function resolveOptionTranslation(englishText, rawTranslation) {
   }
   const key = (englishText ?? '').trim();
   return optionTranslationFallbacks.get(key) ?? null;
+}
+
+function getQuestionKey(question) {
+  return (question?.question ?? '').trim().toLowerCase();
 }
 
 function hasMeaningfulText(value) {
