@@ -27,6 +27,9 @@ const settingsCloseButton = document.querySelector('[data-close-settings]');
 const autoAdvanceCheckbox = document.querySelector('[data-settings-auto-advance]');
 const autoAdvanceStatus = document.querySelector('[data-auto-advance-status]');
 const settingsShuffleButton = document.querySelector('[data-settings-shuffle]');
+const startTranslationToggle = document.querySelector('[data-start-translation-toggle]');
+const startTranslationState = document.querySelector('[data-start-translation-state]');
+const startButton = document.querySelector('[data-start-quiz]');
 const correctEl = document.querySelector('[data-correct]');
 const totalEl = document.querySelector('[data-total]');
 const optionTemplate = document.getElementById('option-button-template');
@@ -59,7 +62,8 @@ let servedQuestionIds = new Set();
 let settingsPanelOpen = false;
 let correctCount = 0;
 
-translationChoiceSection?.addEventListener('click', handleTranslationChoice);
+startButton?.addEventListener('click', handleStartButtonClick);
+startTranslationToggle?.addEventListener('change', updateStartTranslationState);
 nextButton.addEventListener('click', handleNextClick);
 toggleTranslationButton?.addEventListener('click', handleToggleTranslation);
 toggleModeButton?.addEventListener('click', handleToggleMode);
@@ -99,8 +103,9 @@ async function init() {
   updateTranslationToggleLabel();
   updateModeToggleLabel();
   updateShuffleButtonState();
+  updateStartTranslationState();
 
-  statusEl.textContent = '日本語訳を表示するか選んでください。';
+  statusEl.textContent = '日本語訳の表示を設定してスタートしてください。';
   translationChoiceSection.hidden = false;
 }
 
@@ -187,16 +192,12 @@ function mergeQuestionData(englishRows, translationRows, datasetId) {
   return merged;
 }
 
-function handleTranslationChoice(event) {
-  const button = event.target.closest('button[data-translation-option]');
-  if (!button || quizStarted || !allQuestions.length) {
+function handleStartButtonClick() {
+  if (quizStarted) {
     return;
   }
-  const { translationOption } = button.dataset;
-  if (!translationOption) {
-    return;
-  }
-  startQuiz(translationOption === 'show');
+  const enableTranslations = Boolean(startTranslationToggle?.checked);
+  startQuiz(enableTranslations);
 }
 
 function startQuiz(enableTranslations) {
@@ -585,6 +586,14 @@ function updateAutoAdvanceControl() {
   if (autoAdvanceStatus) {
     autoAdvanceStatus.textContent = autoAdvanceEnabled ? 'ON' : 'OFF';
   }
+}
+
+function updateStartTranslationState() {
+  if (!startTranslationState) {
+    return;
+  }
+  const isOn = Boolean(startTranslationToggle?.checked);
+  startTranslationState.textContent = isOn ? 'ON' : 'OFF';
 }
 
 function updateTranslationToggleLabel() {

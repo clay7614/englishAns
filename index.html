@@ -28,7 +28,14 @@
       </div>
     </header>
     <section class="translation-toggle" data-translation-choice hidden>
-      <p class="translation-toggle__prompt">日本語訳を表示しますか？</p>
+      <div class="translation-toggle__row">
+        <span class="translation-toggle__label">日本語訳を表示</span>
+        <label class="translation-toggle__switch">
+          <input type="checkbox" data-start-translation-toggle>
+          <span class="translation-toggle__slider" aria-hidden="true"></span>
+          <span class="translation-toggle__state" data-start-translation-state>OFF</span>
+        </label>
+      </div>
       <div class="start-options" data-start-options>
         <div class="start-options__group">
           <span class="start-options__label">問題の重複</span>
@@ -49,8 +56,7 @@
         </div>
       </div>
       <div class="translation-toggle__buttons">
-        <button type="button" class="translation-toggle__button" data-translation-option="show">表示する</button>
-        <button type="button" class="translation-toggle__button translation-toggle__button--secondary" data-translation-option="hide">表示しない</button>
+        <button type="button" class="translation-toggle__button" data-start-quiz>スタート</button>
       </div>
     </section>
     <section class="quiz" data-quiz hidden>
