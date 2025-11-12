@@ -115,7 +115,7 @@ async function init() {
   updateShuffleButtonState();
   updateStartTranslationState();
 
-  statusEl.textContent = '日本語訳の表示を設定してスタートしてください。';
+  statusEl.textContent = '出題の設定を行ってスタートしてください。';
   translationChoiceSection.hidden = false;
 }
 
@@ -270,7 +270,7 @@ function setQuizMode(mode, options = {}) {
   if (!silent) {
     statusEl.textContent = remaining > 0
       ? `全 ${questionLimit} 問中、残り ${remaining} 問を出題します。`
-      : '指定した問題数の出題が完了しました。';
+      : '出題が終了しました。';
   }
   prepareOrder(getAllQuestionIndexes());
   updateModeToggleLabel();
@@ -323,7 +323,7 @@ function renderResultPanel() {
   const wrong = Math.max(0, totalAnswered - correct);
   const percent = totalAnswered > 0 ? Math.round((correct / totalAnswered) * 100) : 0;
   const summary = `結果: ${totalAnswered}問中${correct}問正解（${percent}%）`;
-  const detail = wrong > 0 ? `誤答: ${wrong}問（誤答のみモードで復習できます）` : '全問正解です！お疲れさまでした。';
+  const detail = wrong > 0 ? `誤答: ${wrong}問（「誤答のみ」で復習できます）` : '全問正解です！お疲れさまでした。';
   resultEl.innerHTML = `<strong>${summary}</strong><br>${detail}`;
   resultEl.hidden = false;
 }
@@ -359,7 +359,7 @@ function showNextQuestion() {
   let poolIndexes = getActivePoolIndexes();
   if (!poolIndexes.length) {
     if (quizMode === 'wrong-only') {
-      statusEl.textContent = '誤答した問題はありません。全問題モードに戻ります。';
+      statusEl.textContent = '誤答した問題はありません。通常モードに戻ります。';
       setQuizMode('all', { silent: true });
       poolIndexes = getActivePoolIndexes();
     }
@@ -469,7 +469,7 @@ function handleOptionClick(button, selectedIndex) {
 
   if (quizMode === 'wrong-only') {
     if (wrongQuestionIds.size === 0) {
-      statusEl.textContent = '誤答した問題はすべて解き終わりました。全問題モードに戻ります。';
+      statusEl.textContent = '誤答した問題はすべて解き終わりました。通常モードに戻ります。';
       setQuizMode('all', { silent: true });
     } else {
       prepareOrder(getActivePoolIndexes());
@@ -635,13 +635,17 @@ function updateModeToggleLabel() {
     return;
   }
   if (toggleModeButton.hidden) {
-    toggleModeButton.textContent = '誤答のみ: OFF';
+    toggleModeButton.textContent = '誤答のみ';
+    toggleModeButton.classList.remove('quiz__control-button--active');
+    toggleModeButton.setAttribute('aria-pressed', 'false');
     toggleModeButton.disabled = true;
     return;
   }
   const isWrongOnly = quizMode === 'wrong-only';
   const hasWrongQuestions = wrongQuestionIds.size > 0;
-  toggleModeButton.textContent = `誤答のみ: ${isWrongOnly ? 'ON' : 'OFF'}`;
+  toggleModeButton.textContent = '誤答のみ';
+  toggleModeButton.classList.toggle('quiz__control-button--active', isWrongOnly);
+  toggleModeButton.setAttribute('aria-pressed', isWrongOnly ? 'true' : 'false');
   toggleModeButton.disabled = !isWrongOnly && !hasWrongQuestions;
 }
 
