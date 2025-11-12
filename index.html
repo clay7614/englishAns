@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="Shift_JIS">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>英語4択ドリル</title>
   <link rel="stylesheet" href="styles.css">
-</head>
+  </head>
 <body>
   <main class="app">
     <header class="app__header">
@@ -25,7 +25,10 @@
       <div class="quiz__options" data-options></div>
       <div class="quiz__feedback" data-feedback></div>
       <div class="quiz__controls">
-        <button type="button" class="quiz__toggle-timer" data-toggle-timer>自動で進む: ON</button>
+        <button type="button" class="quiz__control-button" data-toggle-timer>自動で進む: ON</button>
+        <button type="button" class="quiz__control-button" data-toggle-translation>日本語: 非表示</button>
+        <button type="button" class="quiz__control-button" data-toggle-mode disabled>誤答のみ: OFF</button>
+        <button type="button" class="quiz__control-button" data-shuffle-order disabled>順番をシャッフル</button>
         <button type="button" class="quiz__next" data-next disabled>次の問題へ</button>
       </div>
     </section>
@@ -36,8 +39,14 @@
   </template>
 
   <script type="module">
-    const CSV_FILE_PATH = '601~750_en.csv';
-    const TRANSLATIONS_FILE_PATH = 'translations-ja.json';
+    const QUESTION_DATASETS = [
+      {
+        id: 'set-601-750',
+        title: '英語4択 601-750',
+        questionFile: '601~750_en.csv',
+        translationFile: 'translations-ja.json',
+      },
+    ];
 
     const OPTION_TRANSLATION_FALLBACKS = new Map([
       ['', '（空欄）'],
@@ -290,27 +299,41 @@
     const questionEl = document.querySelector('[data-question]');
     const optionsEl = document.querySelector('[data-options]');
     const feedbackEl = document.querySelector('[data-feedback]');
-  const nextButton = document.querySelector('[data-next]');
-  const toggleTimerButton = document.querySelector('[data-toggle-timer]');
+    const nextButton = document.querySelector('[data-next]');
+    const toggleTimerButton = document.querySelector('[data-toggle-timer]');
+    const toggleTranslationButton = document.querySelector('[data-toggle-translation]');
+    const toggleModeButton = document.querySelector('[data-toggle-mode]');
+    const shuffleButton = document.querySelector('[data-shuffle-order]');
     const correctEl = document.querySelector('[data-correct]');
     const totalEl = document.querySelector('[data-total]');
     const optionTemplate = document.getElementById('option-button-template');
 
-    let questions = [];
+    document.body.classList.add('translations-hidden');
+
+    let allQuestions = [];
+    let questionIndexById = new Map();
+    let questionStats = new Map();
+    const wrongQuestionIds = new Set();
+
     let order = [];
     let orderPointer = 0;
     let currentQuestion = null;
+    let currentQuestionIndex = null;
     let answered = false;
     let correctCount = 0;
     let totalCount = 0;
     let showTranslations = false;
     let quizStarted = false;
-  let autoAdvanceTimer = null;
-  let autoAdvanceEnabled = true;
+    let autoAdvanceTimer = null;
+    let autoAdvanceEnabled = true;
+    let quizMode = 'all';
 
     translationChoiceSection?.addEventListener('click', handleTranslationChoice);
     nextButton.addEventListener('click', handleNextClick);
-  toggleTimerButton?.addEventListener('click', handleToggleTimer);
+    toggleTimerButton?.addEventListener('click', handleToggleTimer);
+    toggleTranslationButton?.addEventListener('click', handleToggleTranslation);
+    toggleModeButton?.addEventListener('click', handleToggleMode);
+    shuffleButton?.addEventListener('click', handleShuffleOrder);
 
     init().catch((error) => {
       console.error(error);
@@ -320,24 +343,40 @@
 
     async function init() {
       try {
-        const [questionRows, translationRows] = await Promise.all([
-          loadQuestionRows(CSV_FILE_PATH),
-          loadTranslationRows(TRANSLATIONS_FILE_PATH),
-        ]);
-        const merged = mergeQuestionData(questionRows, translationRows);
-        if (!merged.length) {
+        const dataset = QUESTION_DATASETS[0];
+        const datasetQuestions = await loadDataset(dataset);
+        if (!datasetQuestions.length) {
           throw new Error('問題が1問も読み込めませんでした。');
         }
-        questions = merged;
-        prepareOrder();
-        updateScoreboard();
+        allQuestions = datasetQuestions;
+        questionIndexById = new Map();
+        questionStats = new Map();
+        wrongQuestionIds.clear();
+        allQuestions.forEach((question, index) => {
+          questionIndexById.set(question.id, index);
+          questionStats.set(question.id, { attempts: 0, correct: 0 });
+        });
+    prepareOrder(getAllQuestionIndexes());
+    updateTimerToggleLabel();
+    updateTranslationToggleLabel();
+    updateModeToggleLabel();
+    updateShuffleButtonState();
         statusEl.textContent = '日本語訳を表示するか選んでください。';
-        if (translationChoiceSection) {
-          translationChoiceSection.hidden = false;
-        }
+        translationChoiceSection.hidden = false;
       } catch (error) {
         throw error;
       }
+    }
+
+    async function loadDataset(dataset) {
+      const translationPromise = dataset.translationFile
+        ? loadTranslationRows(dataset.translationFile)
+        : Promise.resolve([]);
+      const [questionRows, translationRows] = await Promise.all([
+        loadQuestionRows(dataset.questionFile),
+        translationPromise,
+      ]);
+      return mergeQuestionData(questionRows, translationRows, dataset.id);
     }
 
     async function loadQuestionRows(path) {
@@ -367,10 +406,9 @@
       return data;
     }
 
-    function mergeQuestionData(englishRows, translationRows) {
+    function mergeQuestionData(englishRows, translationRows, datasetId) {
       const merged = [];
-      const limit = englishRows.length;
-      for (let index = 0; index < limit; index += 1) {
+      for (let index = 0; index < englishRows.length; index += 1) {
         const english = englishRows[index];
         if (!english || !english.question || english.question.includes('#NAME?')) {
           continue;
@@ -382,6 +420,7 @@
           return resolveOptionTranslation(optionText, rawTranslation);
         });
         merged.push({
+          id: `${datasetId}-${index}`,
           question: english.question,
           options: english.options,
           answerIndex: english.answerIndex,
@@ -396,7 +435,7 @@
 
     function handleTranslationChoice(event) {
       const button = event.target.closest('button[data-translation-option]');
-      if (!button || quizStarted || !questions.length) {
+      if (!button || quizStarted || !allQuestions.length) {
         return;
       }
       const { translationOption } = button.dataset;
@@ -409,22 +448,57 @@
     function startQuiz(enableTranslations) {
       showTranslations = enableTranslations;
       quizStarted = true;
-      if (translationChoiceSection) {
-        translationChoiceSection.hidden = true;
-      }
+      translationChoiceSection.hidden = true;
       quizSection.hidden = false;
-      statusEl.textContent = `全 ${questions.length} 問から出題します。`;
       correctCount = 0;
       totalCount = 0;
       updateScoreboard();
+      updateTranslationToggleLabel();
       updateTimerToggleLabel();
+      setQuizMode('all', { silent: true });
+      statusEl.textContent = `全 ${allQuestions.length} 問から出題します。`;
       showNextQuestion();
     }
 
-    function prepareOrder() {
-      order = Array.from({ length: questions.length }, (_, index) => index);
-      shuffle(order);
+    function setQuizMode(mode, options = {}) {
+      const silent = Boolean(options.silent);
+      if (mode === 'wrong-only') {
+        const wrongIndexes = getWrongQuestionIndexes();
+        if (!wrongIndexes.length) {
+          if (!silent) {
+            statusEl.textContent = '誤答した問題はありません。';
+          }
+          updateModeToggleLabel();
+          updateShuffleButtonState();
+          return;
+        }
+        quizMode = 'wrong-only';
+        if (!silent) {
+          statusEl.textContent = '誤答した問題のみ出題します。';
+        }
+        prepareOrder(wrongIndexes);
+        updateModeToggleLabel();
+        return;
+      }
+      quizMode = 'all';
+      if (!silent) {
+        statusEl.textContent = `全 ${allQuestions.length} 問から出題します。`;
+      }
+      prepareOrder(getAllQuestionIndexes());
+      updateModeToggleLabel();
+    }
+
+    function prepareOrder(poolIndexes) {
+      let candidateIndexes = poolIndexes.slice();
+      if (candidateIndexes.length > 1 && currentQuestionIndex !== null) {
+        const filtered = candidateIndexes.filter((index) => index !== currentQuestionIndex);
+        if (filtered.length) {
+          candidateIndexes = filtered;
+        }
+      }
+      order = shuffle(candidateIndexes);
       orderPointer = 0;
+      updateShuffleButtonState();
     }
 
     function showNextQuestion() {
@@ -432,27 +506,45 @@
         window.clearTimeout(autoAdvanceTimer);
         autoAdvanceTimer = null;
       }
-      if (!questions.length) {
+      if (!allQuestions.length) {
         return;
       }
-      if (orderPointer >= order.length) {
-        shuffle(order);
-        orderPointer = 0;
+      let poolIndexes = getActivePoolIndexes();
+      if (!poolIndexes.length) {
+        if (quizMode === 'wrong-only') {
+          statusEl.textContent = '誤答した問題はありません。全問題モードに戻ります。';
+          setQuizMode('all', { silent: true });
+          poolIndexes = getActivePoolIndexes();
+        }
+        if (!poolIndexes.length) {
+          questionEl.innerHTML = '<span class="quiz__question-text">出題できる問題がありません。</span>';
+          optionsEl.innerHTML = '';
+          return;
+        }
       }
-      const questionIndex = order[orderPointer++];
-      currentQuestion = questions[questionIndex];
+      if (orderPointer >= order.length) {
+        prepareOrder(poolIndexes);
+      }
+      if (!order.length) {
+        return;
+      }
+      const questionIndex = order[orderPointer];
+      orderPointer += 1;
+      currentQuestionIndex = questionIndex;
+      currentQuestion = allQuestions[questionIndex];
       answered = false;
       nextButton.disabled = true;
       feedbackEl.textContent = '';
       feedbackEl.className = 'quiz__feedback';
       renderQuestion(currentQuestion);
       renderOptions(currentQuestion);
+      updateShuffleButtonState();
     }
 
     function renderQuestion(question) {
       let markup = `<span class="quiz__question-text">${formatText(question.question)}</span>`;
       const translationText = question.translation.question;
-      if (showTranslations && hasMeaningfulText(translationText)) {
+      if (hasMeaningfulText(translationText)) {
         markup += `<span class="quiz__question-translation">${formatText(translationText)}</span>`;
       }
       questionEl.innerHTML = markup;
@@ -464,7 +556,7 @@
         const button = optionTemplate.content.firstElementChild.cloneNode(true);
         const translationText = question.translation.options[index];
         let optionMarkup = `<span class="quiz__option-text">${formatText(optionText)}</span>`;
-        if (showTranslations && hasMeaningfulText(translationText)) {
+        if (hasMeaningfulText(translationText)) {
           optionMarkup += `<span class="quiz__option-translation">${formatText(translationText)}</span>`;
         }
         button.innerHTML = optionMarkup;
@@ -480,15 +572,24 @@
       }
       answered = true;
       totalCount += 1;
+
+      const questionId = currentQuestion.id;
+      const stats = questionStats.get(questionId) ?? { attempts: 0, correct: 0 };
+      stats.attempts += 1;
+
       const isCorrect = selectedIndex === currentQuestion.answerIndex;
       if (isCorrect) {
         correctCount += 1;
+        stats.correct += 1;
+        wrongQuestionIds.delete(questionId);
         feedbackEl.textContent = '正解！';
         feedbackEl.classList.add('quiz__feedback--correct');
       } else {
+        wrongQuestionIds.add(questionId);
         feedbackEl.textContent = '残念！正答を確認しましょう。';
         feedbackEl.classList.add('quiz__feedback--wrong');
       }
+      questionStats.set(questionId, stats);
 
       [...optionsEl.children].forEach((optionButton, index) => {
         optionButton.disabled = true;
@@ -502,6 +603,20 @@
 
       nextButton.disabled = false;
       updateScoreboard();
+      updateModeToggleLabel();
+      updateShuffleButtonState();
+
+      if (quizMode === 'wrong-only') {
+        if (wrongQuestionIds.size === 0) {
+          statusEl.textContent = '誤答した問題はすべて解き終わりました。全問題モードに戻ります。';
+          setQuizMode('all', { silent: true });
+        } else {
+          prepareOrder(getActivePoolIndexes());
+        }
+      } else if (orderPointer >= order.length) {
+        prepareOrder(getActivePoolIndexes());
+      }
+
       if (autoAdvanceEnabled) {
         autoAdvanceTimer = window.setTimeout(() => {
           autoAdvanceTimer = null;
@@ -520,11 +635,36 @@
 
     function handleToggleTimer() {
       autoAdvanceEnabled = !autoAdvanceEnabled;
-      updateTimerToggleLabel();
       if (!autoAdvanceEnabled && autoAdvanceTimer !== null) {
         window.clearTimeout(autoAdvanceTimer);
         autoAdvanceTimer = null;
       }
+      updateTimerToggleLabel();
+    }
+
+    function handleToggleTranslation() {
+      showTranslations = !showTranslations;
+      updateTranslationToggleLabel();
+    }
+
+    function handleToggleMode() {
+      const targetMode = quizMode === 'all' ? 'wrong-only' : 'all';
+      setQuizMode(targetMode);
+    }
+
+    function handleShuffleOrder() {
+      if (!quizStarted) {
+        return;
+      }
+      const poolIndexes = getActivePoolIndexes();
+      if (poolIndexes.length <= 1) {
+        statusEl.textContent = poolIndexes.length === 0
+          ? 'シャッフルできる問題がありません。'
+          : 'シャッフルするのに十分な問題がありません。';
+        return;
+      }
+      prepareOrder(poolIndexes);
+      statusEl.textContent = '出題順をシャッフルしました。';
     }
 
     function updateTimerToggleLabel() {
@@ -534,9 +674,50 @@
       toggleTimerButton.textContent = `自動で進む: ${autoAdvanceEnabled ? 'ON' : 'OFF'}`;
     }
 
+    function updateTranslationToggleLabel() {
+      if (!toggleTranslationButton) {
+        return;
+      }
+      toggleTranslationButton.textContent = `日本語: ${showTranslations ? '表示' : '非表示'}`;
+      document.body.classList.toggle('translations-hidden', !showTranslations);
+    }
+
+    function updateModeToggleLabel() {
+      if (!toggleModeButton) {
+        return;
+      }
+      const isWrongOnly = quizMode === 'wrong-only';
+      const hasWrongQuestions = wrongQuestionIds.size > 0;
+      toggleModeButton.textContent = `誤答のみ: ${isWrongOnly ? 'ON' : 'OFF'}`;
+      toggleModeButton.disabled = !isWrongOnly && !hasWrongQuestions;
+    }
+
     function updateScoreboard() {
       correctEl.textContent = String(correctCount);
       totalEl.textContent = String(totalCount);
+    }
+
+    function updateShuffleButtonState() {
+      if (!shuffleButton) {
+        return;
+      }
+      const poolIndexes = getActivePoolIndexes();
+      const canShuffle = quizStarted && poolIndexes.length > 1;
+      shuffleButton.disabled = !canShuffle;
+    }
+
+    function getAllQuestionIndexes() {
+      return allQuestions.map((_, index) => index);
+    }
+
+    function getWrongQuestionIndexes() {
+      return [...wrongQuestionIds]
+        .map((id) => questionIndexById.get(id))
+        .filter((index) => index !== undefined);
+    }
+
+    function getActivePoolIndexes() {
+      return quizMode === 'wrong-only' ? getWrongQuestionIndexes() : getAllQuestionIndexes();
     }
 
     function resolveQuestionTranslation(englishText, rawTranslation) {
@@ -645,10 +826,12 @@
     }
 
     function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i -= 1) {
+      const copy = array.slice();
+      for (let i = copy.length - 1; i > 0; i -= 1) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+        [copy[i], copy[j]] = [copy[j], copy[i]];
       }
+      return copy;
     }
 
     function formatText(text) {
@@ -675,5 +858,3 @@
       });
     }
   </script>
-</body>
-</html>
