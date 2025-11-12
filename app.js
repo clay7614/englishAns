@@ -2,7 +2,7 @@ const QUESTION_DATASETS = [
   {
     id: 'set-601-750',
     title: '英語4択 601-750',
-  questionFile: '601-750_en.csv',
+    questionFile: '601-750_en.csv',
     translationFile: 'translations-ja.json',
   },
 ];
@@ -18,10 +18,14 @@ const questionEl = document.querySelector('[data-question]');
 const optionsEl = document.querySelector('[data-options]');
 const feedbackEl = document.querySelector('[data-feedback]');
 const nextButton = document.querySelector('[data-next]');
-const toggleTimerButton = document.querySelector('[data-toggle-timer]');
 const toggleTranslationButton = document.querySelector('[data-toggle-translation]');
 const toggleModeButton = document.querySelector('[data-toggle-mode]');
-const shuffleButton = document.querySelector('[data-shuffle-order]');
+const settingsButton = document.querySelector('[data-open-settings]');
+const settingsPanel = document.querySelector('[data-settings-panel]');
+const settingsCloseButton = document.querySelector('[data-close-settings]');
+const autoAdvanceCheckbox = document.querySelector('[data-settings-auto-advance]');
+const autoAdvanceStatus = document.querySelector('[data-auto-advance-status]');
+const settingsShuffleButton = document.querySelector('[data-settings-shuffle]');
 const correctEl = document.querySelector('[data-correct]');
 const totalEl = document.querySelector('[data-total]');
 const optionTemplate = document.getElementById('option-button-template');
@@ -52,13 +56,17 @@ let allowDuplicates = false;
 let questionLimit = 0;
 let questionsAsked = 0;
 let servedQuestionIds = new Set();
+let settingsPanelOpen = false;
 
 translationChoiceSection?.addEventListener('click', handleTranslationChoice);
 nextButton.addEventListener('click', handleNextClick);
-toggleTimerButton?.addEventListener('click', handleToggleTimer);
 toggleTranslationButton?.addEventListener('click', handleToggleTranslation);
 toggleModeButton?.addEventListener('click', handleToggleMode);
-shuffleButton?.addEventListener('click', handleShuffleOrder);
+settingsButton?.addEventListener('click', handleSettingsButtonClick);
+settingsCloseButton?.addEventListener('click', closeSettingsPanel);
+autoAdvanceCheckbox?.addEventListener('change', handleAutoAdvanceChange);
+settingsShuffleButton?.addEventListener('click', handleShuffleOrder);
+settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
 
 init().catch((error) => {
@@ -86,7 +94,7 @@ async function init() {
   });
 
   configureQuestionCountControls(allQuestions.length);
-  updateTimerToggleLabel();
+  updateAutoAdvanceControl();
   updateTranslationToggleLabel();
   updateModeToggleLabel();
   updateShuffleButtonState();
@@ -204,13 +212,14 @@ function startQuiz(enableTranslations) {
 
   showTranslations = enableTranslations;
   quizStarted = true;
+  closeSettingsPanel();
   translationChoiceSection.hidden = true;
   quizSection.hidden = false;
   correctCount = 0;
   totalCount = 0;
   updateScoreboard();
   updateTranslationToggleLabel();
-  updateTimerToggleLabel();
+  updateAutoAdvanceControl();
   const canContinue = setQuizMode('all', { silent: true });
   statusEl.textContent = `指定した ${questionLimit} 問を出題します。`;
   if (canContinue) {
@@ -430,13 +439,16 @@ function handleNextClick() {
   showNextQuestion();
 }
 
-function handleToggleTimer() {
-  autoAdvanceEnabled = !autoAdvanceEnabled;
+function handleAutoAdvanceChange() {
+  autoAdvanceEnabled = Boolean(autoAdvanceCheckbox?.checked);
   if (!autoAdvanceEnabled && autoAdvanceTimer !== null) {
     window.clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
   }
-  updateTimerToggleLabel();
+  updateAutoAdvanceControl();
+  if (quizStarted) {
+    statusEl.textContent = `自動で進むを${autoAdvanceEnabled ? 'ON' : 'OFF'}にしました。`;
+  }
 }
 
 function handleToggleTranslation() {
@@ -471,11 +483,68 @@ function handleShuffleOrder() {
   statusEl.textContent = '出題順をシャッフルしました。';
 }
 
-function updateTimerToggleLabel() {
-  if (!toggleTimerButton) {
+function handleSettingsButtonClick(event) {
+  event.stopPropagation();
+  if (settingsPanelOpen) {
+    closeSettingsPanel();
+  } else {
+    openSettingsPanel();
+  }
+}
+
+function openSettingsPanel() {
+  if (!settingsPanel || settingsPanelOpen) {
     return;
   }
-  toggleTimerButton.textContent = `自動で進む: ${autoAdvanceEnabled ? 'ON' : 'OFF'}`;
+  settingsPanel.hidden = false;
+  settingsPanelOpen = true;
+  settingsButton?.setAttribute('aria-expanded', 'true');
+  const focusTarget = settingsPanel.querySelector('input, button');
+  if (focusTarget) {
+    focusTarget.focus();
+  }
+  document.addEventListener('click', handleDocumentClick);
+  document.addEventListener('keydown', handleSettingsKeydown);
+}
+
+function closeSettingsPanel() {
+  if (!settingsPanel || !settingsPanelOpen) {
+    return;
+  }
+  settingsPanel.hidden = true;
+  settingsPanelOpen = false;
+  settingsButton?.setAttribute('aria-expanded', 'false');
+  document.removeEventListener('click', handleDocumentClick);
+  document.removeEventListener('keydown', handleSettingsKeydown);
+}
+
+function handleDocumentClick(event) {
+  if (!settingsPanelOpen) {
+    return;
+  }
+  if (settingsPanel?.contains(event.target)) {
+    return;
+  }
+  if (settingsButton?.contains(event.target)) {
+    return;
+  }
+  closeSettingsPanel();
+}
+
+function handleSettingsKeydown(event) {
+  if (event.key === 'Escape') {
+    closeSettingsPanel();
+  }
+}
+
+function updateAutoAdvanceControl() {
+  if (!autoAdvanceCheckbox) {
+    return;
+  }
+  autoAdvanceCheckbox.checked = autoAdvanceEnabled;
+  if (autoAdvanceStatus) {
+    autoAdvanceStatus.textContent = autoAdvanceEnabled ? 'ON' : 'OFF';
+  }
 }
 
 function updateTranslationToggleLabel() {
@@ -515,7 +584,7 @@ function updateScoreboard() {
 }
 
 function updateShuffleButtonState() {
-  if (!shuffleButton) {
+  if (!settingsShuffleButton) {
     return;
   }
   const poolIndexes = getActivePoolIndexes();
@@ -524,7 +593,7 @@ function updateShuffleButtonState() {
     hasCapacity = remainingQuestionSlots() > 1;
   }
   const canShuffle = quizStarted && poolIndexes.length > 1 && hasCapacity;
-  shuffleButton.disabled = !canShuffle;
+  settingsShuffleButton.disabled = !canShuffle;
 }
 
 function getAllQuestionIndexes() {
