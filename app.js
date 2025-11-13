@@ -1,9 +1,21 @@
 const QUESTION_DATASETS = [
   {
     id: 'set-601-750',
-    title: '英語4択 601-750',
-    questionFile: '601-750_en.csv',
-    translationFile: 'translations-ja.json',
+    title: '英語4択 601〜750',
+    questionFile: '601~750.csv',
+    translationFile: '601~750_ja.csv',
+  },
+  {
+    id: 'set-751-900',
+    title: '英語4択 751〜900',
+    questionFile: '751~900.csv',
+    translationFile: '751~900_ja.csv',
+  },
+  {
+    title: '英語4択 601〜750',
+    questionFile: '601~750.csv',
+    translationFile: '601~750_ja.csv',
+    translationFile: '751~900_ja.csv',
   },
 ];
 
@@ -14,6 +26,8 @@ let questionTranslationFallbacks = new Map();
 const statusEl = document.querySelector('[data-status]');
 const translationChoiceSection = document.querySelector('[data-translation-choice]');
 const quizSection = document.querySelector('[data-quiz]');
+const datasetTitleEl = document.querySelector('[data-dataset-title]');
+const datasetBackLink = document.querySelector('[data-dataset-back]');
 const questionEl = document.querySelector('[data-question]');
 const optionsEl = document.querySelector('[data-options]');
 const feedbackEl = document.querySelector('[data-feedback]');
@@ -62,6 +76,7 @@ let servedQuestionIds = new Set();
 let servedQuestionKeys = new Set();
 let settingsPanelOpen = false;
 let correctCount = 0;
+let activeDataset = null;
 
 startButton?.addEventListener('click', handleStartButtonClick);
 translationChoiceSection?.addEventListener('click', (event) => {
@@ -93,7 +108,32 @@ init().catch((error) => {
 async function init() {
   await loadFallbackData();
 
-  const dataset = QUESTION_DATASETS[0];
+  const params = new URLSearchParams(window.location.search);
+  const requestedId = params.get('set');
+  const dataset = requestedId
+    ? QUESTION_DATASETS.find((item) => item.id === requestedId)
+    : QUESTION_DATASETS[0];
+
+  if (!dataset) {
+    statusEl.textContent = '問題セットが見つかりません。start.html からセットを選択してください。';
+    statusEl.classList.add('app__status--error');
+    translationChoiceSection.hidden = true;
+    quizSection.hidden = true;
+    settingsButton?.setAttribute('disabled', 'true');
+    return;
+  }
+
+  activeDataset = dataset;
+  const pageTitle = `${dataset.title} | 英語4択ドリル`;
+  document.title = pageTitle;
+  if (datasetTitleEl) {
+    datasetTitleEl.textContent = dataset.title;
+  }
+  if (datasetBackLink) {
+    datasetBackLink.href = 'start.html';
+    datasetBackLink.hidden = false;
+  }
+
   const datasetQuestions = await loadDataset(dataset);
   if (!datasetQuestions.length) {
     throw new Error('問題が1問も読み込めませんでした。');
@@ -115,7 +155,7 @@ async function init() {
   updateShuffleButtonState();
   updateStartTranslationState();
 
-  statusEl.textContent = '出題の設定を行ってスタートしてください。';
+  statusEl.textContent = `${dataset.title} の出題設定を行ってスタートしてください。`;
   translationChoiceSection.hidden = false;
 }
 
@@ -127,6 +167,11 @@ async function loadDataset(dataset) {
     loadQuestionRows(dataset.questionFile),
     translationPromise,
   ]);
+  if (translationRows.length && translationRows.length !== questionRows.length) {
+    console.warn(
+      `翻訳データの件数 (${translationRows.length}) が問題数 (${questionRows.length}) と一致しません。`
+    );
+  }
   return mergeQuestionData(questionRows, translationRows, dataset.id);
 }
 
@@ -168,11 +213,26 @@ async function loadTranslationRows(path) {
   if (!response.ok) {
     throw new Error(`翻訳データの取得に失敗しました (HTTP ${response.status})`);
   }
-  const data = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error('翻訳データの形式が正しくありません。');
+  const rawText = await response.text();
+  if (!rawText.trim()) {
+    return [];
   }
-  return data;
+  const rows = parseCsv(rawText);
+  if (!rows.length) {
+    return [];
+  }
+  const header = rows[0] || [];
+  const hasHeader = header.some((cell) => {
+    const normalized = cell.trim().toLowerCase();
+    return normalized === 'q_ja'
+      || normalized === 'question'
+      || normalized === 'q'
+      || normalized === 'question_ja';
+  });
+  const dataRows = hasHeader ? rows.slice(1) : rows;
+  return dataRows
+    .map((cols) => normalizeTranslationRow(cols))
+    .filter((item) => item !== null);
 }
 
 function mergeQuestionData(englishRows, translationRows, datasetId) {
@@ -833,6 +893,28 @@ function normalizeRow(cols) {
     question: rawQuestion.trim(),
     options: options.map((option) => option.trim()),
     answerIndex,
+  };
+}
+
+function normalizeTranslationRow(cols) {
+  if (!cols || !cols.length) {
+    return null;
+  }
+  const questionCell = cols[0] ?? '';
+  const optionStartIndex = 1;
+  const options = [];
+  for (let i = 0; i < 4; i += 1) {
+    const cell = cols[optionStartIndex + i] ?? '';
+    options.push(hasMeaningfulText(cell) ? cell.trim() : null);
+  }
+  const questionText = hasMeaningfulText(questionCell) ? questionCell.trim() : null;
+  const hasAny = questionText !== null || options.some((value) => value !== null);
+  if (!hasAny) {
+    return null;
+  }
+  return {
+    question: questionText,
+    options,
   };
 }
 

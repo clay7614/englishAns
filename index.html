@@ -10,6 +10,10 @@
   <main class="app">
     <header class="app__header">
       <h1>英語4択ドリル</h1>
+      <div class="app__dataset-nav">
+  <a class="app__dataset-back" data-dataset-back href="start.html" hidden>← 一覧に戻る</a>
+        <span class="app__dataset-title" data-dataset-title></span>
+      </div>
       <p class="app__status" data-status>問題を読み込み中...</p>
       <button type="button" class="app__settings-button" data-open-settings aria-haspopup="true" aria-expanded="false">設定</button>
       <div class="settings-panel" data-settings-panel hidden>
@@ -67,7 +71,7 @@
       <div class="quiz__result" data-result hidden></div>
       <div class="quiz__controls">
         <button type="button" class="quiz__control-button" data-toggle-translation>日本語: 非表示</button>
-        <button type="button" class="quiz__control-button" data-toggle-mode hidden disabled>誤答のみ: OFF</button>
+        <button type="button" class="quiz__control-button" data-toggle-mode hidden disabled>誤答のみ</button>
         <button type="button" class="quiz__next" data-next disabled>次の問題へ</button>
       </div>
     </section>
