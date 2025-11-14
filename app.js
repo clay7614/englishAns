@@ -1,18 +1,18 @@
 const QUESTION_DATASETS = [
   {
     id: 'set-601-750',
-    title: '英語4択 601〜750',
+    title: '単語テスト 601〜750',
     questionFile: '601~750.csv',
     translationFile: '601~750_ja.csv',
   },
   {
     id: 'set-751-900',
-    title: '英語4択 751〜900',
+    title: '単語テスト 751〜900',
     questionFile: '751~900.csv',
     translationFile: '751~900_ja.csv',
   },
   {
-    title: '英語4択 601〜750',
+    title: '単語テスト 601〜750',
     questionFile: '601~750.csv',
     translationFile: '601~750_ja.csv',
     translationFile: '751~900_ja.csv',
@@ -40,6 +40,7 @@ const settingsPanel = document.querySelector('[data-settings-panel]');
 const settingsCloseButton = document.querySelector('[data-close-settings]');
 const autoAdvanceCheckbox = document.querySelector('[data-settings-auto-advance]');
 const autoAdvanceStatus = document.querySelector('[data-auto-advance-status]');
+const translationControlVisibilityCheckbox = document.querySelector('[data-settings-translation-control]');
 const settingsShuffleButton = document.querySelector('[data-settings-shuffle]');
 const startTranslationToggle = document.querySelector('[data-start-translation-toggle]');
 const startTranslationState = document.querySelector('[data-start-translation-state]');
@@ -79,6 +80,8 @@ let correctCount = 0;
 let activeDataset = null;
 let questionTransitionInProgress = false;
 let queuedQuestionTransition = false;
+let readyToRestart = false;
+let translationControlVisible = true;
 
 startButton?.addEventListener('click', handleStartButtonClick);
 translationChoiceSection?.addEventListener('click', (event) => {
@@ -97,9 +100,12 @@ toggleModeButton?.addEventListener('click', handleToggleMode);
 settingsButton?.addEventListener('click', handleSettingsButtonClick);
 settingsCloseButton?.addEventListener('click', closeSettingsPanel);
 autoAdvanceCheckbox?.addEventListener('change', handleAutoAdvanceChange);
+translationControlVisibilityCheckbox?.addEventListener('change', handleTranslationControlVisibilityChange);
 settingsShuffleButton?.addEventListener('click', handleShuffleOrder);
 settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
+
+updateNextButtonLabel();
 
 init().catch((error) => {
   console.error(error);
@@ -156,6 +162,10 @@ async function init() {
   updateModeToggleLabel();
   updateShuffleButtonState();
   updateStartTranslationState();
+  if (translationControlVisibilityCheckbox) {
+    translationControlVisible = Boolean(translationControlVisibilityCheckbox.checked);
+  }
+  updateTranslationControlVisibility();
 
   statusEl.textContent = `${dataset.title} の出題設定を行ってスタートしてください。`;
   translationChoiceSection.hidden = false;
@@ -290,6 +300,8 @@ function startQuiz(enableTranslations) {
   closeSettingsPanel();
   translationChoiceSection.hidden = true;
   quizSection.hidden = false;
+  setReadyToRestart(false);
+  nextButton.disabled = true;
   correctCount = 0;
   totalCount = 0;
   resetResultPanel();
@@ -448,6 +460,7 @@ function showNextQuestion() {
     orderPointer += 1;
     currentQuestionIndex = questionIndex;
     currentQuestion = allQuestions[questionIndex];
+    setReadyToRestart(false);
     if (quizMode === 'all') {
       if (!allowDuplicates) {
         servedQuestionIds.add(currentQuestion.id);
@@ -565,6 +578,10 @@ function handleOptionClick(button, selectedIndex) {
 }
 
 function handleNextClick() {
+  if (readyToRestart) {
+    returnToStartScreen();
+    return;
+  }
   if (autoAdvanceTimer !== null) {
     window.clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
@@ -581,6 +598,16 @@ function handleAutoAdvanceChange() {
   updateAutoAdvanceControl();
   if (quizStarted) {
     statusEl.textContent = `自動で進むを${autoAdvanceEnabled ? 'ON' : 'OFF'}にしました。`;
+  }
+}
+
+function handleTranslationControlVisibilityChange() {
+  translationControlVisible = Boolean(translationControlVisibilityCheckbox?.checked);
+  updateTranslationControlVisibility();
+  if (quizStarted) {
+    statusEl.textContent = translationControlVisible
+      ? '「日本語」ボタンを表示しました。'
+      : '「日本語」ボタンを非表示にしました。';
   }
 }
 
@@ -677,6 +704,15 @@ function updateAutoAdvanceControl() {
   if (autoAdvanceStatus) {
     autoAdvanceStatus.textContent = autoAdvanceEnabled ? 'ON' : 'OFF';
   }
+}
+
+function updateTranslationControlVisibility() {
+  if (!toggleTranslationButton) {
+    return;
+  }
+  const isVisible = translationControlVisible;
+  toggleTranslationButton.hidden = !isVisible;
+  toggleTranslationButton.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
 }
 
 function updateStartTranslationState() {
@@ -850,13 +886,67 @@ function finishSession() {
     autoAdvanceTimer = null;
   }
   statusEl.textContent = `指定した ${questionLimit} 問の出題が完了しました。`;
-  nextButton.disabled = true;
+  nextButton.disabled = false;
   order = [];
   orderPointer = 0;
   updateShuffleButtonState();
   renderResultPanel();
   showWrongOnlyControl();
   updateModeToggleLabel();
+  setReadyToRestart(true);
+}
+
+function setReadyToRestart(isReady) {
+  readyToRestart = isReady;
+  updateNextButtonLabel();
+}
+
+function updateNextButtonLabel() {
+  if (!nextButton) {
+    return;
+  }
+  nextButton.textContent = readyToRestart ? '最初に戻る' : '次の問題';
+}
+
+function returnToStartScreen() {
+  if (autoAdvanceTimer !== null) {
+    window.clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = null;
+  }
+  setReadyToRestart(false);
+  quizStarted = false;
+  order = [];
+  orderPointer = 0;
+  currentQuestion = null;
+  currentQuestionIndex = null;
+  answered = false;
+  questionLimit = 0;
+  questionsAsked = 0;
+  servedQuestionIds = new Set();
+  servedQuestionKeys = new Set();
+  wrongQuestionIds.clear();
+  correctCount = 0;
+  totalCount = 0;
+  updateScoreboard();
+  resetResultPanel();
+  hideWrongOnlyControl();
+  updateModeToggleLabel();
+  updateShuffleButtonState();
+  translationChoiceSection.hidden = false;
+  quizSection.hidden = true;
+  nextButton.disabled = true;
+    if (questionEl) {
+      questionEl.innerHTML = '<span class="quiz__question-text">出題設定後にスタートしてください。</span>';
+    }
+  if (optionsEl) {
+    optionsEl.innerHTML = '';
+  }
+  if (feedbackEl) {
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'quiz__feedback';
+  }
+  closeSettingsPanel();
+  statusEl.textContent = `${activeDataset?.title ?? 'このセット'} の出題設定を行ってスタートしてください。`;
 }
 
 function getSelectedDuplicateMode() {
