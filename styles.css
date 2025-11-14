@@ -141,7 +141,7 @@ body {
 .settings-panel__content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .settings-panel__item {
@@ -155,6 +155,8 @@ body {
 
 .settings-panel__item-label {
   font-weight: 600;
+  text-align: left;
+  flex: 1;
 }
 
 .settings-panel__button {
@@ -202,7 +204,8 @@ body {
   margin-bottom: 18px;
 }
 
-.translation-toggle__label {
+.translation-toggle__label,
+.start-options__label {
   font-weight: 700;
   color: #1f2933;
   font-size: 1rem;
@@ -342,9 +345,6 @@ body {
 }
 
 .start-options__label {
-  font-weight: 700;
-  color: #1f2933;
-  font-size: 0.95rem;
   text-align: center;
 }
 
@@ -355,7 +355,6 @@ body {
 
 .start-options__toggle {
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 12px;
