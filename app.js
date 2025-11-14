@@ -316,7 +316,7 @@ function startQuiz(enableTranslations) {
   updateTranslationToggleLabel();
   updateAutoAdvanceControl();
   const canContinue = setQuizMode('all', { silent: true });
-  statusEl.textContent = `指定した ${questionLimit} 問を出題します。`;
+  statusEl.textContent = `${questionLimit} 問を出題します。`;
   if (canContinue) {
     showNextQuestion();
   } else {
