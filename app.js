@@ -704,6 +704,7 @@ function updateAutoAdvanceControl() {
   if (autoAdvanceStatus) {
     autoAdvanceStatus.textContent = autoAdvanceEnabled ? 'ON' : 'OFF';
   }
+  updateNextButtonVisibility();
 }
 
 function updateTranslationControlVisibility() {
@@ -906,6 +907,15 @@ function updateNextButtonLabel() {
     return;
   }
   nextButton.textContent = readyToRestart ? '最初に戻る' : '次の問題';
+  updateNextButtonVisibility();
+}
+
+function updateNextButtonVisibility() {
+  if (!nextButton) {
+    return;
+  }
+  const shouldHide = autoAdvanceEnabled && !readyToRestart;
+  nextButton.hidden = shouldHide;
 }
 
 function returnToStartScreen() {
