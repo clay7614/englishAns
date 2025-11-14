@@ -42,7 +42,6 @@ const autoAdvanceCheckbox = document.querySelector('[data-settings-auto-advance]
 const autoAdvanceStatus = document.querySelector('[data-auto-advance-status]');
 const translationControlVisibilityCheckbox = document.querySelector('[data-settings-translation-control]');
 const optionShuffleCheckbox = document.querySelector('[data-settings-option-shuffle]');
-const settingsShuffleButton = document.querySelector('[data-settings-shuffle]');
 const startTranslationToggle = document.querySelector('[data-start-translation-toggle]');
 const startTranslationState = document.querySelector('[data-start-translation-state]');
 const startButton = document.querySelector('[data-start-quiz]');
@@ -104,7 +103,6 @@ settingsCloseButton?.addEventListener('click', closeSettingsPanel);
 autoAdvanceCheckbox?.addEventListener('change', handleAutoAdvanceChange);
 translationControlVisibilityCheckbox?.addEventListener('change', handleTranslationControlVisibilityChange);
 optionShuffleCheckbox?.addEventListener('change', handleOptionShuffleChange);
-settingsShuffleButton?.addEventListener('click', handleShuffleOrder);
 settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
 
@@ -163,7 +161,6 @@ async function init() {
   updateAutoAdvanceControl();
   updateTranslationToggleLabel();
   updateModeToggleLabel();
-  updateShuffleButtonState();
   updateStartTranslationState();
   if (translationControlVisibilityCheckbox) {
     translationControlVisible = Boolean(translationControlVisibilityCheckbox.checked);
@@ -480,7 +477,6 @@ function showNextQuestion() {
     feedbackEl.className = 'quiz__feedback';
     renderQuestion(currentQuestion);
     renderOptions(currentQuestion);
-    updateShuffleButtonState();
     syncTranslationVisibility();
   } finally {
     questionTransitionInProgress = false;
@@ -576,7 +572,6 @@ function handleOptionClick(button, selectedOptionIndex) {
   nextButton.disabled = false;
   updateScoreboard();
   updateModeToggleLabel();
-  updateShuffleButtonState();
 
   if (quizMode === 'wrong-only') {
     if (wrongQuestionIds.size === 0) {
@@ -661,18 +656,6 @@ function handleToggleMode() {
 }
 
 function handleShuffleOrder() {
-  if (!quizStarted) {
-    return;
-  }
-  const poolIndexes = getActivePoolIndexes();
-  if (poolIndexes.length <= 1) {
-    statusEl.textContent = poolIndexes.length === 0
-      ? 'シャッフルできる問題がありません。'
-      : 'シャッフルするのに十分な問題がありません。';
-    return;
-  }
-  prepareOrder(poolIndexes);
-  statusEl.textContent = '出題順をシャッフルしました。';
 }
 
 function handleSettingsButtonClick(event) {
@@ -799,16 +782,6 @@ function updateScoreboard() {
 }
 
 function updateShuffleButtonState() {
-  if (!settingsShuffleButton) {
-    return;
-  }
-  const poolIndexes = getActivePoolIndexes();
-  let hasCapacity = true;
-  if (quizMode === 'all') {
-    hasCapacity = remainingQuestionSlots() > 1;
-  }
-  const canShuffle = quizStarted && poolIndexes.length > 1 && hasCapacity;
-  settingsShuffleButton.disabled = !canShuffle;
 }
 
 function getAllQuestionIndexes() {
@@ -919,7 +892,6 @@ function finishSession() {
   nextButton.disabled = false;
   order = [];
   orderPointer = 0;
-  updateShuffleButtonState();
   renderResultPanel();
   showWrongOnlyControl();
   updateModeToggleLabel();
@@ -970,7 +942,6 @@ function returnToStartScreen() {
   resetResultPanel();
   hideWrongOnlyControl();
   updateModeToggleLabel();
-  updateShuffleButtonState();
   translationChoiceSection.hidden = false;
   quizSection.hidden = true;
   nextButton.disabled = true;
