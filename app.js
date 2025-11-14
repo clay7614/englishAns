@@ -48,7 +48,8 @@ const startButton = document.querySelector('[data-start-quiz]');
 const correctEl = document.querySelector('[data-correct]');
 const totalEl = document.querySelector('[data-total]');
 const optionTemplate = document.getElementById('option-button-template');
-const duplicateChoiceInputs = document.querySelectorAll('input[name="question-duplicates"]');
+const duplicatesToggle = document.querySelector('[data-start-duplicates-toggle]');
+const duplicatesToggleState = document.querySelector('[data-start-duplicates-state]');
 const questionCountSlider = document.querySelector('[data-question-count-slider]');
 const questionCountDisplay = document.querySelector('[data-question-count-display]');
 
@@ -105,6 +106,7 @@ translationControlVisibilityCheckbox?.addEventListener('change', handleTranslati
 optionShuffleCheckbox?.addEventListener('change', handleOptionShuffleChange);
 settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
+duplicatesToggle?.addEventListener('change', updateDuplicatesToggleState);
 
 updateNextButtonLabel();
 
@@ -162,6 +164,7 @@ async function init() {
   updateTranslationToggleLabel();
   updateModeToggleLabel();
   updateStartTranslationState();
+  updateDuplicatesToggleState();
   if (translationControlVisibilityCheckbox) {
     translationControlVisible = Boolean(translationControlVisibilityCheckbox.checked);
   }
@@ -736,6 +739,14 @@ function updateStartTranslationState() {
   startTranslationState.textContent = isOn ? 'ON' : 'OFF';
 }
 
+function updateDuplicatesToggleState() {
+  if (!duplicatesToggleState) {
+    return;
+  }
+  const isAllowed = Boolean(duplicatesToggle?.checked);
+  duplicatesToggleState.textContent = isAllowed ? '許可する' : '許可しない';
+}
+
 function updateTranslationToggleLabel() {
   if (!toggleTranslationButton) {
     return;
@@ -960,9 +971,7 @@ function returnToStartScreen() {
 }
 
 function getSelectedDuplicateMode() {
-  const inputs = Array.from(duplicateChoiceInputs ?? []);
-  const selected = inputs.find((input) => input.checked);
-  return selected?.value ?? 'disallow';
+  return duplicatesToggle?.checked ? 'allow' : 'disallow';
 }
 
 function resolveQuestionTranslation(englishText, rawTranslation) {

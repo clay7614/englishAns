@@ -22,18 +22,27 @@
           <button type="button" class="settings-panel__close" data-close-settings>閉じる</button>
         </div>
         <div class="settings-panel__content">
-          <label class="settings-panel__item">
-            <input type="checkbox" data-settings-auto-advance checked>
+          <label class="settings-panel__item settings-panel__item--toggle">
             <span class="settings-panel__item-label">自動で進む</span>
-            <span class="settings-panel__state" data-auto-advance-status>ON</span>
+            <span class="toggle-switch">
+              <input type="checkbox" data-settings-auto-advance checked>
+              <span class="toggle-switch__slider" aria-hidden="true"></span>
+              <span class="toggle-switch__state" data-auto-advance-status>ON</span>
+            </span>
           </label>
-          <label class="settings-panel__item">
-            <input type="checkbox" data-settings-translation-control checked>
+          <label class="settings-panel__item settings-panel__item--toggle">
             <span class="settings-panel__item-label">「日本語」ボタンを表示</span>
+            <span class="toggle-switch">
+              <input type="checkbox" data-settings-translation-control checked>
+              <span class="toggle-switch__slider" aria-hidden="true"></span>
+            </span>
           </label>
-          <label class="settings-panel__item">
-            <input type="checkbox" data-settings-option-shuffle checked>
+          <label class="settings-panel__item settings-panel__item--toggle">
             <span class="settings-panel__item-label">選択肢をシャッフル</span>
+            <span class="toggle-switch">
+              <input type="checkbox" data-settings-option-shuffle checked>
+              <span class="toggle-switch__slider" aria-hidden="true"></span>
+            </span>
           </label>
         </div>
       </div>
@@ -48,15 +57,14 @@
         </label>
       </div>
       <div class="start-options" data-start-options>
-        <div class="start-options__group">
-          <span class="start-options__label">問題の重複</span>
-          <label class="start-options__choice">
-            <input type="radio" name="question-duplicates" value="disallow" checked>
-            許可しない
-          </label>
-          <label class="start-options__choice">
-            <input type="radio" name="question-duplicates" value="allow">
-            許可する
+        <div class="start-options__group start-options__group--toggle">
+          <label class="start-options__toggle">
+            <span class="start-options__label">問題の重複</span>
+            <span class="toggle-switch">
+              <input type="checkbox" data-start-duplicates-toggle>
+              <span class="toggle-switch__slider" aria-hidden="true"></span>
+              <span class="toggle-switch__state" data-start-duplicates-state>許可しない</span>
+            </span>
           </label>
         </div>
         <div class="start-options__group start-options__group--slider">
