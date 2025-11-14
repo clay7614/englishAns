@@ -144,7 +144,7 @@ async function init() {
 
   const datasetQuestions = await loadDataset(dataset);
   if (!datasetQuestions.length) {
-    throw new Error('問題が1問も読み込めませんでした。');
+    throw new Error('問題が読み込めませんでした。');
   }
 
   allQuestions = datasetQuestions;
@@ -167,7 +167,7 @@ async function init() {
   }
   updateTranslationControlVisibility();
 
-  statusEl.textContent = `${dataset.title} の出題設定を行ってスタートしてください。`;
+  statusEl.textContent = `設定を行ってスタートしてください。`;
   translationChoiceSection.hidden = false;
 }
 
@@ -560,7 +560,7 @@ function handleOptionClick(button, selectedIndex) {
 
   if (quizMode === 'wrong-only') {
     if (wrongQuestionIds.size === 0) {
-      statusEl.textContent = '誤答した問題はすべて解き終わりました。通常モードに戻ります。';
+      statusEl.textContent = '誤答した問題を解き終わりました。通常モードに戻ります。';
       setQuizMode('all', { silent: true });
     } else {
       prepareOrder(getActivePoolIndexes());
@@ -936,7 +936,7 @@ function returnToStartScreen() {
   quizSection.hidden = true;
   nextButton.disabled = true;
     if (questionEl) {
-      questionEl.innerHTML = '<span class="quiz__question-text">出題設定後にスタートしてください。</span>';
+      questionEl.innerHTML = '<span class="quiz__question-text">設定後にスタートしてください。</span>';
     }
   if (optionsEl) {
     optionsEl.innerHTML = '';
@@ -946,7 +946,7 @@ function returnToStartScreen() {
     feedbackEl.className = 'quiz__feedback';
   }
   closeSettingsPanel();
-  statusEl.textContent = `${activeDataset?.title ?? 'このセット'} の出題設定を行ってスタートしてください。`;
+  statusEl.textContent = `設定を行ってスタートしてください。`;
 }
 
 function getSelectedDuplicateMode() {
