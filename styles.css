@@ -127,6 +127,7 @@ body {
   flex-wrap: nowrap;
   text-align: left;
   width: 100%;
+}
 
 .settings-panel__close {
   border: none;
@@ -935,5 +936,4 @@ body.translations-hidden .quiz__option-translation {
   .quiz__next:disabled {
     background: #475569;
   }
-}
 }
