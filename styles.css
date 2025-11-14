@@ -551,6 +551,8 @@ body.translations-hidden .quiz__option-translation {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
+  text-align: center;
 }
 
 .start-card__title {
@@ -567,7 +569,7 @@ body.translations-hidden .quiz__option-translation {
 }
 
 .start-card__button {
-  align-self: flex-start;
+  align-self: center;
   border: none;
   border-radius: 12px;
   padding: 10px 18px;
