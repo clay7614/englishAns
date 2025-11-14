@@ -1144,7 +1144,8 @@ function configureQuestionCountControls(maxQuestions) {
   }
   const cappedMax = Math.max(1, maxQuestions);
   questionCountSlider.max = String(cappedMax);
-  questionCountSlider.value = String(cappedMax);
+  const defaultCount = Math.min(20, cappedMax);
+  questionCountSlider.value = String(defaultCount);
   updateQuestionCountDisplay();
 }
 
