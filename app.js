@@ -77,6 +77,8 @@ let servedQuestionKeys = new Set();
 let settingsPanelOpen = false;
 let correctCount = 0;
 let activeDataset = null;
+let questionTransitionInProgress = false;
+let queuedQuestionTransition = false;
 
 startButton?.addEventListener('click', handleStartButtonClick);
 translationChoiceSection?.addEventListener('click', (event) => {
@@ -115,7 +117,7 @@ async function init() {
     : QUESTION_DATASETS[0];
 
   if (!dataset) {
-    statusEl.textContent = '問題セットが見つかりません。start.html からセットを選択してください。';
+    statusEl.textContent = '問題セットが見つかりません。index.html からセットを選択してください。';
     statusEl.classList.add('app__status--error');
     translationChoiceSection.hidden = true;
     quizSection.hidden = true;
@@ -130,7 +132,7 @@ async function init() {
     datasetTitleEl.textContent = dataset.title;
   }
   if (datasetBackLink) {
-    datasetBackLink.href = 'start.html';
+    datasetBackLink.href = 'index.html';
     datasetBackLink.hidden = false;
   }
 
@@ -405,56 +407,72 @@ function showWrongOnlyControl() {
   updateModeToggleLabel();
 }
 function showNextQuestion() {
-  if (autoAdvanceTimer !== null) {
-    window.clearTimeout(autoAdvanceTimer);
-    autoAdvanceTimer = null;
-  }
-  if (!allQuestions.length) {
+  if (questionTransitionInProgress) {
+    queuedQuestionTransition = true;
     return;
   }
-  if (quizMode === 'all' && remainingQuestionSlots() <= 0) {
-    finishSession();
-    return;
-  }
-  let poolIndexes = getActivePoolIndexes();
-  if (!poolIndexes.length) {
-    if (quizMode === 'wrong-only') {
-      statusEl.textContent = '誤答した問題はありません。通常モードに戻ります。';
-      setQuizMode('all', { silent: true });
-      poolIndexes = getActivePoolIndexes();
+  questionTransitionInProgress = true;
+  try {
+    if (autoAdvanceTimer !== null) {
+      window.clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = null;
     }
-    if (!poolIndexes.length) {
-      questionEl.innerHTML = '<span class="quiz__question-text">出題できる問題がありません。</span>';
-      optionsEl.innerHTML = '';
+    if (!allQuestions.length) {
       return;
     }
-  }
-  if (orderPointer >= order.length) {
-    prepareOrder(poolIndexes);
-  }
-  if (!order.length) {
-    finishSession();
-    return;
-  }
-  const questionIndex = order[orderPointer];
-  orderPointer += 1;
-  currentQuestionIndex = questionIndex;
-  currentQuestion = allQuestions[questionIndex];
-  if (quizMode === 'all') {
-    if (!allowDuplicates) {
-      servedQuestionIds.add(currentQuestion.id);
-      servedQuestionKeys.add(getQuestionKey(currentQuestion));
+    if (quizMode === 'all' && remainingQuestionSlots() <= 0) {
+      finishSession();
+      return;
     }
-    questionsAsked += 1;
+    let poolIndexes = getActivePoolIndexes();
+    if (!poolIndexes.length) {
+      if (quizMode === 'wrong-only') {
+        statusEl.textContent = '誤答した問題はありません。通常モードに戻ります。';
+        setQuizMode('all', { silent: true });
+        poolIndexes = getActivePoolIndexes();
+      }
+      if (!poolIndexes.length) {
+        questionEl.innerHTML = '<span class="quiz__question-text">出題できる問題がありません。</span>';
+        optionsEl.innerHTML = '';
+        return;
+      }
+    }
+    if (orderPointer >= order.length) {
+      prepareOrder(poolIndexes);
+    }
+    if (!order.length) {
+      finishSession();
+      return;
+    }
+    const questionIndex = order[orderPointer];
+    orderPointer += 1;
+    currentQuestionIndex = questionIndex;
+    currentQuestion = allQuestions[questionIndex];
+    if (quizMode === 'all') {
+      if (!allowDuplicates) {
+        servedQuestionIds.add(currentQuestion.id);
+        servedQuestionKeys.add(getQuestionKey(currentQuestion));
+      }
+      questionsAsked += 1;
+    }
+    answered = false;
+    nextButton.disabled = true;
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'quiz__feedback';
+    renderQuestion(currentQuestion);
+    renderOptions(currentQuestion);
+    updateShuffleButtonState();
+    syncTranslationVisibility();
+  } finally {
+    questionTransitionInProgress = false;
+    if (queuedQuestionTransition) {
+      queuedQuestionTransition = false;
+      const schedule = (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function')
+        ? window.requestAnimationFrame.bind(window)
+        : (callback) => window.setTimeout(callback, 0);
+      schedule(() => showNextQuestion());
+    }
   }
-  answered = false;
-  nextButton.disabled = true;
-  feedbackEl.textContent = '';
-  feedbackEl.className = 'quiz__feedback';
-  renderQuestion(currentQuestion);
-  renderOptions(currentQuestion);
-  updateShuffleButtonState();
-  syncTranslationVisibility();
 }
 
 function renderQuestion(question) {
