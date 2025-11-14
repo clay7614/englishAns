@@ -117,16 +117,15 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .settings-panel__title {
   font-weight: 700;
   color: #1f2933;
-  justify-content: flex-start;
-  gap: 16px;
-  flex-wrap: nowrap;
   text-align: left;
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .settings-panel__close {
@@ -136,6 +135,7 @@ body {
   color: #4c6ef5;
   cursor: pointer;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .settings-panel__content {
@@ -148,15 +148,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   font-size: 0.95rem;
   color: #364152;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .settings-panel__item-label {
   font-weight: 600;
   text-align: left;
   flex: 1;
+  white-space: nowrap;
 }
 
 .settings-panel__button {
