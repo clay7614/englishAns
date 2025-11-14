@@ -41,6 +41,7 @@ const settingsCloseButton = document.querySelector('[data-close-settings]');
 const autoAdvanceCheckbox = document.querySelector('[data-settings-auto-advance]');
 const autoAdvanceStatus = document.querySelector('[data-auto-advance-status]');
 const translationControlVisibilityCheckbox = document.querySelector('[data-settings-translation-control]');
+const optionShuffleCheckbox = document.querySelector('[data-settings-option-shuffle]');
 const settingsShuffleButton = document.querySelector('[data-settings-shuffle]');
 const startTranslationToggle = document.querySelector('[data-start-translation-toggle]');
 const startTranslationState = document.querySelector('[data-start-translation-state]');
@@ -82,6 +83,7 @@ let questionTransitionInProgress = false;
 let queuedQuestionTransition = false;
 let readyToRestart = false;
 let translationControlVisible = true;
+let shuffleOptionsEnabled = true;
 
 startButton?.addEventListener('click', handleStartButtonClick);
 translationChoiceSection?.addEventListener('click', (event) => {
@@ -101,6 +103,7 @@ settingsButton?.addEventListener('click', handleSettingsButtonClick);
 settingsCloseButton?.addEventListener('click', closeSettingsPanel);
 autoAdvanceCheckbox?.addEventListener('change', handleAutoAdvanceChange);
 translationControlVisibilityCheckbox?.addEventListener('change', handleTranslationControlVisibilityChange);
+optionShuffleCheckbox?.addEventListener('change', handleOptionShuffleChange);
 settingsShuffleButton?.addEventListener('click', handleShuffleOrder);
 settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
@@ -164,6 +167,9 @@ async function init() {
   updateStartTranslationState();
   if (translationControlVisibilityCheckbox) {
     translationControlVisible = Boolean(translationControlVisibilityCheckbox.checked);
+  }
+  if (optionShuffleCheckbox) {
+    shuffleOptionsEnabled = Boolean(optionShuffleCheckbox.checked);
   }
   updateTranslationControlVisibility();
 
@@ -499,21 +505,34 @@ function renderQuestion(question) {
 
 function renderOptions(question) {
   optionsEl.innerHTML = '';
-  question.options.forEach((optionText, index) => {
+  const renderOrder = getOptionRenderOrder(question);
+  renderOrder.forEach((optionIndex) => {
+    const optionText = question.options[optionIndex];
     const button = optionTemplate.content.firstElementChild.cloneNode(true);
-    const translationText = question.translation.options[index];
+    const translationText = question.translation.options[optionIndex];
     let optionMarkup = `<span class="quiz__option-text">${formatText(optionText)}</span>`;
     if (hasMeaningfulText(translationText)) {
       optionMarkup += `<span class="quiz__option-translation">${formatText(translationText)}</span>`;
     }
     button.innerHTML = optionMarkup;
-    button.dataset.index = String(index);
-    button.addEventListener('click', () => handleOptionClick(button, index));
+    button.dataset.optionIndex = String(optionIndex);
+    button.addEventListener('click', () => handleOptionClick(button, optionIndex));
     optionsEl.appendChild(button);
   });
 }
 
-function handleOptionClick(button, selectedIndex) {
+function getOptionRenderOrder(question) {
+  if (!question || !question.options) {
+    return [];
+  }
+  const baseOrder = question.options.map((_, index) => index);
+  if (!shuffleOptionsEnabled) {
+    return baseOrder;
+  }
+  return shuffle(baseOrder);
+}
+
+function handleOptionClick(button, selectedOptionIndex) {
   if (answered) {
     return;
   }
@@ -527,7 +546,7 @@ function handleOptionClick(button, selectedIndex) {
   const stats = questionStats.get(questionId) ?? { attempts: 0, correct: 0 };
   stats.attempts += 1;
 
-  const isCorrect = selectedIndex === currentQuestion.answerIndex;
+  const isCorrect = selectedOptionIndex === currentQuestion.answerIndex;
   if (isCorrect) {
     if (isScoredQuestion) {
       correctCount += 1;
@@ -543,12 +562,13 @@ function handleOptionClick(button, selectedIndex) {
   }
   questionStats.set(questionId, stats);
 
-  [...optionsEl.children].forEach((optionButton, index) => {
+  [...optionsEl.children].forEach((optionButton) => {
     optionButton.disabled = true;
-    if (index === currentQuestion.answerIndex) {
+    const buttonOptionIndex = Number.parseInt(optionButton.dataset.optionIndex ?? '-1', 10);
+    if (buttonOptionIndex === currentQuestion.answerIndex) {
       optionButton.classList.add('quiz__option--correct');
     }
-    if (index === selectedIndex && !isCorrect) {
+    if (buttonOptionIndex === selectedOptionIndex && !isCorrect) {
       optionButton.classList.add('quiz__option--wrong');
     }
   });
@@ -608,6 +628,15 @@ function handleTranslationControlVisibilityChange() {
     statusEl.textContent = translationControlVisible
       ? '「日本語」ボタンを表示しました。'
       : '「日本語」ボタンを非表示にしました。';
+  }
+}
+
+function handleOptionShuffleChange() {
+  shuffleOptionsEnabled = Boolean(optionShuffleCheckbox?.checked);
+  if (quizStarted) {
+    statusEl.textContent = shuffleOptionsEnabled
+      ? '選択肢の順番をシャッフルします。'
+      : '選択肢の順番を固定します。';
   }
 }
 
