@@ -5,7 +5,6 @@ const CACHE_NAME = `english-ans-cache-${CACHE_VERSION}`;
 const APP_SHELL = [
   './',
   './index.html',
-  './quiz.html',
   './styles.css',
   './app.js',
   './pwa.js',

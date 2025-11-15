@@ -11,12 +11,6 @@ const QUESTION_DATASETS = [
     questionFile: '751~900.csv',
     translationFile: '751~900_ja.csv',
   },
-  {
-    title: '単語テスト 601〜750',
-    questionFile: '601~750.csv',
-    translationFile: '601~750_ja.csv',
-    translationFile: '751~900_ja.csv',
-  },
 ];
 
 const FALLBACKS_FILE = 'translation-fallbacks-ja.json';
@@ -28,6 +22,9 @@ const translationChoiceSection = document.querySelector('[data-translation-choic
 const quizSection = document.querySelector('[data-quiz]');
 const datasetTitleEl = document.querySelector('[data-dataset-title]');
 const datasetBackLink = document.querySelector('[data-dataset-back]');
+const selectionView = document.querySelector('[data-view="selection"]');
+const quizView = document.querySelector('[data-view="quiz"]');
+const datasetButtons = document.querySelectorAll('[data-dataset-button]');
 const questionEl = document.querySelector('[data-question]');
 const optionsEl = document.querySelector('[data-options]');
 const feedbackEl = document.querySelector('[data-feedback]');
@@ -84,6 +81,7 @@ let queuedQuestionTransition = false;
 let readyToRestart = false;
 let translationControlVisible = true;
 let shuffleOptionsEnabled = true;
+let datasetLoading = false;
 
 startButton?.addEventListener('click', handleStartButtonClick);
 translationChoiceSection?.addEventListener('click', (event) => {
@@ -107,6 +105,10 @@ optionShuffleCheckbox?.addEventListener('change', handleOptionShuffleChange);
 settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
 duplicatesToggle?.addEventListener('change', updateDuplicatesToggleState);
+datasetButtons.forEach((button) => {
+  button.addEventListener('click', () => handleDatasetSelection(button.dataset.datasetId));
+});
+datasetBackLink?.addEventListener('click', handleDatasetBackClick);
 
 updateNextButtonLabel();
 
@@ -118,37 +120,138 @@ init().catch((error) => {
 
 async function init() {
   await loadFallbackData();
+  setActiveView('selection');
+  translationChoiceSection.hidden = true;
+  quizSection.hidden = true;
+  settingsButton?.setAttribute('disabled', 'true');
 
   const params = new URLSearchParams(window.location.search);
   const requestedId = params.get('set');
-  const dataset = requestedId
-    ? QUESTION_DATASETS.find((item) => item.id === requestedId)
-    : QUESTION_DATASETS[0];
+  if (requestedId) {
+    await handleDatasetSelection(requestedId);
+  } else {
+    statusEl.textContent = '問題集を選んでください。';
+    statusEl.classList.remove('app__status--error');
+  }
+}
 
-  if (!dataset) {
-    statusEl.textContent = '問題セットが見つかりません。index.html からセットを選択してください。';
-    statusEl.classList.add('app__status--error');
-    translationChoiceSection.hidden = true;
-    quizSection.hidden = true;
-    settingsButton?.setAttribute('disabled', 'true');
+async function loadDataset(dataset) {
+  const translationPromise = dataset.translationFile
+    ? loadTranslationRows(dataset.translationFile)
+    : Promise.resolve([]);
+  const [questionRows, translationRows] = await Promise.all([
+    loadQuestionRows(dataset.questionFile),
+    translationPromise,
+  ]);
+  if (translationRows.length && translationRows.length !== questionRows.length) {
+    console.warn(
+      `翻訳データの件数 (${translationRows.length}) が問題数 (${questionRows.length}) と一致しません。`
+    );
+  }
+  return mergeQuestionData(questionRows, translationRows, dataset.id);
+}
+
+async function handleDatasetSelection(datasetId) {
+  if (!datasetId || datasetLoading) {
     return;
   }
+  datasetLoading = true;
+  statusEl.classList.remove('app__status--error');
+  statusEl.textContent = '問題を読み込み中...';
+  translationChoiceSection.hidden = true;
+  quizSection.hidden = true;
+  setActiveView('quiz');
+  try {
+    await prepareDataset(datasetId);
+    translationChoiceSection.hidden = false;
+    statusEl.textContent = '設定を行ってスタートしてください。';
+    updateDatasetQueryParam(datasetId);
+  } catch (error) {
+    statusEl.textContent = `問題セットの読み込みに失敗しました: ${error.message}`;
+    statusEl.classList.add('app__status--error');
+    setActiveView('selection');
+  } finally {
+    datasetLoading = false;
+  }
+}
 
-  activeDataset = dataset;
-  const pageTitle = `${dataset.title} | 英語4択ドリル`;
-  document.title = pageTitle;
+function handleDatasetBackClick(event) {
+  event.preventDefault();
+  if (datasetLoading) {
+    return;
+  }
+  returnToDatasetSelection();
+}
+
+function returnToDatasetSelection() {
+  resetToPreQuizState();
+  activeDataset = null;
+  setActiveView('selection');
   if (datasetTitleEl) {
-    datasetTitleEl.textContent = dataset.title;
+    datasetTitleEl.textContent = '';
   }
   if (datasetBackLink) {
-    datasetBackLink.href = 'index.html';
-    datasetBackLink.hidden = false;
+    datasetBackLink.hidden = true;
+    datasetBackLink.setAttribute('aria-hidden', 'true');
+  }
+  settingsButton?.setAttribute('disabled', 'true');
+  statusEl.textContent = '問題集を選んでください。';
+  statusEl.classList.remove('app__status--error');
+  updateDatasetQueryParam(null);
+}
+
+function setActiveView(viewName) {
+  document.body.dataset.view = viewName;
+  toggleViewState(selectionView, viewName === 'selection');
+  toggleViewState(quizView, viewName === 'quiz');
+}
+
+function updateDatasetQueryParam(datasetId) {
+  if (typeof window === 'undefined' || !window.history || !window.location) {
+    return;
+  }
+  const url = new URL(window.location.href);
+  if (datasetId) {
+    url.searchParams.set('set', datasetId);
+  } else {
+    url.searchParams.delete('set');
+  }
+  if (url.toString() !== window.location.href) {
+    window.history.replaceState({}, '', url);
+  }
+}
+
+function toggleViewState(element, isActive) {
+  if (!element) {
+    return;
+  }
+  element.classList.toggle('view--hidden', !isActive);
+  element.classList.toggle('view--active', isActive);
+  element.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+}
+
+async function prepareDataset(datasetId) {
+  const dataset = QUESTION_DATASETS.find((item) => item.id === datasetId);
+  if (!dataset) {
+    throw new Error('指定された問題セットが見つかりません。');
   }
 
   const datasetQuestions = await loadDataset(dataset);
   if (!datasetQuestions.length) {
     throw new Error('問題が読み込めませんでした。');
   }
+
+  activeDataset = dataset;
+  document.title = `${dataset.title} | 英語4択ドリル`;
+  if (datasetTitleEl) {
+    datasetTitleEl.textContent = dataset.title;
+  }
+  if (datasetBackLink) {
+    datasetBackLink.hidden = false;
+    datasetBackLink.setAttribute('aria-hidden', 'false');
+  }
+
+  resetToPreQuizState();
 
   allQuestions = datasetQuestions;
   questionIndexById = new Map();
@@ -172,25 +275,46 @@ async function init() {
     shuffleOptionsEnabled = Boolean(optionShuffleCheckbox.checked);
   }
   updateTranslationControlVisibility();
-
-  statusEl.textContent = `設定を行ってスタートしてください。`;
-  translationChoiceSection.hidden = false;
+  settingsButton?.removeAttribute('disabled');
 }
 
-async function loadDataset(dataset) {
-  const translationPromise = dataset.translationFile
-    ? loadTranslationRows(dataset.translationFile)
-    : Promise.resolve([]);
-  const [questionRows, translationRows] = await Promise.all([
-    loadQuestionRows(dataset.questionFile),
-    translationPromise,
-  ]);
-  if (translationRows.length && translationRows.length !== questionRows.length) {
-    console.warn(
-      `翻訳データの件数 (${translationRows.length}) が問題数 (${questionRows.length}) と一致しません。`
-    );
+function resetToPreQuizState() {
+  if (autoAdvanceTimer !== null) {
+    window.clearTimeout(autoAdvanceTimer);
+    autoAdvanceTimer = null;
   }
-  return mergeQuestionData(questionRows, translationRows, dataset.id);
+  setReadyToRestart(false);
+  quizStarted = false;
+  order = [];
+  orderPointer = 0;
+  currentQuestion = null;
+  currentQuestionIndex = null;
+  answered = false;
+  questionLimit = 0;
+  questionsAsked = 0;
+  servedQuestionIds = new Set();
+  servedQuestionKeys = new Set();
+  wrongQuestionIds.clear();
+  correctCount = 0;
+  totalCount = 0;
+  updateScoreboard();
+  resetResultPanel();
+  hideWrongOnlyControl();
+  updateModeToggleLabel();
+  quizSection.hidden = true;
+  translationChoiceSection.hidden = true;
+  nextButton.disabled = true;
+  if (questionEl) {
+    questionEl.innerHTML = '<span class="quiz__question-text">設定後にスタートしてください。</span>';
+  }
+  if (optionsEl) {
+    optionsEl.innerHTML = '';
+  }
+  if (feedbackEl) {
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'quiz__feedback';
+  }
+  closeSettingsPanel();
 }
 
 async function loadFallbackData() {
@@ -931,43 +1055,11 @@ function updateNextButtonVisibility() {
 }
 
 function returnToStartScreen() {
-  if (autoAdvanceTimer !== null) {
-    window.clearTimeout(autoAdvanceTimer);
-    autoAdvanceTimer = null;
+  resetToPreQuizState();
+  if (activeDataset) {
+    translationChoiceSection.hidden = false;
+    statusEl.textContent = '設定を行ってスタートしてください。';
   }
-  setReadyToRestart(false);
-  quizStarted = false;
-  order = [];
-  orderPointer = 0;
-  currentQuestion = null;
-  currentQuestionIndex = null;
-  answered = false;
-  questionLimit = 0;
-  questionsAsked = 0;
-  servedQuestionIds = new Set();
-  servedQuestionKeys = new Set();
-  wrongQuestionIds.clear();
-  correctCount = 0;
-  totalCount = 0;
-  updateScoreboard();
-  resetResultPanel();
-  hideWrongOnlyControl();
-  updateModeToggleLabel();
-  translationChoiceSection.hidden = false;
-  quizSection.hidden = true;
-  nextButton.disabled = true;
-    if (questionEl) {
-      questionEl.innerHTML = '<span class="quiz__question-text">設定後にスタートしてください。</span>';
-    }
-  if (optionsEl) {
-    optionsEl.innerHTML = '';
-  }
-  if (feedbackEl) {
-    feedbackEl.textContent = '';
-    feedbackEl.className = 'quiz__feedback';
-  }
-  closeSettingsPanel();
-  statusEl.textContent = `設定を行ってスタートしてください。`;
 }
 
 function getSelectedDuplicateMode() {

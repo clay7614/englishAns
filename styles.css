@@ -20,6 +20,38 @@ body {
 .app {
   width: min(100%, 760px);
   padding: 24px 20px 48px;
+  position: relative;
+}
+
+.view-stack {
+  position: relative;
+  min-height: 100%;
+}
+
+.view {
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  will-change: opacity, transform;
+}
+
+.view--hidden {
+  opacity: 0;
+  transform: translateY(28px);
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.view--active {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view {
+    transition: none;
+    transform: none !important;
+  }
 }
 
 
