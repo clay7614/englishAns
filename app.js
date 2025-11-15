@@ -135,7 +135,7 @@ async function init() {
   }
 
   activeDataset = dataset;
-  const pageTitle = `${dataset.title} | 英語4択ドリル`;
+  const pageTitle = `${dataset.title} | 英語テスト`;
   document.title = pageTitle;
   if (datasetTitleEl) {
     datasetTitleEl.textContent = dataset.title;
@@ -957,7 +957,7 @@ function returnToStartScreen() {
   quizSection.hidden = true;
   nextButton.disabled = true;
     if (questionEl) {
-      questionEl.innerHTML = '<span class="quiz__question-text">設定後にスタートしてください。</span>';
+      questionEl.innerHTML = '<span class="quiz__question-text"></span>';
     }
   if (optionsEl) {
     optionsEl.innerHTML = '';
