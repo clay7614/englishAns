@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="ja">
-<!DOCTYPE html>
-<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,124 +10,28 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>単語テスト | 英語4択ドリル</title>
+  <title>英語テスト | 選択</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-view="selection">
-  <main class="app">
-    <div class="view-stack">
-      <section class="view view--selection view--active" data-view="selection" aria-label="問題集一覧">
-        <header class="app__header">
-          <h1>単語テスト</h1>
-          <p class="app__status">問題集を選んでください。</p>
-        </header>
-        <section class="start-selection">
-          <article class="start-card">
-            <h2 class="start-card__title">単語テスト 601〜750</h2>
-            <p class="start-card__meta">151問</p>
-            <button type="button" class="start-card__button" data-dataset-button data-dataset-id="set-601-750">スタート</button>
-          </article>
-          <article class="start-card">
-            <h2 class="start-card__title">単語テスト 751〜900</h2>
-            <p class="start-card__meta">150問</p>
-            <button type="button" class="start-card__button" data-dataset-button data-dataset-id="set-751-900">スタート</button>
-          </article>
-        </section>
-      </section>
-
-      <section class="view view--quiz view--hidden" data-view="quiz" aria-live="polite">
-        <header class="app__header">
-          <h1>単語テスト</h1>
-          <div class="app__dataset-nav">
-            <a class="app__dataset-back" data-dataset-back href="#" hidden aria-hidden="true">← 問題集一覧に戻る</a>
-            <span class="app__dataset-title" data-dataset-title></span>
-          </div>
-          <p class="app__status" data-status>問題を読み込み中...</p>
-          <button type="button" class="app__settings-button" data-open-settings aria-haspopup="true" aria-expanded="false" disabled>設定</button>
-          <div class="settings-panel" data-settings-panel hidden>
-            <div class="settings-panel__header">
-              <span class="settings-panel__title">設定</span>
-              <button type="button" class="settings-panel__close" data-close-settings>閉じる</button>
-            </div>
-            <div class="settings-panel__content">
-              <label class="settings-panel__item settings-panel__item--toggle">
-                <span class="settings-panel__item-label">自動で進む</span>
-                <span class="toggle-switch">
-                  <input type="checkbox" data-settings-auto-advance checked>
-                  <span class="toggle-switch__slider" aria-hidden="true"></span>
-                </span>
-              </label>
-              <label class="settings-panel__item settings-panel__item--toggle">
-                <span class="settings-panel__item-label">「日本語」ボタンを表示</span>
-                <span class="toggle-switch">
-                  <input type="checkbox" data-settings-translation-control checked>
-                  <span class="toggle-switch__slider" aria-hidden="true"></span>
-                </span>
-              </label>
-              <label class="settings-panel__item settings-panel__item--toggle">
-                <span class="settings-panel__item-label">選択肢をシャッフル</span>
-                <span class="toggle-switch">
-                  <input type="checkbox" data-settings-option-shuffle checked>
-                  <span class="toggle-switch__slider" aria-hidden="true"></span>
-                </span>
-              </label>
-            </div>
-          </div>
-        </header>
-
-        <section class="translation-toggle" data-translation-choice hidden>
-          <div class="translation-toggle__row">
-            <span class="translation-toggle__label">日本語訳を表示</span>
-            <label class="translation-toggle__switch">
-              <input type="checkbox" data-start-translation-toggle>
-              <span class="translation-toggle__slider" aria-hidden="true"></span>
-            </label>
-          </div>
-          <div class="start-options" data-start-options>
-            <div class="start-options__group start-options__group--toggle">
-              <label class="start-options__toggle">
-                <span class="start-options__label">問題の重複</span>
-                <span class="toggle-switch">
-                  <input type="checkbox" data-start-duplicates-toggle>
-                  <span class="toggle-switch__slider" aria-hidden="true"></span>
-                </span>
-                <span class="toggle-switch__state" data-start-duplicates-state>許可しない</span>
-              </label>
-            </div>
-            <div class="start-options__group start-options__group--slider">
-              <label for="question-count-slider" class="start-options__label">
-                出題数: <span data-question-count-display>0</span>問
-              </label>
-              <input type="range" id="question-count-slider" data-question-count-slider min="1" max="150" value="20">
-            </div>
-          </div>
-          <div class="translation-toggle__buttons">
-            <button type="button" class="translation-toggle__button" data-start-quiz>スタート</button>
-          </div>
-        </section>
-
-        <section class="quiz" data-quiz hidden>
-          <div class="quiz__score"><span data-correct>0</span> / <span data-total>0</span> 正解</div>
-          <div class="quiz__question" data-question></div>
-          <div class="quiz__options" data-options></div>
-          <div class="quiz__feedback" data-feedback></div>
-          <div class="quiz__result" data-result hidden></div>
-          <div class="quiz__controls">
-            <button type="button" class="quiz__control-button" data-toggle-translation>日本語: 非表示</button>
-            <button type="button" class="quiz__control-button" data-toggle-mode hidden disabled>誤答のみ</button>
-            <button type="button" class="quiz__next" data-next disabled>次の問題へ</button>
-          </div>
-        </section>
-      </section>
-    </div>
+<body>
+  <main class="app app--start">
+    <header class="app__header">
+      <h1>英語テスト</h1>
+      <p class="app__status">問題集を選んでください。</p>
+    </header>
+    <section class="start-selection" aria-label="問題集一覧">
+      <article class="start-card">
+        <h2 class="start-card__title">単語テスト 601〜750</h2>
+        <p class="start-card__meta">151問</p>
+        <button type="button" class="start-card__button" onclick="location.href='quiz.html?set=set-601-750'">スタート</button>
+      </article>
+      <article class="start-card">
+        <h2 class="start-card__title">単語テスト 751〜900</h2>
+        <p class="start-card__meta">150問</p>
+        <button type="button" class="start-card__button" onclick="location.href='quiz.html?set=set-751-900'">スタート</button>
+      </article>
+    </section>
   </main>
-
-  <template id="option-button-template">
-    <button type="button" class="quiz__option"></button>
-  </template>
-
-  <script type="module" src="app.js"></script>
   <script type="module" src="pwa.js"></script>
 </body>
 </html>
-

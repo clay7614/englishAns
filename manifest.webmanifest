@@ -1,7 +1,7 @@
 {
-  "name": "英語4択ドリル",
-  "short_name": "英語ドリル",
-  "description": "弊校の英語教員向け4択再試験対策アプリ",
+  "name": "英語テスト",
+  "short_name": "英語テスト",
+  "description": "弊校の英語教員向け再試験対策アプリ",
   "lang": "ja",
   "start_url": "index.html",
   "scope": "./",
