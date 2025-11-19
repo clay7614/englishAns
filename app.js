@@ -11,12 +11,6 @@ const QUESTION_DATASETS = [
     questionFile: '751~900.csv',
     translationFile: '751~900_ja.csv',
   },
-  {
-    title: '単語テスト 601〜750',
-    questionFile: '601~750.csv',
-    translationFile: '601~750_ja.csv',
-    translationFile: '751~900_ja.csv',
-  },
 ];
 
 const FALLBACKS_FILE = 'translation-fallbacks-ja.json';
@@ -24,10 +18,10 @@ let optionTranslationFallbacks = new Map();
 let questionTranslationFallbacks = new Map();
 
 const statusEl = document.querySelector('[data-status]');
+const datasetSelectionSection = document.querySelector('[data-dataset-selection]');
 const translationChoiceSection = document.querySelector('[data-translation-choice]');
 const quizSection = document.querySelector('[data-quiz]');
 const datasetTitleEl = document.querySelector('[data-dataset-title]');
-const datasetBackLink = document.querySelector('[data-dataset-back]');
 const questionEl = document.querySelector('[data-question]');
 const optionsEl = document.querySelector('[data-options]');
 const feedbackEl = document.querySelector('[data-feedback]');
@@ -108,6 +102,8 @@ settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
 duplicatesToggle?.addEventListener('change', updateDuplicatesToggleState);
 
+window.addEventListener('popstate', handlePopState);
+
 updateNextButtonLabel();
 
 init().catch((error) => {
@@ -118,64 +114,183 @@ init().catch((error) => {
 
 async function init() {
   await loadFallbackData();
+  handlePopState();
+}
 
+function handlePopState() {
   const params = new URLSearchParams(window.location.search);
   const requestedId = params.get('set');
-  const dataset = requestedId
-    ? QUESTION_DATASETS.find((item) => item.id === requestedId)
-    : QUESTION_DATASETS[0];
-
-  if (!dataset) {
-    statusEl.textContent = '問題セットが見つかりません。index.html からセットを選択してください。';
-    statusEl.classList.add('app__status--error');
-    translationChoiceSection.hidden = true;
-    quizSection.hidden = true;
-    settingsButton?.setAttribute('disabled', 'true');
+  
+  if (!requestedId) {
+    // No set selected, show selection screen
+    if (activeDataset || quizStarted) {
+      returnToDatasetSelection(true); // true = from popstate
+    } else {
+      renderDatasetSelection();
+    }
     return;
   }
 
+  // Set is selected
+  const dataset = QUESTION_DATASETS.find((item) => item.id === requestedId);
+  if (!dataset) {
+    // Invalid ID, go back to selection
+    const newUrl = new URL(window.location);
+    newUrl.searchParams.delete('set');
+    window.history.replaceState({}, '', newUrl);
+    renderDatasetSelection();
+    return;
+  }
+
+  // If we are already on this dataset's settings or quiz, do nothing (or maybe handle view change?)
+  // For now, if we are in quiz and URL is just ?set=..., we might want to go back to settings?
+  // But we don't have a separate URL for quiz yet.
+  
+  if (activeDataset?.id !== dataset.id) {
+    selectDataset(dataset, true); // true = from popstate
+  } else if (quizStarted) {
+    // If we are in quiz but URL implies settings (no view param), we should probably go back to settings
+    // But since we don't use view param yet, let's just stay.
+    // If we want to support Back from Quiz -> Settings, we need to push state on startQuiz.
+  }
+}
+
+function renderDatasetSelection() {
+  activeDataset = null;
+  if (!datasetSelectionSection) return;
+  
+  datasetSelectionSection.innerHTML = '';
+  QUESTION_DATASETS.forEach(dataset => {
+    const card = document.createElement('article');
+    card.className = 'start-card';
+    card.innerHTML = `
+      <h2 class="start-card__title">${escapeHtml(dataset.title)}</h2>
+      <button type="button" class="start-card__button">スタート</button>
+    `;
+    card.querySelector('button').addEventListener('click', () => selectDataset(dataset));
+    datasetSelectionSection.appendChild(card);
+  });
+
+  statusEl.textContent = '問題集を選んでください。';
+  datasetSelectionSection.hidden = false;
+  translationChoiceSection.hidden = true;
+  quizSection.hidden = true;
+  if (datasetTitleEl) datasetTitleEl.textContent = '';
+}
+
+async function selectDataset(dataset, fromPopState = false) {
   activeDataset = dataset;
   const pageTitle = `${dataset.title} | 英語テスト`;
   document.title = pageTitle;
   if (datasetTitleEl) {
     datasetTitleEl.textContent = dataset.title;
   }
-  if (datasetBackLink) {
-    datasetBackLink.href = 'index.html';
-    datasetBackLink.hidden = false;
-  }
 
-  const datasetQuestions = await loadDataset(dataset);
-  if (!datasetQuestions.length) {
-    throw new Error('問題が読み込めませんでした。');
+  // Transition
+  if (!datasetSelectionSection.hidden) {
+    datasetSelectionSection.classList.add('animate-fade-out');
+    setTimeout(async () => {
+      datasetSelectionSection.hidden = true;
+      datasetSelectionSection.classList.remove('animate-fade-out');
+      await loadAndShowStartOptions(dataset, fromPopState);
+    }, 250);
+  } else {
+    await loadAndShowStartOptions(dataset, fromPopState);
   }
-
-  allQuestions = datasetQuestions;
-  questionIndexById = new Map();
-  questionStats = new Map();
-  wrongQuestionIds.clear();
-  allQuestions.forEach((question, index) => {
-    questionIndexById.set(question.id, index);
-    questionStats.set(question.id, { attempts: 0, correct: 0 });
-  });
-
-  configureQuestionCountControls(allQuestions.length);
-  updateAutoAdvanceControl();
-  updateTranslationToggleLabel();
-  updateModeToggleLabel();
-  updateStartTranslationState();
-  updateDuplicatesToggleState();
-  if (translationControlVisibilityCheckbox) {
-    translationControlVisible = Boolean(translationControlVisibilityCheckbox.checked);
-  }
-  if (optionShuffleCheckbox) {
-    shuffleOptionsEnabled = Boolean(optionShuffleCheckbox.checked);
-  }
-  updateTranslationControlVisibility();
-
-  statusEl.textContent = `設定を行ってスタートしてください。`;
-  translationChoiceSection.hidden = false;
 }
+
+async function loadAndShowStartOptions(dataset, fromPopState = false) {
+  statusEl.textContent = '問題を読み込み中...';
+  
+  try {
+    // If we already have the questions loaded, don't reload
+    if (allQuestions.length > 0 && activeDataset?.id === dataset.id && !fromPopState) {
+       // Just show
+    } else {
+        const datasetQuestions = await loadDataset(dataset);
+        if (!datasetQuestions.length) {
+        throw new Error('問題が読み込めませんでした。');
+        }
+
+        allQuestions = datasetQuestions;
+        questionIndexById = new Map();
+        questionStats = new Map();
+        wrongQuestionIds.clear();
+        allQuestions.forEach((question, index) => {
+        questionIndexById.set(question.id, index);
+        questionStats.set(question.id, { attempts: 0, correct: 0 });
+        });
+    }
+
+    configureQuestionCountControls(allQuestions.length);
+    updateAutoAdvanceControl();
+    updateTranslationToggleLabel();
+    updateModeToggleLabel();
+    updateStartTranslationState();
+    updateDuplicatesToggleState();
+    if (translationControlVisibilityCheckbox) {
+      translationControlVisible = Boolean(translationControlVisibilityCheckbox.checked);
+    }
+    if (optionShuffleCheckbox) {
+      shuffleOptionsEnabled = Boolean(optionShuffleCheckbox.checked);
+    }
+    updateTranslationControlVisibility();
+
+    statusEl.textContent = `設定を行ってスタートしてください。`;
+    
+    translationChoiceSection.hidden = false;
+    translationChoiceSection.classList.add('animate-fade-in');
+    setTimeout(() => {
+      translationChoiceSection.classList.remove('animate-fade-in');
+    }, 300);
+    
+    if (!fromPopState) {
+        // Update URL without reloading
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('set', dataset.id);
+        window.history.pushState({ set: dataset.id }, '', newUrl);
+    }
+
+  } catch (error) {
+    console.error(error);
+    statusEl.textContent = `エラー: ${error.message}`;
+    statusEl.classList.add('app__status--error');
+  }
+}
+
+function returnToDatasetSelection(fromPopState = false) {
+  if (quizStarted) {
+    // If returning from quiz, first go back to start screen logic (resetting state)
+    // But here we want to go all the way back to selection
+    // Let's just reset everything and show selection
+    returnToStartScreen(true); // Pass true to indicate we want to go further back
+    // Note: returnToStartScreen handles the UI transition
+    // If fromPopState is true, we shouldn't push state in returnToStartScreen either?
+    // Actually returnToStartScreen doesn't push state for selection return currently?
+    // Let's check returnToStartScreen implementation
+    return;
+  }
+
+  // Transition from start options to selection
+  translationChoiceSection.classList.add('animate-fade-out');
+  setTimeout(() => {
+    translationChoiceSection.hidden = true;
+    translationChoiceSection.classList.remove('animate-fade-out');
+    renderDatasetSelection();
+    datasetSelectionSection.classList.add('animate-fade-in');
+    setTimeout(() => {
+      datasetSelectionSection.classList.remove('animate-fade-in');
+    }, 300);
+  }, 250);
+  
+  if (!fromPopState) {
+      // Clear URL param
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('set');
+      window.history.pushState({}, '', newUrl);
+  }
+}
+
 
 async function loadDataset(dataset) {
   const translationPromise = dataset.translationFile
@@ -304,8 +419,20 @@ function startQuiz(enableTranslations) {
   showTranslations = enableTranslations;
   quizStarted = true;
   closeSettingsPanel();
-  translationChoiceSection.hidden = true;
-  quizSection.hidden = false;
+  
+  // Transition from start screen to quiz
+  translationChoiceSection.classList.add('animate-fade-out');
+  setTimeout(() => {
+    translationChoiceSection.hidden = true;
+    translationChoiceSection.classList.remove('animate-fade-out');
+    
+    quizSection.hidden = false;
+    quizSection.classList.add('animate-fade-in');
+    setTimeout(() => {
+      quizSection.classList.remove('animate-fade-in');
+    }, 300);
+  }, 250);
+
   setReadyToRestart(false);
   nextButton.disabled = true;
   correctCount = 0;
@@ -333,7 +460,6 @@ function setQuizMode(mode, options = {}) {
         statusEl.textContent = '誤答した問題はありません。';
       }
       updateModeToggleLabel();
-      updateShuffleButtonState();
       return false;
     }
     quizMode = 'wrong-only';
@@ -363,14 +489,12 @@ function prepareOrder(poolIndexes) {
     if (remaining <= 0) {
       order = [];
       orderPointer = 0;
-      updateShuffleButtonState();
       return;
     }
     const sourceIndexes = poolIndexes.length ? poolIndexes : getAllQuestionIndexes();
     const nextOrder = buildOrderForAllMode(sourceIndexes, remaining);
     order = nextOrder;
     orderPointer = 0;
-    updateShuffleButtonState();
     return;
   }
 
@@ -383,7 +507,6 @@ function prepareOrder(poolIndexes) {
   }
   order = shuffle(candidateIndexes);
   orderPointer = 0;
-  updateShuffleButtonState();
 }
 
 function resetResultPanel() {
@@ -478,9 +601,31 @@ function showNextQuestion() {
     nextButton.disabled = true;
     feedbackEl.textContent = '';
     feedbackEl.className = 'quiz__feedback';
-    renderQuestion(currentQuestion);
-    renderOptions(currentQuestion);
-    syncTranslationVisibility();
+
+    // Animate question transition
+    const container = questionEl.parentElement;
+    container.classList.add('animate-fade-out');
+    
+    setTimeout(() => {
+      renderQuestion(currentQuestion);
+      renderOptions(currentQuestion);
+      syncTranslationVisibility();
+      
+      container.classList.remove('animate-fade-out');
+      container.classList.add('animate-fade-in');
+      
+      // Animate options sequentially
+      const options = optionsEl.querySelectorAll('.quiz__option');
+      options.forEach((opt, i) => {
+        opt.style.opacity = '0';
+        opt.style.animation = `popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${i * 0.05 + 0.1}s`;
+      });
+
+      setTimeout(() => {
+        container.classList.remove('animate-fade-in');
+      }, 300);
+    }, 200);
+
   } finally {
     questionTransitionInProgress = false;
     if (queuedQuestionTransition) {
@@ -658,9 +803,6 @@ function handleToggleMode() {
   }
 }
 
-function handleShuffleOrder() {
-}
-
 function handleSettingsButtonClick(event) {
   event.stopPropagation();
   if (settingsPanelOpen) {
@@ -675,6 +817,8 @@ function openSettingsPanel() {
     return;
   }
   settingsPanel.hidden = false;
+  settingsPanel.classList.remove('animate-close');
+  settingsPanel.classList.add('animate-open');
   settingsPanelOpen = true;
   settingsButton?.setAttribute('aria-expanded', 'true');
   document.addEventListener('click', handleDocumentClick);
@@ -685,11 +829,19 @@ function closeSettingsPanel() {
   if (!settingsPanel || !settingsPanelOpen) {
     return;
   }
-  settingsPanel.hidden = true;
+  settingsPanel.classList.remove('animate-open');
+  settingsPanel.classList.add('animate-close');
   settingsPanelOpen = false;
   settingsButton?.setAttribute('aria-expanded', 'false');
   document.removeEventListener('click', handleDocumentClick);
   document.removeEventListener('keydown', handleSettingsKeydown);
+
+  setTimeout(() => {
+    if (!settingsPanelOpen) {
+      settingsPanel.hidden = true;
+      settingsPanel.classList.remove('animate-close');
+    }
+  }, 200);
 }
 
 function handleDocumentClick(event) {
@@ -790,9 +942,6 @@ function updateModeToggleLabel() {
 function updateScoreboard() {
   correctEl.textContent = String(correctCount);
   totalEl.textContent = String(totalCount);
-}
-
-function updateShuffleButtonState() {
 }
 
 function getAllQuestionIndexes() {
@@ -930,7 +1079,7 @@ function updateNextButtonVisibility() {
   nextButton.hidden = shouldHide;
 }
 
-function returnToStartScreen() {
+function returnToStartScreen(goBackToSelection = false) {
   if (autoAdvanceTimer !== null) {
     window.clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
@@ -953,8 +1102,34 @@ function returnToStartScreen() {
   resetResultPanel();
   hideWrongOnlyControl();
   updateModeToggleLabel();
-  translationChoiceSection.hidden = false;
-  quizSection.hidden = true;
+  
+  // Transition from quiz
+  quizSection.classList.add('animate-fade-out');
+  setTimeout(() => {
+    quizSection.hidden = true;
+    quizSection.classList.remove('animate-fade-out');
+    
+    if (goBackToSelection) {
+      renderDatasetSelection();
+      datasetSelectionSection.classList.add('animate-fade-in');
+      setTimeout(() => {
+        datasetSelectionSection.classList.remove('animate-fade-in');
+      }, 300);
+      
+      // Clear URL param
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('set');
+      window.history.pushState({}, '', newUrl);
+    } else {
+      translationChoiceSection.hidden = false;
+      translationChoiceSection.classList.add('animate-fade-in');
+      setTimeout(() => {
+        translationChoiceSection.classList.remove('animate-fade-in');
+      }, 300);
+      statusEl.textContent = `設定を行ってスタートしてください。`;
+    }
+  }, 250);
+
   nextButton.disabled = true;
     if (questionEl) {
       questionEl.innerHTML = '<span class="quiz__question-text"></span>';
@@ -967,7 +1142,6 @@ function returnToStartScreen() {
     feedbackEl.className = 'quiz__feedback';
   }
   closeSettingsPanel();
-  statusEl.textContent = `設定を行ってスタートしてください。`;
 }
 
 function getSelectedDuplicateMode() {

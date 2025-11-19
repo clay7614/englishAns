@@ -1,0 +1,27 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#244d8b"/>
+      <stop offset="100%" stop-color="#5ac3ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="6" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Main Background -->
+  <rect x="32" y="32" width="448" height="448" rx="110" fill="url(#grad)" />
+  
+  <!-- Glossy Top Half -->
+  <path d="M 32 142 A 110 110 0 0 1 142 32 L 370 32 A 110 110 0 0 1 480 142 L 480 256 L 32 256 Z" fill="url(#gloss)" />
+
+  <!-- Inner Border -->
+  <rect x="64" y="64" width="384" height="384" rx="80" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="10" />
+  
+  <!-- Text -->
+  <text x="256" y="340" font-family="'Segoe UI', Arial, sans-serif" font-weight="bold" font-size="240" text-anchor="middle" fill="white" filter="url(#shadow)" style="letter-spacing: -5px;">ET</text>
+</svg>
