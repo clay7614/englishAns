@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE_NAME = `english-ans-cache-${CACHE_VERSION}`;
 const APP_SHELL = [
   './',
@@ -13,6 +13,14 @@ const APP_SHELL = [
   './601~750_ja.csv',
   './751~900.csv',
   './751~900_ja.csv',
+  './901~1050.csv',
+  './901~1050_ja.csv',
+  './1051~1200.csv',
+  './1051~1200_ja.csv',
+  './glammer-2A.csv',
+  './glammer-2A_ja.csv',
+  './glammer-2B.csv',
+  './glammer-2B_ja.csv',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];

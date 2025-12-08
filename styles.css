@@ -1015,3 +1015,57 @@ body.translations-hidden .quiz__option-translation {
     background: #475569;
   }
 }
+
+/* Descriptive Question Styles */
+.quiz__descriptive-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.quiz__descriptive-input {
+  padding: 12px 16px;
+  font-size: 1.1rem;
+  border: 2px solid #cbd5e0;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.quiz__descriptive-input:focus {
+  border-color: #3b82f6;
+}
+
+.quiz__descriptive-input--correct {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+}
+
+.quiz__descriptive-input--wrong {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.quiz__descriptive-submit {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.quiz__descriptive-submit:hover {
+  background-color: #2563eb;
+}
+
+.quiz__descriptive-submit:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}

@@ -11,6 +11,30 @@ const QUESTION_DATASETS = [
     questionFile: '751~900.csv',
     translationFile: '751~900_ja.csv',
   },
+  {
+    id: 'set-901-1050',
+    title: '単語テスト 901〜1050',
+    questionFile: '901~1050.csv',
+    translationFile: '901~1050_ja.csv',
+  },
+  {
+    id: 'set-1051-1200',
+    title: '単語テスト 1051〜1200',
+    questionFile: '1051~1200.csv',
+    translationFile: '1051~1200_ja.csv',
+  },
+  {
+    id: 'set-glammer-2a',
+    title: '文法問題 2A',
+    questionFile: 'glammer-2A.csv',
+    translationFile: 'glammer-2A_ja.csv',
+  },
+  {
+    id: 'set-glammer-2b',
+    title: '文法問題 2B',
+    questionFile: 'glammer-2B.csv',
+    translationFile: 'glammer-2B_ja.csv',
+  },
 ];
 
 const FALLBACKS_FILE = 'translation-fallbacks-ja.json';
@@ -386,6 +410,8 @@ function mergeQuestionData(englishRows, translationRows, datasetId) {
       question: english.question,
       options: english.options,
       answerIndex: english.answerIndex,
+      correctAnswer: english.correctAnswer, // Pass through correct answer text
+      type: english.type || 'choice', // Pass through type
       translation: {
         question: questionTranslation,
         options: optionTranslations,
@@ -608,18 +634,26 @@ function showNextQuestion() {
     
     setTimeout(() => {
       renderQuestion(currentQuestion);
-      renderOptions(currentQuestion);
+      
+      if (currentQuestion.type === 'descriptive') {
+        renderDescriptiveInput(currentQuestion);
+      } else {
+        renderOptions(currentQuestion);
+      }
+      
       syncTranslationVisibility();
       
       container.classList.remove('animate-fade-out');
       container.classList.add('animate-fade-in');
       
-      // Animate options sequentially
-      const options = optionsEl.querySelectorAll('.quiz__option');
-      options.forEach((opt, i) => {
-        opt.style.opacity = '0';
-        opt.style.animation = `popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${i * 0.05 + 0.1}s`;
-      });
+      if (currentQuestion.type !== 'descriptive') {
+        // Animate options sequentially
+        const options = optionsEl.querySelectorAll('.quiz__option');
+        options.forEach((opt, i) => {
+          opt.style.opacity = '0';
+          opt.style.animation = `popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${i * 0.05 + 0.1}s`;
+        });
+      }
 
       setTimeout(() => {
         container.classList.remove('animate-fade-in');
@@ -664,6 +698,133 @@ function renderOptions(question) {
     optionsEl.appendChild(button);
   });
 }
+
+function renderDescriptiveInput(question) {
+  optionsEl.innerHTML = '';
+  
+  const container = document.createElement('div');
+  container.className = 'quiz__descriptive-container';
+  
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'quiz__descriptive-input';
+  input.placeholder = '答えを入力してください';
+  input.autocomplete = 'off';
+  
+  const submitButton = document.createElement('button');
+  submitButton.type = 'button';
+  submitButton.className = 'quiz__descriptive-submit';
+  submitButton.textContent = '回答する';
+  
+  const handleSubmit = () => {
+    if (answered) return;
+    handleDescriptiveSubmit(input.value);
+  };
+  
+  submitButton.addEventListener('click', handleSubmit);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  });
+  
+  container.appendChild(input);
+  container.appendChild(submitButton);
+  optionsEl.appendChild(container);
+  
+  // Auto-focus input
+  setTimeout(() => input.focus(), 100);
+  
+  // Force show translation for descriptive questions if requested by user
+  // User said: "記述問題が出題された時だけ...日本語訳を表示するなどして"
+  // Let's show it if it exists.
+  // We can reuse the existing translation toggle logic, but maybe force it visible?
+  // Or just ensure the translation element is rendered in renderQuestion (it is).
+  // But the visibility is controlled by CSS class 'translations-hidden' on body.
+  // If we want to force show it, we should remove that class temporarily?
+  // Or maybe just add a specific class to the question container?
+  // Let's add a hint area or just rely on the user toggling it?
+  // The user request implies automatic display.
+  // Let's force show translation for this question type.
+  const translationEl = questionEl.querySelector('.quiz__question-translation');
+  if (translationEl) {
+    translationEl.style.display = 'block'; // Override CSS hiding
+    translationEl.style.opacity = '1';
+    translationEl.style.height = 'auto';
+  }
+}
+
+function handleDescriptiveSubmit(userAnswer) {
+  if (answered) {
+    return;
+  }
+  answered = true;
+  const isScoredQuestion = quizMode !== 'wrong-only';
+  if (isScoredQuestion) {
+    totalCount += 1;
+  }
+
+  const questionId = currentQuestion.id;
+  const stats = questionStats.get(questionId) ?? { attempts: 0, correct: 0 };
+  stats.attempts += 1;
+
+  // Normalize answers for comparison (trim, case-insensitive, maybe collapse spaces)
+  const normalizedUser = userAnswer.trim().toLowerCase().replace(/\s+/g, ' ');
+  const normalizedCorrect = currentQuestion.correctAnswer.trim().toLowerCase().replace(/\s+/g, ' ');
+  
+  const isCorrect = normalizedUser === normalizedCorrect;
+  
+  const input = optionsEl.querySelector('.quiz__descriptive-input');
+  const submitBtn = optionsEl.querySelector('.quiz__descriptive-submit');
+  
+  if (input) input.disabled = true;
+  if (submitBtn) submitBtn.disabled = true;
+
+  if (isCorrect) {
+    if (isScoredQuestion) {
+      correctCount += 1;
+    }
+    stats.correct += 1;
+    wrongQuestionIds.delete(questionId);
+    feedbackEl.textContent = '正解！';
+    feedbackEl.classList.add('quiz__feedback--correct');
+    if (input) input.classList.add('quiz__descriptive-input--correct');
+  } else {
+    wrongQuestionIds.add(questionId);
+    feedbackEl.innerHTML = `残念！<br>正解: <strong>${escapeHtml(currentQuestion.correctAnswer)}</strong>`;
+    feedbackEl.classList.add('quiz__feedback--wrong');
+    if (input) input.classList.add('quiz__descriptive-input--wrong');
+  }
+  questionStats.set(questionId, stats);
+
+  nextButton.disabled = false;
+  updateScoreboard();
+  updateModeToggleLabel();
+
+  if (quizMode === 'wrong-only') {
+    if (wrongQuestionIds.size === 0) {
+      statusEl.textContent = '誤答した問題を解き終わりました。通常モードに戻ります。';
+      setQuizMode('all', { silent: true });
+    } else {
+      prepareOrder(getActivePoolIndexes());
+    }
+  } else if (orderPointer >= order.length) {
+    prepareOrder(getActivePoolIndexes());
+  }
+
+  // Auto advance if correct? Or always?
+  // For descriptive, maybe give more time to read feedback if wrong?
+  // Existing logic:
+  if (autoAdvanceEnabled) {
+    // If wrong, maybe wait longer?
+    const delay = isCorrect ? 800 : 2000; 
+    autoAdvanceTimer = window.setTimeout(() => {
+      autoAdvanceTimer = null;
+      showNextQuestion();
+    }, delay);
+  }
+}
+
 
 function getOptionRenderOrder(question) {
   if (!question || !question.options) {
@@ -1186,6 +1347,18 @@ function normalizeRow(cols) {
   const [rawQuestion, ...optionAndAnswer] = cols;
   const options = optionAndAnswer.slice(0, 4);
   const answerRaw = optionAndAnswer[4];
+  
+  // Check for descriptive question (Anum = 0)
+  if (answerRaw.trim() === '0') {
+    return {
+      question: rawQuestion.trim(),
+      options: [], // No options for descriptive
+      answerIndex: -1, // Indicator for descriptive
+      correctAnswer: options[0].trim(), // A1 contains the answer
+      type: 'descriptive'
+    };
+  }
+
   const answerIndex = Number.parseInt(answerRaw, 10) - 1;
   if (Number.isNaN(answerIndex) || answerIndex < 0 || answerIndex > 3) {
     return null;
@@ -1194,6 +1367,7 @@ function normalizeRow(cols) {
     question: rawQuestion.trim(),
     options: options.map((option) => option.trim()),
     answerIndex,
+    type: 'choice'
   };
 }
 
