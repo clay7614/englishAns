@@ -143,7 +143,5 @@ def extract_questions(html_dir, output_eng, output_jp):
         writer.writerows(jp_rows)
 
 if __name__ == "__main__":
-    extract_questions("glammer-2A", "glammer-2A.csv", "glammer-2A_ja.csv")
-    extract_questions("glammer-2B", "glammer-2B.csv", "glammer-2B_ja.csv")
-    extract_questions("901", "901~1050.csv", "901~1050_ja.csv")
-    extract_questions("1051", "1051~1200.csv", "1051~1200_ja.csv")
+    extract_questions("glammer-2A", "glammer-2A.csv", "glammer_ja.csv")
+
