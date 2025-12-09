@@ -85,6 +85,7 @@ let currentQuestionIndex = null;
 let answered = false;
 let totalCount = 0;
 let showTranslations = false;
+let userTranslationPreference = false;
 let quizStarted = false;
 let autoAdvanceTimer = null;
 let autoAdvanceEnabled = true;
@@ -443,6 +444,7 @@ function startQuiz(enableTranslations) {
   servedQuestionKeys = new Set();
 
   showTranslations = enableTranslations;
+  userTranslationPreference = enableTranslations;
   quizStarted = true;
   closeSettingsPanel();
   
@@ -633,6 +635,14 @@ function showNextQuestion() {
     container.classList.add('animate-fade-out');
     
     setTimeout(() => {
+      // Auto-toggle translation for descriptive questions
+      if (currentQuestion.type === 'descriptive') {
+        showTranslations = true;
+      } else {
+        showTranslations = userTranslationPreference;
+      }
+      updateTranslationToggleLabel();
+
       renderQuestion(currentQuestion);
       
       if (currentQuestion.type === 'descriptive') {
@@ -641,7 +651,7 @@ function showNextQuestion() {
         renderOptions(currentQuestion);
       }
       
-      syncTranslationVisibility();
+      // syncTranslationVisibility is called by updateTranslationToggleLabel
       
       container.classList.remove('animate-fade-out');
       container.classList.add('animate-fade-in');
@@ -715,6 +725,41 @@ function renderDescriptiveInput(question) {
   submitButton.type = 'button';
   submitButton.className = 'quiz__descriptive-submit';
   submitButton.textContent = '回答する';
+
+  const hintButton = document.createElement('button');
+  hintButton.type = 'button';
+  hintButton.className = 'quiz__descriptive-hint';
+  hintButton.textContent = 'ヒント';
+  hintButton.style.marginLeft = '10px';
+  
+  const hintText = document.createElement('span');
+  hintText.className = 'quiz__descriptive-hint-text';
+  hintText.style.marginLeft = '10px';
+  hintText.style.display = 'none';
+
+  hintButton.addEventListener('click', () => {
+    const answer = currentQuestion.correctAnswer || '';
+    // Show first letter of each word, handling commas
+    // e.g. "Washing, catching" -> "W..., c..."
+    // e.g. "to, go" -> "t..., g..."
+    // e.g. "Having slept" -> "H... s..."
+    
+    // Split by comma first to handle multiple answers structure if any
+    // But here the answer string is just text.
+    // Let's just split by non-word characters to find words?
+    // Or just split by space?
+    // The user example: "Washing, catching".
+    // If I split by space: "Washing,", "catching".
+    // "Washing,"[0] -> "W". "catching"[0] -> "c".
+    // "Having slept" -> "H", "s".
+    
+    // Simple regex to find words and take first letter
+    const hint = answer.replace(/[a-zA-Z0-9]+/g, (match) => match[0] + '...');
+    hintText.textContent = hint;
+    hintText.style.display = 'inline';
+    // Focus back on input
+    input.focus();
+  });
   
   const handleSubmit = () => {
     if (answered) return;
@@ -730,6 +775,8 @@ function renderDescriptiveInput(question) {
   
   container.appendChild(input);
   container.appendChild(submitButton);
+  container.appendChild(hintButton);
+  container.appendChild(hintText);
   optionsEl.appendChild(container);
   
   // Auto-focus input
@@ -768,9 +815,9 @@ function handleDescriptiveSubmit(userAnswer) {
   const stats = questionStats.get(questionId) ?? { attempts: 0, correct: 0 };
   stats.attempts += 1;
 
-  // Normalize answers for comparison (trim, case-insensitive, maybe collapse spaces)
-  const normalizedUser = userAnswer.trim().toLowerCase().replace(/\s+/g, ' ');
-  const normalizedCorrect = currentQuestion.correctAnswer.trim().toLowerCase().replace(/\s+/g, ' ');
+  // Normalize answers for comparison (trim, case-insensitive, replace commas with spaces, collapse spaces)
+  const normalizedUser = userAnswer.trim().toLowerCase().replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+  const normalizedCorrect = currentQuestion.correctAnswer.trim().toLowerCase().replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
   
   const isCorrect = normalizedUser === normalizedCorrect;
   
@@ -946,6 +993,7 @@ function handleOptionShuffleChange() {
 
 function handleToggleTranslation() {
   showTranslations = !showTranslations;
+  userTranslationPreference = showTranslations;
   updateTranslationToggleLabel();
 }
 
