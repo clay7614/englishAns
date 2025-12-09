@@ -1632,18 +1632,31 @@ function closeHistoryPanel() {
 const HISTORY_KEY = 'english-quiz-history';
 let historyChartInstance = null;
 
-async function fetchHistory() {
+function getHistoryData() {
   try {
-    const response = await fetch('/api/history');
-    if (!response.ok) throw new Error('Network response was not ok');
-    return await response.json();
+    const json = localStorage.getItem(HISTORY_KEY);
+    if (!json) return {};
+    
+    const data = JSON.parse(json);
+    if (Array.isArray(data)) {
+      // Migrate old array format to new object format
+      const newData = {};
+      data.forEach(item => {
+        const id = item.datasetId || 'unknown';
+        if (!newData[id]) newData[id] = [];
+        newData[id].push(item);
+      });
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(newData));
+      return newData;
+    }
+    return data;
   } catch (e) {
-    console.error('Failed to fetch history', e);
+    console.error('Failed to load history', e);
     return {};
   }
 }
 
-async function saveResult(dataset, score, total) {
+function saveResult(dataset, score, total) {
   if (!dataset) return;
   
   const result = {
@@ -1656,26 +1669,29 @@ async function saveResult(dataset, score, total) {
   };
   
   try {
-    await fetch('/api/history', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        datasetId: dataset.id,
-        result: result
-      }),
-    });
+    const historyData = getHistoryData();
+    if (!historyData[dataset.id]) {
+      historyData[dataset.id] = [];
+    }
+    
+    historyData[dataset.id].unshift(result);
+    
+    // Limit per dataset
+    if (historyData[dataset.id].length > 100) {
+      historyData[dataset.id].length = 100;
+    }
+    
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
   } catch (e) {
     console.error('Failed to save history', e);
   }
 }
 
-async function renderHistory(preferredId) {
+function renderHistory(preferredId) {
   if (!historyContent) return;
   
   try {
-    const historyData = await fetchHistory();
+    const historyData = getHistoryData();
     const datasetIds = Object.keys(historyData);
     
     // Rebuild options
