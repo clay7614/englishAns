@@ -13,6 +13,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>英語テスト</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
 <body>
   <main class="app animate-fade-in">
@@ -22,7 +23,35 @@
         <span class="app__dataset-title" data-dataset-title></span>
       </div>
       <p class="app__status" data-status>問題を読み込み中...</p>
-      <button type="button" class="app__settings-button" data-open-settings aria-haspopup="true" aria-expanded="false">設定</button>
+      <div class="app__header-controls">
+        <button type="button" class="app__history-button" data-open-history aria-haspopup="true" aria-expanded="false">履歴</button>
+        <button type="button" class="app__settings-button" data-open-settings aria-haspopup="true" aria-expanded="false">設定</button>
+      </div>
+      <div class="history-panel" data-history-panel hidden>
+        <div class="history-panel__header">
+          <span class="history-panel__title">学習履歴</span>
+          <select class="history-panel__dataset-select" data-history-dataset-select aria-label="問題集でフィルタリング">
+            <option value="all">すべての問題集</option>
+          </select>
+          <select class="history-panel__interval-select" data-history-interval-select aria-label="グラフの表示単位">
+            <option value="test">回ごと</option>
+            <option value="hour">時間ごと</option>
+            <option value="day">日ごと</option>
+          </select>
+          <div class="history-panel__actions">
+            <button type="button" class="history-panel__delete-all" data-delete-all-history title="履歴をすべて削除">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+            <button type="button" class="history-panel__close" data-close-history>閉じる</button>
+          </div>
+        </div>
+        <div class="history-panel__graph-container">
+          <canvas id="historyChart"></canvas>
+        </div>
+        <div class="history-panel__content" data-history-content>
+          <p class="history-panel__empty">履歴はありません。</p>
+        </div>
+      </div>
       <div class="settings-panel" data-settings-panel hidden>
         <div class="settings-panel__content">
           <label class="settings-panel__item settings-panel__item--toggle">

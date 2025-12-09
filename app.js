@@ -71,6 +71,15 @@ const duplicatesToggleState = document.querySelector('[data-start-duplicates-sta
 const questionCountSlider = document.querySelector('[data-question-count-slider]');
 const questionCountDisplay = document.querySelector('[data-question-count-display]');
 
+const historyButton = document.querySelector('[data-open-history]');
+const historyPanel = document.querySelector('[data-history-panel]');
+const historyCloseButton = document.querySelector('[data-close-history]');
+const historyContent = document.querySelector('[data-history-content]');
+const historyDeleteAllButton = document.querySelector('[data-delete-all-history]');
+const historyDatasetSelect = document.querySelector('[data-history-dataset-select]');
+const historyIntervalSelect = document.querySelector('[data-history-interval-select]');
+const historyChartCanvas = document.getElementById('historyChart');
+
 document.body.classList.add('translations-hidden');
 
 let allQuestions = [];
@@ -96,6 +105,7 @@ let questionsAsked = 0;
 let servedQuestionIds = new Set();
 let servedQuestionKeys = new Set();
 let settingsPanelOpen = false;
+let historyPanelOpen = false;
 let correctCount = 0;
 let activeDataset = null;
 let questionTransitionInProgress = false;
@@ -126,6 +136,22 @@ optionShuffleCheckbox?.addEventListener('change', handleOptionShuffleChange);
 settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
 duplicatesToggle?.addEventListener('change', updateDuplicatesToggleState);
+
+historyButton?.addEventListener('click', handleHistoryButtonClick);
+historyCloseButton?.addEventListener('click', closeHistoryPanel);
+historyDeleteAllButton?.addEventListener('click', handleDeleteAllHistory);
+historyDatasetSelect?.addEventListener('change', () => renderHistory());
+historyIntervalSelect?.addEventListener('change', () => renderHistory());
+historyPanel?.addEventListener('click', (event) => event.stopPropagation());
+
+document.addEventListener('click', (event) => {
+  if (settingsPanelOpen && !settingsPanel.contains(event.target) && !settingsButton.contains(event.target)) {
+    closeSettingsPanel();
+  }
+  if (historyPanelOpen && !historyPanel.contains(event.target) && !historyButton.contains(event.target)) {
+    closeHistoryPanel();
+  }
+});
 
 window.addEventListener('popstate', handlePopState);
 
@@ -737,24 +763,19 @@ function renderDescriptiveInput(question) {
   hintText.style.marginLeft = '10px';
   hintText.style.display = 'none';
 
+  let hintLevel = 0;
   hintButton.addEventListener('click', () => {
+    hintLevel++;
     const answer = currentQuestion.correctAnswer || '';
-    // Show first letter of each word, handling commas
-    // e.g. "Washing, catching" -> "W..., c..."
-    // e.g. "to, go" -> "t..., g..."
-    // e.g. "Having slept" -> "H... s..."
     
-    // Split by comma first to handle multiple answers structure if any
-    // But here the answer string is just text.
-    // Let's just split by non-word characters to find words?
-    // Or just split by space?
-    // The user example: "Washing, catching".
-    // If I split by space: "Washing,", "catching".
-    // "Washing,"[0] -> "W". "catching"[0] -> "c".
-    // "Having slept" -> "H", "s".
+    // Show more characters of each word as hintLevel increases
+    const hint = answer.replace(/[a-zA-Z0-9]+/g, (match) => {
+      if (hintLevel >= match.length) {
+        return match;
+      }
+      return match.slice(0, hintLevel) + '...';
+    });
     
-    // Simple regex to find words and take first letter
-    const hint = answer.replace(/[a-zA-Z0-9]+/g, (match) => match[0] + '...');
     hintText.textContent = hint;
     hintText.style.display = 'inline';
     // Focus back on input
@@ -1022,6 +1043,9 @@ function handleSettingsButtonClick(event) {
 }
 
 function openSettingsPanel() {
+  if (historyPanelOpen) {
+    closeHistoryPanel();
+  }
   if (!settingsPanel || settingsPanelOpen) {
     return;
   }
@@ -1257,6 +1281,12 @@ function finishSession() {
     window.clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
   }
+
+  // Save result
+  if (activeDataset && quizMode !== 'wrong-only') {
+    saveResult(activeDataset, correctCount, totalCount);
+  }
+
   statusEl.textContent = `指定した ${questionLimit} 問の出題が完了しました。`;
   nextButton.disabled = false;
   order = [];
@@ -1554,5 +1584,340 @@ function updateQuestionCountDisplay() {
 
 function handleQuestionCountInput() {
   updateQuestionCountDisplay();
+}
+
+
+/* History Functions */
+function handleHistoryButtonClick(event) {
+  event.stopPropagation();
+  if (historyPanelOpen) {
+    closeHistoryPanel();
+  } else {
+    openHistoryPanel();
+  }
+}
+
+function openHistoryPanel() {
+  if (settingsPanelOpen) {
+    closeSettingsPanel();
+  }
+  if (!historyPanel || historyPanelOpen) {
+    return;
+  }
+  historyPanel.hidden = false;
+  historyPanel.classList.remove('animate-close');
+  historyPanel.classList.add('animate-open');
+  historyPanelOpen = true;
+  historyButton?.setAttribute('aria-expanded', 'true');
+  renderHistory(activeDataset?.id);
+}
+
+function closeHistoryPanel() {
+  if (!historyPanel || !historyPanelOpen) {
+    return;
+  }
+  historyPanel.classList.remove('animate-open');
+  historyPanel.classList.add('animate-close');
+  historyPanelOpen = false;
+  historyButton?.setAttribute('aria-expanded', 'false');
+  
+  setTimeout(() => {
+    if (!historyPanelOpen) {
+      historyPanel.hidden = true;
+      historyPanel.classList.remove('animate-close');
+    }
+  }, 200);
+}
+
+const HISTORY_KEY = 'english-quiz-history';
+let historyChartInstance = null;
+
+async function fetchHistory() {
+  try {
+    const response = await fetch('/api/history');
+    if (!response.ok) throw new Error('Network response was not ok');
+    return await response.json();
+  } catch (e) {
+    console.error('Failed to fetch history', e);
+    return {};
+  }
+}
+
+async function saveResult(dataset, score, total) {
+  if (!dataset) return;
+  
+  const result = {
+    date: Date.now(),
+    datasetId: dataset.id,
+    datasetTitle: dataset.title,
+    score: score,
+    total: total,
+    mode: quizMode
+  };
+  
+  try {
+    await fetch('/api/history', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        datasetId: dataset.id,
+        result: result
+      }),
+    });
+  } catch (e) {
+    console.error('Failed to save history', e);
+  }
+}
+
+async function renderHistory(preferredId) {
+  if (!historyContent) return;
+  
+  try {
+    const historyData = await fetchHistory();
+    const datasetIds = Object.keys(historyData);
+    
+    // Rebuild options
+    const currentSelection = historyDatasetSelect.value;
+    historyDatasetSelect.innerHTML = '<option value="all">すべての問題集</option>';
+    
+    datasetIds.forEach(id => {
+      const items = historyData[id];
+      if (items && items.length > 0) {
+        const title = items[0].datasetTitle || id;
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = title;
+        historyDatasetSelect.appendChild(option);
+      }
+    });
+    
+    // Restore selection or set default
+    if (preferredId && historyData[preferredId]) {
+      historyDatasetSelect.value = preferredId;
+    } else if (datasetIds.includes(currentSelection)) {
+      historyDatasetSelect.value = currentSelection;
+    }
+    
+    const selectedId = historyDatasetSelect.value;
+    let displayHistory = [];
+    
+    if (selectedId === 'all') {
+      Object.values(historyData).forEach(items => {
+        displayHistory = displayHistory.concat(items);
+      });
+      displayHistory.sort((a, b) => b.date - a.date);
+    } else {
+      displayHistory = historyData[selectedId] || [];
+    }
+    
+    renderHistoryGraph(displayHistory);
+
+    if (displayHistory.length === 0) {
+      historyContent.innerHTML = '<p class="history-panel__empty">履歴はありません。</p>';
+      return;
+    }
+    
+    historyContent.innerHTML = displayHistory.map(item => {
+      const date = new Date(item.date);
+      const dateStr = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+      const percent = item.total > 0 ? Math.round((item.score / item.total) * 100) : 0;
+      const isPerfect = item.score === item.total && item.total > 0;
+      
+      return `
+        <div class="history-item ${isPerfect ? 'history-item--perfect' : ''}">
+          <div class="history-item__header">
+            <span class="history-item__date">${dateStr}</span>
+            <span class="history-item__mode">${item.mode === 'wrong-only' ? '誤答のみ' : '通常'}</span>
+          </div>
+          <div class="history-item__title">${escapeHtml(item.datasetTitle)}</div>
+          <div class="history-item__score">${item.score} / ${item.total} (${percent}%)</div>
+        </div>
+      `;
+    }).join('');
+    
+  } catch (e) {
+    console.error('Failed to render history', e);
+    historyContent.innerHTML = '<p class="history-panel__empty">履歴の読み込みに失敗しました。</p>';
+  }
+}
+
+function renderHistoryGraph(history) {
+  if (!historyChartCanvas || typeof Chart === 'undefined') return;
+
+  if (historyChartInstance) {
+    historyChartInstance.destroy();
+    historyChartInstance = null;
+  }
+
+  if (!history || history.length === 0) {
+    return;
+  }
+
+  const interval = historyIntervalSelect ? historyIntervalSelect.value : 'test';
+  let graphData = [];
+  let labels = [];
+  let scores = [];
+  let tooltips = [];
+
+  if (interval === 'test') {
+    // Prepare data for the graph (reverse to show oldest to newest)
+    graphData = [...history].reverse().slice(-20); // Show last 20 attempts
+    
+    labels = graphData.map(item => {
+      const date = new Date(item.date);
+      return `${date.getMonth() + 1}/${date.getDate()}`;
+    });
+    
+    scores = graphData.map(item => {
+      return item.total > 0 ? Math.round((item.score / item.total) * 100) : 0;
+    });
+
+    tooltips = graphData.map(item => {
+      const date = new Date(item.date);
+      return {
+        title: `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`,
+        label: `${item.datasetTitle}: ${item.score}/${item.total}`
+      };
+    });
+
+  } else {
+    // Aggregate data
+    const groups = new Map();
+    
+    // Sort history by date ascending first
+    const sortedHistory = [...history].sort((a, b) => a.date - b.date);
+
+    sortedHistory.forEach(item => {
+      const date = new Date(item.date);
+      let key;
+      let label;
+      
+      if (interval === 'hour') {
+        key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}-${date.getHours()}`;
+        label = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:00`;
+      } else { // day
+        key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        label = `${date.getMonth() + 1}/${date.getDate()}`;
+      }
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          label: label,
+          totalScore: 0,
+          totalCount: 0,
+          items: 0,
+          date: date
+        });
+      }
+      
+      const group = groups.get(key);
+      group.totalScore += item.score;
+      group.totalCount += item.total;
+      group.items += 1;
+    });
+
+    // Convert map to array and take last 20 points
+    graphData = Array.from(groups.values()).slice(-20);
+
+    labels = graphData.map(g => g.label);
+    scores = graphData.map(g => g.totalCount > 0 ? Math.round((g.totalScore / g.totalCount) * 100) : 0);
+    tooltips = graphData.map(g => ({
+      title: g.label,
+      label: `平均: ${Math.round((g.totalScore / g.totalCount) * 100)}% (${g.items}回)`
+    }));
+  }
+
+  const ctx = historyChartCanvas.getContext('2d');
+  
+  // Check for dark mode
+  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+  const textColor = isDarkMode ? '#e0e0e0' : '#666';
+
+  historyChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '正答率 (%)',
+        data: scores,
+        borderColor: '#4a90e2',
+        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+        borderWidth: 2,
+        tension: 0.3,
+        fill: true,
+        pointBackgroundColor: isDarkMode ? '#4a90e2' : '#fff',
+        pointBorderColor: '#4a90e2',
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            title: (context) => {
+              const index = context[0].dataIndex;
+              return tooltips[index].title;
+            },
+            label: (context) => {
+              const index = context.dataIndex;
+              const tip = tooltips[index];
+              return `${tip.label} (${context.raw}%)`;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          grid: {
+            color: gridColor
+          },
+          ticks: {
+            color: textColor
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: textColor,
+            maxTicksLimit: 10
+          }
+        }
+      }
+    }
+  });
+}
+
+function handleDeleteAllHistory() {
+  if (!confirm('すべての学習履歴を削除しますか？この操作は取り消せません。')) {
+    return;
+  }
+  
+  const selectedId = historyDatasetSelect.value;
+  
+  try {
+    if (selectedId === 'all') {
+      localStorage.removeItem(HISTORY_KEY);
+    } else {
+      const historyData = getHistoryData();
+      delete historyData[selectedId];
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+    }
+    renderHistory();
+  } catch (e) {
+    console.error('Failed to delete history', e);
+    alert('履歴の削除に失敗しました。');
+  }
 }
 
