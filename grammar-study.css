@@ -38,8 +38,32 @@
 /* Hide Japanese content when toggled off */
 body.hide-japanese-explanation .grammar-example__explanation,
 body.hide-japanese-explanation .grammar-practice__explanation,
-body.hide-japanese-explanation .grammar-rule__note {
+body.hide-japanese-explanation .grammar-rule__note,
+body.hide-japanese-explanation .grammar-example__question-ja,
+body.hide-japanese-explanation .grammar-practice__question-ja {
   display: none;
+}
+
+/* Japanese translation for questions */
+.grammar-example__question-ja {
+  margin: 6px 0 8px 24px;
+  padding: 8px 12px;
+  background: #fef3c7;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.grammar-practice__question-ja {
+  text-align: center;
+  margin: 8px auto 16px;
+  padding: 10px 16px;
+  background: #fef3c7;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #92400e;
+  max-width: 90%;
 }
 
 /* Navigation */
@@ -885,5 +909,15 @@ body.hide-japanese-explanation .grammar-rule__note {
   
   .grammar-study__checklist li strong {
     color: #f8fafc;
+  }
+
+  .grammar-example__question-ja {
+    background: rgba(254, 243, 199, 0.15);
+    color: #fcd34d;
+  }
+
+  .grammar-practice__question-ja {
+    background: rgba(254, 243, 199, 0.15);
+    color: #fcd34d;
   }
 }
