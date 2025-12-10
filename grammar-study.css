@@ -15,6 +15,33 @@
   text-decoration: underline;
 }
 
+/* Translation Toggle Controls */
+.grammar-study__controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.grammar-study__toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.grammar-study__toggle-label {
+  font-weight: 600;
+  color: #364152;
+  font-size: 0.95rem;
+}
+
+/* Hide Japanese content when toggled off */
+body.hide-japanese-explanation .grammar-example__explanation,
+body.hide-japanese-explanation .grammar-practice__explanation,
+body.hide-japanese-explanation .grammar-rule__note {
+  display: none;
+}
+
 /* Navigation */
 .grammar-nav {
   margin: 20px 0;
@@ -604,6 +631,10 @@
   
   .grammar-study__back-link:hover {
     color: #a5b4fc;
+  }
+  
+  .grammar-study__toggle-label {
+    color: #c7d2fe;
   }
   
   .grammar-nav__link {

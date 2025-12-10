@@ -855,15 +855,18 @@ let currentTopic = null;
 let practiceMode = false;
 let practiceIndex = 0;
 let practiceAnswered = false;
+let showJapaneseExplanation = true;
 
 // DOM Elements
 const topicNav = document.getElementById('topicNav');
 const grammarContent = document.getElementById('grammarContent');
+const translationToggle = document.querySelector('[data-translation-toggle]');
 
 // Initialize
 function init() {
   renderNavigation();
   renderAllTopics();
+  setupTranslationToggle();
 }
 
 function renderNavigation() {
@@ -1129,6 +1132,29 @@ function escapeHtml(text) {
       default: return char;
     }
   });
+}
+
+function setupTranslationToggle() {
+  if (!translationToggle) return;
+  
+  // Load saved preference
+  const savedPreference = localStorage.getItem('grammar-study-show-japanese');
+  if (savedPreference !== null) {
+    showJapaneseExplanation = savedPreference === 'true';
+    translationToggle.checked = showJapaneseExplanation;
+  }
+  
+  syncJapaneseVisibility();
+  
+  translationToggle.addEventListener('change', () => {
+    showJapaneseExplanation = translationToggle.checked;
+    localStorage.setItem('grammar-study-show-japanese', String(showJapaneseExplanation));
+    syncJapaneseVisibility();
+  });
+}
+
+function syncJapaneseVisibility() {
+  document.body.classList.toggle('hide-japanese-explanation', !showJapaneseExplanation);
 }
 
 // Initialize when DOM is ready
