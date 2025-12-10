@@ -1328,6 +1328,7 @@ function returnToStartScreen(goBackToSelection = false) {
   }
   setReadyToRestart(false);
   quizStarted = false;
+  // Reset wrong-only session flag for new quiz sessions
   wasWrongOnlySession = false;
   order = [];
   orderPointer = 0;
