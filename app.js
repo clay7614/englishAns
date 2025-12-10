@@ -99,6 +99,7 @@ let quizStarted = false;
 let autoAdvanceTimer = null;
 let autoAdvanceEnabled = true;
 let quizMode = 'all';
+let wasWrongOnlySession = false;
 let allowDuplicates = false;
 let questionLimit = 0;
 let questionsAsked = 0;
@@ -472,6 +473,7 @@ function startQuiz(enableTranslations) {
   showTranslations = enableTranslations;
   userTranslationPreference = enableTranslations;
   quizStarted = true;
+  wasWrongOnlySession = false;
   closeSettingsPanel();
   
   // Transition from start screen to quiz
@@ -517,6 +519,7 @@ function setQuizMode(mode, options = {}) {
       return false;
     }
     quizMode = 'wrong-only';
+    wasWrongOnlySession = true;
     if (!silent) {
       statusEl.textContent = '誤答した問題のみ出題します。';
     }
@@ -1282,8 +1285,8 @@ function finishSession() {
     autoAdvanceTimer = null;
   }
 
-  // Save result
-  if (activeDataset && quizMode !== 'wrong-only') {
+  // Save result only for normal mode sessions (not wrong-only mode)
+  if (activeDataset && quizMode !== 'wrong-only' && !wasWrongOnlySession) {
     saveResult(activeDataset, correctCount, totalCount);
   }
 
@@ -1325,6 +1328,7 @@ function returnToStartScreen(goBackToSelection = false) {
   }
   setReadyToRestart(false);
   quizStarted = false;
+  wasWrongOnlySession = false;
   order = [];
   orderPointer = 0;
   currentQuestion = null;
