@@ -974,7 +974,7 @@ function renderAllTopics() {
 function renderExamples(examples) {
   return examples.map((example, index) => {
     const hasOptions = example.options && example.options.length > 0;
-    const hasJaTranslation = example.questionJa && example.questionJa.length > 0;
+    const hasJaTranslation = !!example.questionJa;
     return `
       <div class="grammar-example" data-index="${index}">
         <div class="grammar-example__question">
@@ -1043,7 +1043,7 @@ function renderPracticeMode() {
   
   const example = currentTopic.examples[practiceIndex];
   const hasOptions = example.options && example.options.length > 0;
-  const hasJaTranslation = example.questionJa && example.questionJa.length > 0;
+  const hasJaTranslation = !!example.questionJa;
   const progress = `${practiceIndex + 1} / ${currentTopic.examples.length}`;
   
   grammarContent.innerHTML = `
