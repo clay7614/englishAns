@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1c4b82">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>文法学習 2A | 英語テスト</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="grammar-study.css">
+</head>
+<body>
+  <main class="app animate-fade-in">
+    <header class="app__header">
+      <h1>文法学習 2A</h1>
+      <p class="app__status">glammer-2Aの英文法ポイントを学習しましょう</p>
+      <a href="index.html" class="grammar-study__back-link">← クイズに戻る</a>
+    </header>
+
+    <nav class="grammar-nav" aria-label="文法トピック">
+      <ul class="grammar-nav__list" id="topicNav">
+        <!-- Topics will be inserted by JavaScript -->
+      </ul>
+    </nav>
+
+    <section class="grammar-content" id="grammarContent">
+      <!-- Content will be inserted by JavaScript -->
+    </section>
+
+    <div class="grammar-study__quick-tips">
+      <h2>迷ったときのチェックポイント</h2>
+      <ol class="grammar-study__checklist">
+        <li><strong>動詞の後に何が来る？</strong> → 動名詞を取る動詞か、to不定詞を取る動詞かを確認</li>
+        <li><strong>前置詞の後は？</strong> → 必ず動名詞（-ing形）</li>
+        <li><strong>it〜toの形式主語？</strong> → for/of の使い分けに注意</li>
+        <li><strong>使役・知覚動詞？</strong> → make/let/have は原形、get は to不定詞</li>
+        <li><strong>分詞構文の主語は？</strong> → 主節と同じなら省略、違うなら独立分詞構文</li>
+        <li><strong>-ing/-edの選択？</strong> → 感情の原因（物）は-ing、感情を感じる人は-ed</li>
+        <li><strong>比較の形は？</strong> → as〜as、比較級+than、倍数表現の語順を確認</li>
+        <li><strong>名詞を修飾する分詞？</strong> → 能動なら-ing、受動なら-ed/p.p.</li>
+        <li><strong>SVOC構文？</strong> → keep/leave/find/make/getの後の補語の形を確認</li>
+      </ol>
+    </div>
+  </main>
+
+  <script type="module" src="grammar-study.js"></script>
+  <script type="module" src="pwa.js"></script>
+</body>
+</html>

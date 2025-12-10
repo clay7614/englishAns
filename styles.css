@@ -150,6 +150,24 @@ button:active {
   color: #52606d;
 }
 
+.app__grammar-link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  border-radius: 12px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.app__grammar-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+}
+
 .app__header-controls {
   position: absolute;
   top: 0;
@@ -948,6 +966,10 @@ body.translations-hidden .quiz__option-translation {
 
   .app__status {
     color: #94a3b8;
+  }
+
+  .app__grammar-link {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
   }
 
   .app__settings-button,

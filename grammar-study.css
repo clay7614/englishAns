@@ -1,0 +1,858 @@
+/* Grammar Study Page Styles */
+
+.grammar-study__back-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: #4c6ef5;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.grammar-study__back-link:hover {
+  color: #3b5bdb;
+  text-decoration: underline;
+}
+
+/* Navigation */
+.grammar-nav {
+  margin: 20px 0;
+  padding: 0;
+}
+
+.grammar-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.grammar-nav__item {
+  margin: 0;
+}
+
+.grammar-nav__link {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #ffffff;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #364152;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s ease;
+}
+
+.grammar-nav__link:hover {
+  background: #4c6ef5;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 110, 245, 0.3);
+}
+
+/* Grammar Topics */
+.grammar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.grammar-topic {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: clamp(20px, 5vw, 32px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  scroll-margin-top: 20px;
+}
+
+.grammar-topic__title {
+  margin: 0 0 20px;
+  font-size: clamp(1.2rem, 4vw, 1.5rem);
+  color: #1f2933;
+  border-bottom: 3px solid #4c6ef5;
+  padding-bottom: 12px;
+}
+
+.grammar-topic__content {
+  margin-bottom: 24px;
+}
+
+/* Grammar Rules */
+.grammar-rule {
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #4c6ef5;
+}
+
+.grammar-rule--special {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.grammar-rule--important {
+  border-left-color: #10b981;
+  background: #ecfdf5;
+}
+
+.grammar-rule h4 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #1f2933;
+}
+
+.grammar-rule h5 {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  color: #364152;
+}
+
+.grammar-rule ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.grammar-rule li {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.grammar-rule__columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.grammar-rule__formula {
+  font-family: 'Monaco', 'Consolas', monospace;
+  background: #e0e7ff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin: 8px 0;
+  display: inline-block;
+}
+
+.grammar-rule__note {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  color: #52606d;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+}
+
+.grammar-rule__note code {
+  background: #e0e7ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Consolas', monospace;
+}
+
+.grammar-rule__example-box {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.grammar-rule__example-box p {
+  margin: 4px 0;
+}
+
+.highlight {
+  background: #fef08a;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+/* Grammar Table */
+.grammar-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 0.9rem;
+}
+
+.grammar-table th,
+.grammar-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.grammar-table th {
+  background: #f1f5f9;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+.grammar-table tr:last-child td {
+  border-bottom: none;
+}
+
+.grammar-table tr:hover td {
+  background: rgba(76, 110, 245, 0.05);
+}
+
+/* Examples Section */
+.grammar-topic__examples {
+  margin-top: 24px;
+}
+
+.grammar-topic__examples-title {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  color: #1f2933;
+}
+
+.grammar-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.grammar-example {
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.grammar-example:hover {
+  border-color: #cbd5e1;
+}
+
+.grammar-example--expanded {
+  border-color: #4c6ef5;
+  box-shadow: 0 4px 12px rgba(76, 110, 245, 0.15);
+}
+
+.grammar-example__question {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.grammar-example__q-label {
+  font-weight: 700;
+  color: #4c6ef5;
+  flex-shrink: 0;
+}
+
+.grammar-example__q-text {
+  color: #1f2933;
+  line-height: 1.5;
+}
+
+.grammar-example__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px 24px;
+}
+
+.grammar-example__option {
+  padding: 4px 10px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.grammar-example__answer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 12px 0 8px;
+  padding: 12px;
+  background: #e0f2fe;
+  border-radius: 8px;
+}
+
+.grammar-example__a-label {
+  font-weight: 700;
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+.grammar-example__a-text {
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.grammar-example__explanation {
+  margin: 8px 0;
+  padding: 12px;
+  background: #f0fdf4;
+  border-radius: 8px;
+  color: #166534;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.grammar-example__toggle {
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid #4c6ef5;
+  border-radius: 6px;
+  color: #4c6ef5;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.grammar-example__toggle:hover {
+  background: #4c6ef5;
+  color: #ffffff;
+}
+
+/* Practice Button */
+.grammar-topic__practice-btn {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #4c6ef5 0%, #5a8dee 100%);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.grammar-topic__practice-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(76, 110, 245, 0.35);
+}
+
+/* Practice Mode */
+.grammar-practice {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: clamp(20px, 5vw, 32px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.grammar-practice__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.grammar-practice__back {
+  padding: 8px 16px;
+  background: transparent;
+  border: 2px solid #4c6ef5;
+  border-radius: 8px;
+  color: #4c6ef5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.grammar-practice__back:hover {
+  background: #4c6ef5;
+  color: #ffffff;
+}
+
+.grammar-practice__progress {
+  font-weight: 600;
+  color: #52606d;
+}
+
+.grammar-practice__topic {
+  margin: 0 0 24px;
+  font-size: 1.2rem;
+  color: #1f2933;
+  text-align: center;
+}
+
+.grammar-practice__question {
+  font-size: clamp(1.1rem, 4vw, 1.3rem);
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.grammar-practice__options {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.grammar-practice__option {
+  width: 100%;
+  padding: 16px;
+  background: #f0f4ff;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.grammar-practice__option:hover:not(:disabled) {
+  border-color: #4c6ef5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 110, 245, 0.2);
+}
+
+.grammar-practice__option:disabled {
+  cursor: default;
+}
+
+.grammar-practice__option--correct {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #166534;
+}
+
+.grammar-practice__option--wrong {
+  background: #fee2e2;
+  border-color: #dc2626;
+  color: #991b1b;
+}
+
+/* Practice Input */
+.grammar-practice__input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto 24px;
+}
+
+.grammar-practice__input {
+  padding: 14px 18px;
+  font-size: 1.1rem;
+  border: 2px solid #cbd5e0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.grammar-practice__input:focus {
+  border-color: #4c6ef5;
+}
+
+.grammar-practice__input--correct {
+  border-color: #16a34a;
+  background: #dcfce7;
+}
+
+.grammar-practice__input--wrong {
+  border-color: #dc2626;
+  background: #fee2e2;
+}
+
+.grammar-practice__submit {
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #4c6ef5 0%, #5a8dee 100%);
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.grammar-practice__submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 110, 245, 0.35);
+}
+
+.grammar-practice__submit:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Practice Feedback */
+.grammar-practice__feedback {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.grammar-practice__result {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.grammar-practice__result--correct {
+  color: #16a34a;
+}
+
+.grammar-practice__result--wrong {
+  color: #dc2626;
+}
+
+.grammar-practice__explanation {
+  padding: 16px;
+  background: #f0fdf4;
+  border-radius: 10px;
+  color: #166534;
+  line-height: 1.6;
+}
+
+.grammar-practice__controls {
+  display: flex;
+  justify-content: center;
+}
+
+.grammar-practice__next {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #4c6ef5 0%, #5a8dee 100%);
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.grammar-practice__next:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(76, 110, 245, 0.35);
+}
+
+/* Quick Tips Section */
+.grammar-study__quick-tips {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: clamp(20px, 5vw, 32px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  margin-top: 32px;
+}
+
+.grammar-study__quick-tips h2 {
+  margin: 0 0 20px;
+  font-size: 1.3rem;
+  color: #1f2933;
+  text-align: center;
+}
+
+.grammar-study__checklist {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.grammar-study__checklist li {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  color: #364152;
+}
+
+.grammar-study__checklist li strong {
+  color: #1f2933;
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+  .grammar-nav__list {
+    gap: 6px;
+  }
+  
+  .grammar-nav__link {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  
+  .grammar-table {
+    font-size: 0.8rem;
+  }
+  
+  .grammar-table th,
+  .grammar-table td {
+    padding: 8px 6px;
+  }
+  
+  .grammar-rule__columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .grammar-study__back-link {
+    color: #82a0ff;
+  }
+  
+  .grammar-study__back-link:hover {
+    color: #a5b4fc;
+  }
+  
+  .grammar-nav__link {
+    background: #1e2a47;
+    color: #e2e8f0;
+  }
+  
+  .grammar-nav__link:hover {
+    background: #5a8dee;
+    color: #ffffff;
+  }
+  
+  .grammar-topic {
+    background: #111b33;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.65);
+  }
+  
+  .grammar-topic__title {
+    color: #f8fafc;
+    border-bottom-color: #82a0ff;
+  }
+  
+  .grammar-rule {
+    background: #1e2a47;
+    border-left-color: #82a0ff;
+  }
+  
+  .grammar-rule--special {
+    background: rgba(245, 158, 11, 0.15);
+    border-left-color: #f59e0b;
+  }
+  
+  .grammar-rule--important {
+    background: rgba(16, 185, 129, 0.15);
+    border-left-color: #10b981;
+  }
+  
+  .grammar-rule h4,
+  .grammar-rule h5 {
+    color: #f8fafc;
+  }
+  
+  .grammar-rule__formula {
+    background: rgba(130, 160, 255, 0.2);
+    color: #c7d2fe;
+  }
+  
+  .grammar-rule__note {
+    color: #94a3b8;
+    background: rgba(30, 42, 71, 0.7);
+  }
+  
+  .grammar-rule__note code {
+    background: rgba(130, 160, 255, 0.2);
+    color: #c7d2fe;
+  }
+  
+  .grammar-rule__example-box {
+    background: rgba(30, 42, 71, 0.7);
+  }
+  
+  .highlight {
+    background: rgba(254, 240, 138, 0.3);
+    color: #fef08a;
+  }
+  
+  .grammar-table th {
+    background: #1e2a47;
+    color: #f8fafc;
+  }
+  
+  .grammar-table th,
+  .grammar-table td {
+    border-bottom-color: #334155;
+    color: #e2e8f0;
+  }
+  
+  .grammar-table tr:hover td {
+    background: rgba(130, 160, 255, 0.1);
+  }
+  
+  .grammar-topic__examples-title {
+    color: #f8fafc;
+  }
+  
+  .grammar-example {
+    background: #1e2a47;
+  }
+  
+  .grammar-example:hover {
+    border-color: #475569;
+  }
+  
+  .grammar-example--expanded {
+    border-color: #82a0ff;
+  }
+  
+  .grammar-example__q-label {
+    color: #82a0ff;
+  }
+  
+  .grammar-example__q-text {
+    color: #f8fafc;
+  }
+  
+  .grammar-example__option {
+    background: #334155;
+    color: #94a3b8;
+  }
+  
+  .grammar-example__answer {
+    background: rgba(2, 132, 199, 0.2);
+  }
+  
+  .grammar-example__a-label {
+    color: #38bdf8;
+  }
+  
+  .grammar-example__a-text {
+    color: #7dd3fc;
+  }
+  
+  .grammar-example__explanation {
+    background: rgba(22, 101, 52, 0.2);
+    color: #86efac;
+  }
+  
+  .grammar-example__toggle {
+    border-color: #82a0ff;
+    color: #82a0ff;
+  }
+  
+  .grammar-example__toggle:hover {
+    background: #82a0ff;
+    color: #111b33;
+  }
+  
+  .grammar-topic__practice-btn {
+    background: linear-gradient(135deg, #5a8dee 0%, #748ffc 100%);
+  }
+  
+  .grammar-practice {
+    background: #111b33;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.65);
+  }
+  
+  .grammar-practice__back {
+    border-color: #82a0ff;
+    color: #82a0ff;
+  }
+  
+  .grammar-practice__back:hover {
+    background: #82a0ff;
+    color: #111b33;
+  }
+  
+  .grammar-practice__progress {
+    color: #94a3b8;
+  }
+  
+  .grammar-practice__topic {
+    color: #f8fafc;
+  }
+  
+  .grammar-practice__question {
+    background: #1e2a47;
+    color: #f8fafc;
+  }
+  
+  .grammar-practice__option {
+    background: #1e2a47;
+    color: #e2e8f0;
+  }
+  
+  .grammar-practice__option:hover:not(:disabled) {
+    border-color: #82a0ff;
+  }
+  
+  .grammar-practice__option--correct {
+    background: rgba(22, 163, 74, 0.2);
+    border-color: #22c55e;
+    color: #86efac;
+  }
+  
+  .grammar-practice__option--wrong {
+    background: rgba(220, 38, 38, 0.2);
+    border-color: #ef4444;
+    color: #fca5a5;
+  }
+  
+  .grammar-practice__input {
+    background: #1e2a47;
+    border-color: #475569;
+    color: #f8fafc;
+  }
+  
+  .grammar-practice__input:focus {
+    border-color: #82a0ff;
+  }
+  
+  .grammar-practice__input--correct {
+    border-color: #22c55e;
+    background: rgba(22, 163, 74, 0.2);
+  }
+  
+  .grammar-practice__input--wrong {
+    border-color: #ef4444;
+    background: rgba(220, 38, 38, 0.2);
+  }
+  
+  .grammar-practice__submit {
+    background: linear-gradient(135deg, #5a8dee 0%, #748ffc 100%);
+  }
+  
+  .grammar-practice__submit:disabled {
+    background: #475569;
+  }
+  
+  .grammar-practice__result--correct {
+    color: #86efac;
+  }
+  
+  .grammar-practice__result--wrong {
+    color: #fca5a5;
+  }
+  
+  .grammar-practice__explanation {
+    background: rgba(22, 101, 52, 0.2);
+    color: #86efac;
+  }
+  
+  .grammar-practice__next {
+    background: linear-gradient(135deg, #5a8dee 0%, #748ffc 100%);
+  }
+  
+  .grammar-study__quick-tips {
+    background: #111b33;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, 0.65);
+  }
+  
+  .grammar-study__quick-tips h2 {
+    color: #f8fafc;
+  }
+  
+  .grammar-study__checklist li {
+    color: #c7d2fe;
+  }
+  
+  .grammar-study__checklist li strong {
+    color: #f8fafc;
+  }
+}
