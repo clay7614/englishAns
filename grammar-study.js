@@ -72,16 +72,19 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'Would you mind (give) me some advice about it?',
+        questionJa: 'それについてアドバイスをいただけませんか？',
         answer: 'giving',
         explanation: 'mindの後は動名詞。「〜するのを気にする」という意味。'
       },
       {
         question: 'We enjoyed (sail) all over Japan last summer.',
+        questionJa: '私たちは去年の夏、日本中を航海して楽しんだ。',
         answer: 'sailing',
         explanation: 'enjoyの後は必ず動名詞。「〜を楽しむ」'
       },
       {
         question: 'It will stop (     ) this evening.',
+        questionJa: '今晩には----だろう。',
         options: ['to rain', 'having rained', 'raining', 'to have rained'],
         answer: 'raining',
         answerIndex: 2,
@@ -89,6 +92,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'Scott finally decided (     ) the girl he had been dating for three years.',
+        questionJa: 'スコットはついに3年間付き合っていた彼女と----ことに決めた。',
         options: ['marrying to', 'getting married to', 'to get married', 'to marry'],
         answer: 'to marry',
         answerIndex: 3,
@@ -96,6 +100,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'She gave up (     ) part-time to finish her studies.',
+        questionJa: '彼女は勉強を終えるために----を辞めた。',
         options: ['to work', 'working', 'to working', 'worked'],
         answer: 'working',
         answerIndex: 1,
@@ -103,6 +108,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'He stopped (answer) the phone and talked for a while on the phone.',
+        questionJa: '彼は電話に出るために立ち止まり、しばらく電話で話した。',
         answer: 'to answer',
         explanation: '「電話に出るために立ち止まった」という目的の意味なのでto不定詞。'
       }
@@ -131,6 +137,7 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'My grandfather went all the way to see the doctor, (     ) find him absent.',
+        questionJa: '祖父はわざわざ医者に会いに行ったが、----不在だとわかった。',
         options: ['enough to', 'only to', 'in order to', 'about to'],
         answer: 'only to',
         answerIndex: 1,
@@ -138,11 +145,13 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'I was (-----) (-----) (-----) study last night.',
+        questionJa: '昨夜は疲れすぎて勉強できなかった。',
         answer: 'too tired to',
         explanation: 'too + 形容詞 + to不定詞 で「〜すぎて…できない」'
       },
       {
         question: 'This bike is too big for Ted (     ).',
+        questionJa: 'この自転車はテッドが----には大きすぎる。',
         options: ['ride', 'riding', 'to ride', 'rode'],
         answer: 'to ride',
         answerIndex: 2,
@@ -150,6 +159,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'She ran fast (     ) a bus.',
+        questionJa: '彼女は----バスに乗った。',
         options: ['to catch in order', 'order in to catch', 'in order catch to', 'in order to catch'],
         answer: 'in order to catch',
         answerIndex: 3,
@@ -157,6 +167,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'I hurried to the bank (     ) find it closed.',
+        questionJa: '銀行へ急いだが、----閉まっていた。',
         options: ['so to', 'as to', 'only to', 'much to'],
         answer: 'only to',
         answerIndex: 2,
@@ -200,16 +211,19 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'I think (-----) strange (-----) put pineapples on a pizza.',
+        questionJa: 'ピザにパイナップルを乗せるのは奇妙だと思う。',
         answer: 'it to',
         explanation: 'think it + 形容詞 + to do の構文。「〜することを…だと思う」'
       },
       {
         question: "It's important for your health (-----) (-----) (-----) too much.",
+        questionJa: '食べ過ぎないことが健康にとって重要だ。',
         answer: 'not to eat',
         explanation: "It's important for 〜 not to do。否定はto不定詞の前に置く。"
       },
       {
         question: 'It was kind (     ) him to give up his seat to the old man.',
+        questionJa: '老人に席を譲るとは----親切だった。',
         options: ['by', 'for', 'of', 'at'],
         answer: 'of',
         answerIndex: 2,
@@ -217,6 +231,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'I found (     ) impossible to do the work in a day.',
+        questionJa: 'その仕事を1日でやるのは不可能だと----。',
         options: ['what', 'that', 'how', 'it'],
         answer: 'it',
         answerIndex: 3,
@@ -224,6 +239,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'It was careless (     ) me to forget my textbook in your room.',
+        questionJa: 'あなたの部屋に教科書を忘れるなんて、----不注意だった。',
         options: ['for', 'at', 'of', 'to'],
         answer: 'of',
         answerIndex: 2,
@@ -231,6 +247,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'It is very difficult (     ) the rule.',
+        questionJa: '----その規則に従うのは非常に難しい。',
         options: ['me obeying', 'I obeyed', 'for me to obey', 'of me to obey'],
         answer: 'for me to obey',
         answerIndex: 2,
@@ -284,6 +301,7 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'Listening to music makes me (     ) positive.',
+        questionJa: '音楽を聴くと前向きな----。',
         options: ['feeling', 'to feel', 'felt', 'feel'],
         answer: 'feel',
         answerIndex: 3,
@@ -291,6 +309,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: "Thomas didn't (     ) his daughter go out after dinner.",
+        questionJa: 'トーマスは夕食後に娘が外出するのを----。',
         options: ['hope', 'allow', 'let', 'advise'],
         answer: 'let',
         answerIndex: 2,
@@ -298,6 +317,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'I saw Mike (    ) the ball.',
+        questionJa: '私はマイクがボールを----のを見た。',
         options: ['was kicked', 'kick', 'to kick', 'kicked'],
         answer: 'kick',
         answerIndex: 1,
@@ -305,6 +325,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'Please let me (     ) when you\'re moving.',
+        questionJa: '引っ越すときは----ください。',
         options: ['known', 'know', 'knowing', 'to know'],
         answer: 'know',
         answerIndex: 1,
@@ -312,11 +333,13 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'Mr. White (-----) his daughter (-----) (-----) a driver\'s license.',
+        questionJa: 'ホワイト氏は娘に運転免許を取らせた。',
         answer: 'got to get',
         explanation: 'get + O + to不定詞 で「〜するよう説得する」'
       },
       {
         question: 'My mother (     ) me wait outside the store.',
+        questionJa: '母は私を店の外で----。',
         options: ['get', 'told', 'expect', 'made'],
         answer: 'made',
         answerIndex: 3,
@@ -366,11 +389,13 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: '(-----) (-----) enough last night, I felt fine all day today.',
+        questionJa: '昨夜十分に寝たので、今日は一日中気分が良かった。',
         answer: 'Having slept',
         explanation: '「昨夜十分に寝たので」先行の完了形。'
       },
       {
         question: '(     ) my umbrella with me, I ran home in the rain.',
+        questionJa: '傘を----ので、雨の中を走って帰った。',
         options: ['Not having', 'Having never', 'Having not', 'Not had'],
         answer: 'Not having',
         answerIndex: 0,
@@ -378,6 +403,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: '(     ) my homework assignment before the deadline, I can take a break now.',
+        questionJa: '締め切り前に宿題を----、今は休憩できる。',
         options: ['Being submitted', 'Having submitted', 'Having been submitted', 'Being submitting'],
         answer: 'Having submitted',
         answerIndex: 1,
@@ -385,6 +411,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: '(     ) knowing which way to go, I had to guess.',
+        questionJa: 'どちらの道を行けばよいか----ので、推測しなければならなかった。',
         options: ['As', 'Not', 'Unless', 'Being'],
         answer: 'Not',
         answerIndex: 1,
@@ -392,6 +419,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: '(     ) from the plane, the islands were very pretty.',
+        questionJa: '飛行機から----、その島々はとてもきれいだった。',
         options: ['Seen', 'Seeing', 'To see', 'To be seen'],
         answer: 'Seen',
         answerIndex: 0,
@@ -399,6 +427,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: '(     ) from what he says, the situation is bad.',
+        questionJa: '彼の言うことから----、状況は悪い。',
         options: ['Judge', 'Is judged', 'Judgment', 'Judging'],
         answer: 'Judging',
         answerIndex: 3,
@@ -426,6 +455,7 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'Ms. Sato is afraid of (     ) a horse.',
+        questionJa: '佐藤さんは馬に----のを怖がっている。',
         options: ['ride', 'riding', 'to ride', 'being ridden'],
         answer: 'riding',
         answerIndex: 1,
@@ -433,11 +463,13 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'He is used (-----) (-----) for hours.',
+        questionJa: '彼は何時間も待つことに慣れている。',
         answer: 'to waiting',
         explanation: 'be used to ~ing で「〜することに慣れている」'
       },
       {
         question: 'The boys insisted (     ) back to the amusement park.',
+        questionJa: '少年たちは遊園地に----と言い張った。',
         options: ['going', 'to go', 'on going', 'at going'],
         answer: 'on going',
         answerIndex: 2,
@@ -445,6 +477,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'She is (     ) going to Okinawa next month.',
+        questionJa: '彼女は来月沖縄に行くのを----。',
         options: ['looking to', 'looking for', 'looking after', 'looking forward to'],
         answer: 'looking forward to',
         answerIndex: 3,
@@ -452,6 +485,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'We are looking forward (     ) your family.',
+        questionJa: '私たちはあなたのご家族に----楽しみにしています。',
         options: ['to see', 'seeing', 'to seeing', 'see'],
         answer: 'to seeing',
         answerIndex: 2,
@@ -496,11 +530,13 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'The movie (-----) me (-----).',
+        questionJa: 'その映画は私を退屈させた。',
         answer: 'made bored',
         explanation: '「私」が退屈させられる側なので bored'
       },
       {
         question: 'The students remained (     ) in the problem after the lesson.',
+        questionJa: '生徒たちは授業の後もその問題に----続けた。',
         options: ['to interest', 'interesting', 'interested', 'interest'],
         answer: 'interested',
         answerIndex: 2,
@@ -508,6 +544,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: "The game looked (     ), so he didn't join it.",
+        questionJa: 'そのゲームは----に見えたので、彼は参加しなかった。',
         options: ['bored', 'boring', 'bore', 'to bore'],
         answer: 'boring',
         answerIndex: 1,
@@ -515,6 +552,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'I felt (     ) when I made such a simple mistake.',
+        questionJa: 'そんな単純な間違いをして----思いをした。',
         options: ['to embarrass', 'embarrassing', 'embarrassed', 'to be embarrassed'],
         answer: 'embarrassed',
         answerIndex: 2,
@@ -584,6 +622,7 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'My dog is not as (     ) yours.',
+        questionJa: '私の犬はあなたの----ほど大きくない。',
         options: ['bigger', 'biggest', 'big as', 'more big'],
         answer: 'big as',
         answerIndex: 2,
@@ -591,6 +630,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'The population of the U.S. is roughly (     ) large as that of Japan.',
+        questionJa: 'アメリカの人口は日本の----だ。',
         options: ['as two and a half time', 'two and a half time', 'two and a half times as', 'as two and a half times'],
         answer: 'two and a half times as',
         answerIndex: 2,
@@ -598,6 +638,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'Mary can swim faster than (     ) in her class.',
+        questionJa: 'メアリーはクラスの----よりも速く泳げる。',
         options: ['all the student', 'another students', 'student', 'any other student'],
         answer: 'any other student',
         answerIndex: 3,
@@ -605,6 +646,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'I have two sisters. Emily is (     ) of the two.',
+        questionJa: '私には2人の姉妹がいる。エミリーは2人のうちで----。',
         options: ['the youngest', 'younger', 'a youngest', 'the younger'],
         answer: 'the younger',
         answerIndex: 3,
@@ -612,6 +654,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'The higher you climb up the mountain, (     ) it will be.',
+        questionJa: '山を高く登れば登るほど、----なる。',
         options: ['cold', 'the coldest', 'colder', 'the colder'],
         answer: 'the colder',
         answerIndex: 3,
@@ -651,6 +694,7 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'The quality of the sound (     ) from those speakers shows why they are so expensive.',
+        questionJa: 'それらのスピーカーから----音の質は、なぜそれらがそんなに高価なのかを示している。',
         options: ['comes', 'coming', 'came', 'is coming'],
         answer: 'coming',
         answerIndex: 1,
@@ -658,6 +702,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'The roads (     ) to the country are jammed with traffic.',
+        questionJa: 'その国へ----道路は交通渋滞している。',
         options: ['leads', 'led', 'lead', 'leading'],
         answer: 'leading',
         answerIndex: 3,
@@ -665,6 +710,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'The (     ) to the students were very difficult.',
+        questionJa: '生徒たちに----はとても難しかった。',
         options: ['tests giving', 'tests given', 'given tests', 'giving tests'],
         answer: 'tests given',
         answerIndex: 1,
@@ -672,6 +718,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'Of the two girls (     ) over there, the taller one is my sister.',
+        questionJa: 'あそこに----2人の少女のうち、背の高い方が私の妹だ。',
         options: ['stand', 'standing', 'stands', 'stood'],
         answer: 'standing',
         answerIndex: 1,
@@ -679,6 +726,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'Watch out for the (     ).',
+        questionJa: '----に気をつけなさい。',
         options: ['broken glass', 'glass breaking', 'breaking glass', 'glass broken'],
         answer: 'broken glass',
         answerIndex: 0,
@@ -738,6 +786,7 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'They had to keep the (     ) through the weekend.',
+        questionJa: '彼らは週末中、----なければならなかった。',
         options: ['machines running', 'machines run', 'run machines', 'running machines'],
         answer: 'machines running',
         answerIndex: 0,
@@ -745,6 +794,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'The girl kept (    ).',
+        questionJa: 'その少女は----続けた。',
         options: ['having smiled', 'smiling', 'smiled', 'smile'],
         answer: 'smiling',
         answerIndex: 1,
@@ -752,6 +802,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'The band kept the audience (     ) all night.',
+        questionJa: 'そのバンドは一晩中観客を----続けた。',
         options: ['fascinated', 'fascinating', 'to fascinate', 'fascinate'],
         answer: 'fascinated',
         answerIndex: 0,
@@ -759,6 +810,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'He left his friend (     ) in the parking lot for an hour.',
+        questionJa: '彼は友人を駐車場で1時間----ままにした。',
         options: ['having waited', 'waited', 'to wait', 'waiting'],
         answer: 'waiting',
         answerIndex: 3,
@@ -766,6 +818,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'The man often leaves the door (     ) all day.',
+        questionJa: 'その男は一日中ドアを----ままにしておくことがよくある。',
         options: ['unlock', 'unlocking', 'to unlock', 'unlocked'],
         answer: 'unlocked',
         answerIndex: 3,
@@ -773,6 +826,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: "Because the room was terribly noisy, I couldn't make myself (     ).",
+        questionJa: '部屋がひどく騒がしかったので、私の声は----なかった。',
         options: ['heard', 'to hear', 'hearing', 'hear'],
         answer: 'heard',
         answerIndex: 0,
@@ -806,6 +860,7 @@ const GRAMMAR_TIPS = [
     examples: [
       {
         question: 'The boy opened the window, although his mother told him (     ).',
+        questionJa: '母親が----言ったにもかかわらず、少年は窓を開けた。',
         options: ["don't do", 'not do it', 'to not', 'not to'],
         answer: 'not to',
         answerIndex: 3,
@@ -813,6 +868,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'We all should try (     ) late for our important business meeting.',
+        questionJa: '私たちは皆、重要なビジネス会議に----努めるべきだ。',
         options: ['not to be', "don't be", 'not to', 'not be'],
         answer: 'not to be',
         answerIndex: 0,
@@ -820,6 +876,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: "I don't know (     ) next.",
+        questionJa: '次に----わからない。',
         options: ['what of doing', 'what do', 'what to do', 'about doing what'],
         answer: 'what to do',
         answerIndex: 2,
@@ -827,6 +884,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'Could you show me (     ) to use the new computer?',
+        questionJa: '新しいコンピュータの----を教えてくれませんか？',
         options: ['what', 'that', 'which', 'how'],
         answer: 'how',
         answerIndex: 3,
@@ -834,6 +892,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: '(     ) Sunday, the bank was closed.',
+        questionJa: '----、銀行は閉まっていた。',
         options: ['It being', 'Being it', 'It was', 'Being'],
         answer: 'It being',
         answerIndex: 0,
@@ -841,6 +900,7 @@ const GRAMMAR_TIPS = [
       },
       {
         question: 'There (     ) no further problems to discuss, we called off the meeting.',
+        questionJa: '議論すべき問題がこれ以上----、私たちは会議を中止した。',
         options: ['be', 'is', 'being', 'are'],
         answer: 'being',
         answerIndex: 2,
@@ -914,12 +974,18 @@ function renderAllTopics() {
 function renderExamples(examples) {
   return examples.map((example, index) => {
     const hasOptions = example.options && example.options.length > 0;
+    const hasJaTranslation = example.questionJa && example.questionJa.length > 0;
     return `
       <div class="grammar-example" data-index="${index}">
         <div class="grammar-example__question">
           <span class="grammar-example__q-label">Q.</span>
           <span class="grammar-example__q-text">${escapeHtml(example.question)}</span>
         </div>
+        ${hasJaTranslation ? `
+          <div class="grammar-example__question-ja">
+            ${escapeHtml(example.questionJa)}
+          </div>
+        ` : ''}
         ${hasOptions ? `
           <div class="grammar-example__options">
             ${example.options.map((opt, i) => `
@@ -977,6 +1043,7 @@ function renderPracticeMode() {
   
   const example = currentTopic.examples[practiceIndex];
   const hasOptions = example.options && example.options.length > 0;
+  const hasJaTranslation = example.questionJa && example.questionJa.length > 0;
   const progress = `${practiceIndex + 1} / ${currentTopic.examples.length}`;
   
   grammarContent.innerHTML = `
@@ -989,6 +1056,11 @@ function renderPracticeMode() {
       <div class="grammar-practice__question">
         ${escapeHtml(example.question)}
       </div>
+      ${hasJaTranslation ? `
+        <div class="grammar-practice__question-ja">
+          ${escapeHtml(example.questionJa)}
+        </div>
+      ` : ''}
       ${hasOptions ? `
         <div class="grammar-practice__options">
           ${example.options.map((opt, i) => `
