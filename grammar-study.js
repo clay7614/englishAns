@@ -1080,6 +1080,12 @@ function renderPracticeMode() {
         <button type="button" class="grammar-practice__next">次の問題</button>
       </div>
     </div>
+    <div class="grammar-practice__reference">
+      <h3 class="grammar-practice__reference-title">📖 文法のポイント</h3>
+      <div class="grammar-practice__reference-content">
+        ${currentTopic.content}
+      </div>
+    </div>
   `;
   
   // Add event listeners
