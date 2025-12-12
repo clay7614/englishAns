@@ -79,6 +79,7 @@ const historyDeleteAllButton = document.querySelector('[data-delete-all-history]
 const historyDatasetSelect = document.querySelector('[data-history-dataset-select]');
 const historyIntervalSelect = document.querySelector('[data-history-interval-select]');
 const historyChartCanvas = document.getElementById('historyChart');
+const grammarLink = document.querySelector('.app__grammar-link');
 
 document.body.classList.add('translations-hidden');
 
@@ -227,6 +228,7 @@ function renderDatasetSelection() {
   datasetSelectionSection.hidden = false;
   translationChoiceSection.hidden = true;
   quizSection.hidden = true;
+  setGrammarLinkVisibility(true);
   if (datasetTitleEl) datasetTitleEl.textContent = '';
 }
 
@@ -295,6 +297,7 @@ async function loadAndShowStartOptions(dataset, fromPopState = false) {
     setTimeout(() => {
       translationChoiceSection.classList.remove('animate-fade-in');
     }, 300);
+    setGrammarLinkVisibility(false);
     
     if (!fromPopState) {
         // Update URL without reloading
@@ -324,16 +327,16 @@ function returnToDatasetSelection(fromPopState = false) {
   }
 
   // Transition from start options to selection
-  translationChoiceSection.classList.add('animate-fade-out');
-  setTimeout(() => {
-    translationChoiceSection.hidden = true;
-    translationChoiceSection.classList.remove('animate-fade-out');
-    renderDatasetSelection();
-    datasetSelectionSection.classList.add('animate-fade-in');
+    translationChoiceSection.classList.add('animate-fade-out');
     setTimeout(() => {
-      datasetSelectionSection.classList.remove('animate-fade-in');
-    }, 300);
-  }, 250);
+      translationChoiceSection.hidden = true;
+      translationChoiceSection.classList.remove('animate-fade-out');
+      renderDatasetSelection();
+      datasetSelectionSection.classList.add('animate-fade-in');
+      setTimeout(() => {
+        datasetSelectionSection.classList.remove('animate-fade-in');
+      }, 300);
+    }, 250);
   
   if (!fromPopState) {
       // Clear URL param
@@ -1321,6 +1324,13 @@ function updateNextButtonVisibility() {
   nextButton.hidden = shouldHide;
 }
 
+function setGrammarLinkVisibility(isVisible) {
+  if (!grammarLink) {
+    return;
+  }
+  grammarLink.hidden = !isVisible;
+}
+
 function returnToStartScreen(goBackToSelection = false) {
   if (autoAdvanceTimer !== null) {
     window.clearTimeout(autoAdvanceTimer);
@@ -1346,6 +1356,7 @@ function returnToStartScreen(goBackToSelection = false) {
   resetResultPanel();
   hideWrongOnlyControl();
   updateModeToggleLabel();
+  setGrammarLinkVisibility(goBackToSelection);
   
   // Transition from quiz
   quizSection.classList.add('animate-fade-out');
@@ -1941,4 +1952,3 @@ function handleDeleteAllHistory() {
     alert('履歴の削除に失敗しました。');
   }
 }
-
