@@ -79,7 +79,7 @@ const historyDeleteAllButton = document.querySelector('[data-delete-all-history]
 const historyDatasetSelect = document.querySelector('[data-history-dataset-select]');
 const historyIntervalSelect = document.querySelector('[data-history-interval-select]');
 const historyChartCanvas = document.getElementById('historyChart');
-// Grammar study shortcut in header; shown only while on selection view
+// Grammar study shortcut in header; shown only on the dataset selection view
 const grammarLink = document.querySelector('.app__grammar-link');
 
 document.body.classList.add('translations-hidden');
@@ -1329,7 +1329,6 @@ function updateNextButtonVisibility() {
  * Toggle visibility of the grammar study link.
  * @param {boolean} isVisible - Whether the link should be shown.
  * Only the dataset selection view should show this link; other screens hide it.
- * Pass true to show the link, false to hide it.
  * Safely no-ops when the link element is missing.
  */
 function setGrammarLinkVisibility(isVisible) {
@@ -1366,7 +1365,7 @@ function returnToStartScreen(goBackToSelection = false) {
   updateModeToggleLabel();
   setGrammarLinkVisibility(goBackToSelection);
   
-  // Transition from quiz (and restore grammar link only when returning to selection)
+  // Transition from quiz
   quizSection.classList.add('animate-fade-out');
   setTimeout(() => {
     quizSection.hidden = true;
