@@ -229,8 +229,8 @@ function renderDatasetSelection() {
   datasetSelectionSection.hidden = false;
   translationChoiceSection.hidden = true;
   quizSection.hidden = true;
-  setGrammarLinkVisibility(true);
   if (datasetTitleEl) datasetTitleEl.textContent = '';
+  setGrammarLinkVisibility(true);
 }
 
 async function selectDataset(dataset, fromPopState = false) {
@@ -1328,6 +1328,7 @@ function updateNextButtonVisibility() {
 /**
  * Toggle visibility of the grammar study link.
  * @param {boolean} isVisible - Whether the link should be shown.
+ * Only the dataset selection view should show this link; other screens hide it.
  * Safely no-ops when the link element is missing.
  */
 function setGrammarLinkVisibility(isVisible) {
@@ -1364,7 +1365,7 @@ function returnToStartScreen(goBackToSelection = false) {
   updateModeToggleLabel();
   setGrammarLinkVisibility(goBackToSelection);
   
-  // Transition from quiz
+  // Transition from quiz (and restore grammar link only when returning to selection)
   quizSection.classList.add('animate-fade-out');
   setTimeout(() => {
     quizSection.hidden = true;
