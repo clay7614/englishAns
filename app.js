@@ -1324,6 +1324,10 @@ function updateNextButtonVisibility() {
   nextButton.hidden = shouldHide;
 }
 
+/**
+ * Toggle visibility of the grammar study link.
+ * Safely no-ops when the link element is missing.
+ */
 function setGrammarLinkVisibility(isVisible) {
   if (!grammarLink) {
     return;
