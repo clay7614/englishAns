@@ -21,6 +21,67 @@
   </head>
 <body>
   <div class="overlay" data-overlay hidden></div>
+
+  <div class="history-panel" data-history-panel hidden>
+    <div class="history-panel__header">
+      <span class="history-panel__title">学習履歴</span>
+      <select class="history-panel__dataset-select" data-history-dataset-select aria-label="問題集でフィルタリング">
+        <option value="all">すべての問題集</option>
+      </select>
+      <select class="history-panel__interval-select" data-history-interval-select aria-label="グラフの表示単位">
+        <option value="test">回ごと</option>
+        <option value="hour">時間ごと</option>
+        <option value="day">日ごと</option>
+      </select>
+      <div class="history-panel__actions">
+        <button type="button" class="history-panel__delete-all" data-delete-all-history title="履歴をすべて削除">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+        <button type="button" class="history-panel__close" data-close-history>
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </div>
+    <div class="history-panel__graph-container">
+      <canvas id="historyChart"></canvas>
+    </div>
+    <div class="history-panel__content" data-history-content>
+      <p class="history-panel__empty">履歴はありません。</p>
+    </div>
+  </div>
+
+  <div class="settings-panel" data-settings-panel hidden>
+    <div class="settings-panel__header">
+      <span class="settings-panel__title">設定</span>
+      <button type="button" class="settings-panel__close" data-close-settings>
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="settings-panel__content">
+      <label class="settings-panel__item settings-panel__item--toggle">
+        <span class="settings-panel__item-label">自動で進む</span>
+        <span class="toggle-switch">
+          <input type="checkbox" data-settings-auto-advance checked>
+          <span class="toggle-switch__slider" aria-hidden="true"></span>
+        </span>
+      </label>
+      <label class="settings-panel__item settings-panel__item--toggle">
+        <span class="settings-panel__item-label">「日本語」ボタンを表示</span>
+        <span class="toggle-switch">
+          <input type="checkbox" data-settings-translation-control checked>
+          <span class="toggle-switch__slider" aria-hidden="true"></span>
+        </span>
+      </label>
+      <label class="settings-panel__item settings-panel__item--toggle">
+        <span class="settings-panel__item-label">選択肢をシャッフル</span>
+        <span class="toggle-switch">
+          <input type="checkbox" data-settings-option-shuffle checked>
+          <span class="toggle-switch__slider" aria-hidden="true"></span>
+        </span>
+      </label>
+    </div>
+  </div>
+
   <main class="app animate-fade-in">
     <header class="app__header">
       <h1>英語テスト</h1>
@@ -41,58 +102,6 @@
           <span class="material-symbols-outlined">settings</span>
           設定
         </button>
-      </div>
-      <div class="history-panel" data-history-panel hidden>
-        <div class="history-panel__header">
-          <span class="history-panel__title">学習履歴</span>
-          <select class="history-panel__dataset-select" data-history-dataset-select aria-label="問題集でフィルタリング">
-            <option value="all">すべての問題集</option>
-          </select>
-          <select class="history-panel__interval-select" data-history-interval-select aria-label="グラフの表示単位">
-            <option value="test">回ごと</option>
-            <option value="hour">時間ごと</option>
-            <option value="day">日ごと</option>
-          </select>
-          <div class="history-panel__actions">
-            <button type="button" class="history-panel__delete-all" data-delete-all-history title="履歴をすべて削除">
-              <span class="material-symbols-outlined">delete</span>
-            </button>
-            <button type="button" class="history-panel__close" data-close-history>
-              <span class="material-symbols-outlined">close</span>
-            </button>
-          </div>
-        </div>
-        <div class="history-panel__graph-container">
-          <canvas id="historyChart"></canvas>
-        </div>
-        <div class="history-panel__content" data-history-content>
-          <p class="history-panel__empty">履歴はありません。</p>
-        </div>
-      </div>
-      <div class="settings-panel" data-settings-panel hidden>
-        <div class="settings-panel__content">
-          <label class="settings-panel__item settings-panel__item--toggle">
-            <span class="settings-panel__item-label">自動で進む</span>
-            <span class="toggle-switch">
-              <input type="checkbox" data-settings-auto-advance checked>
-              <span class="toggle-switch__slider" aria-hidden="true"></span>
-            </span>
-          </label>
-          <label class="settings-panel__item settings-panel__item--toggle">
-            <span class="settings-panel__item-label">「日本語」ボタンを表示</span>
-            <span class="toggle-switch">
-              <input type="checkbox" data-settings-translation-control checked>
-              <span class="toggle-switch__slider" aria-hidden="true"></span>
-            </span>
-          </label>
-          <label class="settings-panel__item settings-panel__item--toggle">
-            <span class="settings-panel__item-label">選択肢をシャッフル</span>
-            <span class="toggle-switch">
-              <input type="checkbox" data-settings-option-shuffle checked>
-              <span class="toggle-switch__slider" aria-hidden="true"></span>
-            </span>
-          </label>
-        </div>
       </div>
     </header>
     <section class="start-selection" data-dataset-selection aria-label="問題集一覧">
