@@ -1101,7 +1101,7 @@ function closeSettingsPanel() {
       settingsPanel.hidden = true;
       settingsPanel.classList.remove('animate-close');
     }
-  }, 200);
+  }, 400);
 }
 
 function handleDocumentClick(event) {
@@ -1669,7 +1669,7 @@ function closeHistoryPanel() {
       historyPanel.hidden = true;
       historyPanel.classList.remove('animate-close');
     }
-  }, 200);
+  }, 400);
 }
 
 const HISTORY_KEY = 'english-quiz-history';
