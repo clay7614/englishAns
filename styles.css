@@ -494,6 +494,12 @@ h1, h2, h3 {
   padding: 16px 24px;
   background: var(--md-sys-color-surface-container-high);
   border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.translation-toggle__row:hover {
+  background: var(--md-sys-color-surface-container-highest);
 }
 
 .translation-toggle__label {
