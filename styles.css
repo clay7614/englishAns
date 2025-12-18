@@ -668,13 +668,13 @@ body.translations-hidden .quiz__option-translation {
   color: var(--md-sys-color-on-primary-container);
   border-radius: 24px;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   font-weight: 700;
   animation: fadeIn 0.5s ease;
 }
 
 .quiz__result strong {
-  font-size: 2rem;
+  font-size: 1.1rem;
   display: block;
   margin: 8px 0;
   color: var(--md-sys-color-primary);
