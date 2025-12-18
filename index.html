@@ -12,6 +12,10 @@
   <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <title>英語テスト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
@@ -23,10 +27,19 @@
         <span class="app__dataset-title" data-dataset-title></span>
       </div>
       <p class="app__status" data-status>問題を読み込み中...</p>
-      <a href="grammar-study.html" class="app__grammar-link">📖 文法学習 2A</a>
+      <a href="grammar-study.html" class="app__grammar-link">
+        <span class="material-symbols-outlined">menu_book</span>
+        文法学習 2A
+      </a>
       <div class="app__header-controls">
-        <button type="button" class="app__history-button" data-open-history aria-haspopup="true" aria-expanded="false">履歴</button>
-        <button type="button" class="app__settings-button" data-open-settings aria-haspopup="true" aria-expanded="false">設定</button>
+        <button type="button" class="app__history-button" data-open-history aria-haspopup="true" aria-expanded="false">
+          <span class="material-symbols-outlined">history</span>
+          履歴
+        </button>
+        <button type="button" class="app__settings-button" data-open-settings aria-haspopup="true" aria-expanded="false">
+          <span class="material-symbols-outlined">settings</span>
+          設定
+        </button>
       </div>
       <div class="history-panel" data-history-panel hidden>
         <div class="history-panel__header">
@@ -41,9 +54,11 @@
           </select>
           <div class="history-panel__actions">
             <button type="button" class="history-panel__delete-all" data-delete-all-history title="履歴をすべて削除">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span class="material-symbols-outlined">delete</span>
             </button>
-            <button type="button" class="history-panel__close" data-close-history>閉じる</button>
+            <button type="button" class="history-panel__close" data-close-history>
+              <span class="material-symbols-outlined">close</span>
+            </button>
           </div>
         </div>
         <div class="history-panel__graph-container">

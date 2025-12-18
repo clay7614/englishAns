@@ -1557,11 +1557,14 @@ function renderAllTopics() {
         ${topic.content}
       </div>
       <div class="grammar-topic__examples">
-        <h3 class="grammar-topic__examples-title">📝 問題例</h3>
+        <h3 class="grammar-topic__examples-title">
+          <span class="material-symbols-outlined">quiz</span> 問題例
+        </h3>
         <div class="grammar-examples">
           ${renderExamples(topic.examples)}
         </div>
         <button type="button" class="grammar-topic__practice-btn" data-topic-id="${topic.id}">
+          <span class="material-symbols-outlined">play_arrow</span>
           この文法を練習する
         </button>
       </div>
@@ -1609,6 +1612,7 @@ function renderExamples(examples) {
           ${escapeHtml(example.explanation)}
         </div>
         <button type="button" class="grammar-example__toggle" aria-expanded="false">
+          <span class="material-symbols-outlined">visibility</span>
           答えを見る
         </button>
       </div>
@@ -1626,7 +1630,9 @@ function handleExampleClick(event) {
   if (event.target.closest('.grammar-example__toggle') || event.target === card) {
     const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
     toggleBtn.setAttribute('aria-expanded', !isExpanded);
-    toggleBtn.textContent = isExpanded ? '答えを見る' : '答えを隠す';
+    toggleBtn.innerHTML = isExpanded 
+      ? '<span class="material-symbols-outlined">visibility</span> 答えを見る' 
+      : '<span class="material-symbols-outlined">visibility_off</span> 答えを隠す';
     answerEl.hidden = isExpanded;
     explanationEl.hidden = isExpanded;
     card.classList.toggle('grammar-example--expanded', !isExpanded);
@@ -1657,7 +1663,9 @@ function renderPracticeMode() {
   grammarContent.innerHTML = `
     <div class="grammar-practice">
       <div class="grammar-practice__header">
-        <button type="button" class="grammar-practice__back" data-back>← 戻る</button>
+        <button type="button" class="grammar-practice__back" data-back aria-label="戻る">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
         <span class="grammar-practice__progress">${progress}</span>
       </div>
       <h2 class="grammar-practice__topic">${escapeHtml(currentTopic.title)}</h2>
@@ -1673,23 +1681,30 @@ function renderPracticeMode() {
         <div class="grammar-practice__options">
           ${example.options.map((opt, i) => `
             <button type="button" class="grammar-practice__option" data-index="${i}">
-              ${i + 1}. ${escapeHtml(opt)}
+              ${escapeHtml(opt)}
             </button>
           `).join('')}
         </div>
       ` : `
         <div class="grammar-practice__input-container">
           <input type="text" class="grammar-practice__input" placeholder="答えを入力してください" autocomplete="off">
-          <button type="button" class="grammar-practice__submit">回答する</button>
+          <button type="button" class="grammar-practice__submit" title="回答する">
+            <span class="material-symbols-outlined">send</span>
+          </button>
         </div>
       `}
       <div class="grammar-practice__feedback" hidden></div>
       <div class="grammar-practice__controls" hidden>
-        <button type="button" class="grammar-practice__next">次の問題</button>
+        <button type="button" class="grammar-practice__next">
+          <span>次の問題</span>
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
       </div>
     </div>
     <div class="grammar-practice__reference">
-      <h3 class="grammar-practice__reference-title">📖 文法のポイント</h3>
+      <h3 class="grammar-practice__reference-title">
+        <span class="material-symbols-outlined">menu_book</span> 文法のポイント
+      </h3>
       <div class="grammar-practice__reference-content">
         ${currentTopic.content}
       </div>
@@ -1766,6 +1781,7 @@ function showFeedback(isCorrect, example) {
   if (feedbackEl) {
     feedbackEl.innerHTML = `
       <div class="grammar-practice__result ${isCorrect ? 'grammar-practice__result--correct' : 'grammar-practice__result--wrong'}">
+        <span class="material-symbols-outlined">${isCorrect ? 'check_circle' : 'cancel'}</span>
         ${isCorrect ? '正解！' : `残念！正解: ${escapeHtml(example.answer)}`}
       </div>
       <div class="grammar-practice__explanation">
@@ -1778,7 +1794,7 @@ function showFeedback(isCorrect, example) {
   if (controlsEl) {
     const nextBtn = controlsEl.querySelector('.grammar-practice__next');
     if (practiceIndex >= currentTopic.examples.length - 1) {
-      nextBtn.textContent = '終了';
+      nextBtn.innerHTML = '<span>終了</span><span class="material-symbols-outlined">done_all</span>';
     }
     controlsEl.hidden = false;
   }

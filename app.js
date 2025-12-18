@@ -219,7 +219,10 @@ function renderDatasetSelection() {
     card.className = 'start-card';
     card.innerHTML = `
       <h2 class="start-card__title">${escapeHtml(dataset.title)}</h2>
-      <button type="button" class="start-card__button">スタート</button>
+      <button type="button" class="start-card__button">
+        <span class="material-symbols-outlined">play_arrow</span>
+        スタート
+      </button>
     `;
     card.querySelector('button').addEventListener('click', () => selectDataset(dataset));
     datasetSelectionSection.appendChild(card);
@@ -716,12 +719,29 @@ function showNextQuestion() {
 }
 
 function renderQuestion(question) {
-  let markup = `<span class="quiz__question-text">${formatText(question.question)}</span>`;
+  let markup = `
+    <div class="quiz__question-header">
+      <span class="quiz__question-text">${formatText(question.question)}</span>
+      <button type="button" class="quiz__speak-button" aria-label="読み上げ">
+        <span class="material-symbols-outlined">volume_up</span>
+      </button>
+    </div>
+  `;
   const translationText = question.translation.question;
   if (hasMeaningfulText(translationText)) {
     markup += `<span class="quiz__question-translation">${formatText(translationText)}</span>`;
   }
   questionEl.innerHTML = markup;
+
+  // Add speech synthesis event
+  const speakBtn = questionEl.querySelector('.quiz__speak-button');
+  if (speakBtn) {
+    speakBtn.addEventListener('click', () => {
+      const utterance = new SpeechSynthesisUtterance(question.question);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    });
+  }
 }
 
 function renderOptions(question) {
@@ -754,20 +774,23 @@ function renderDescriptiveInput(question) {
   input.placeholder = '答えを入力してください';
   input.autocomplete = 'off';
   
+  const actions = document.createElement('div');
+  actions.className = 'quiz__descriptive-actions';
+
   const submitButton = document.createElement('button');
   submitButton.type = 'button';
   submitButton.className = 'quiz__descriptive-submit';
-  submitButton.textContent = '回答する';
+  submitButton.innerHTML = '<span class="material-symbols-outlined">send</span>';
+  submitButton.title = '回答する';
 
   const hintButton = document.createElement('button');
   hintButton.type = 'button';
   hintButton.className = 'quiz__descriptive-hint';
-  hintButton.textContent = 'ヒント';
-  hintButton.style.marginLeft = '10px';
+  hintButton.innerHTML = '<span class="material-symbols-outlined">lightbulb</span>';
+  hintButton.title = 'ヒント';
   
   const hintText = document.createElement('span');
   hintText.className = 'quiz__descriptive-hint-text';
-  hintText.style.marginLeft = '10px';
   hintText.style.display = 'none';
 
   let hintLevel = 0;
@@ -775,7 +798,6 @@ function renderDescriptiveInput(question) {
     hintLevel++;
     const answer = currentQuestion.correctAnswer || '';
     
-    // Show more characters of each word as hintLevel increases
     const hint = answer.replace(/[a-zA-Z0-9]+/g, (match) => {
       if (hintLevel >= match.length) {
         return match;
@@ -784,8 +806,7 @@ function renderDescriptiveInput(question) {
     });
     
     hintText.textContent = hint;
-    hintText.style.display = 'inline';
-    // Focus back on input
+    hintText.style.display = 'block';
     input.focus();
   });
   
@@ -801,29 +822,18 @@ function renderDescriptiveInput(question) {
     }
   });
   
+  actions.appendChild(hintButton);
+  actions.appendChild(submitButton);
   container.appendChild(input);
-  container.appendChild(submitButton);
-  container.appendChild(hintButton);
+  container.appendChild(actions);
   container.appendChild(hintText);
   optionsEl.appendChild(container);
   
-  // Auto-focus input
   setTimeout(() => input.focus(), 100);
   
-  // Force show translation for descriptive questions if requested by user
-  // User said: "記述問題が出題された時だけ...日本語訳を表示するなどして"
-  // Let's show it if it exists.
-  // We can reuse the existing translation toggle logic, but maybe force it visible?
-  // Or just ensure the translation element is rendered in renderQuestion (it is).
-  // But the visibility is controlled by CSS class 'translations-hidden' on body.
-  // If we want to force show it, we should remove that class temporarily?
-  // Or maybe just add a specific class to the question container?
-  // Let's add a hint area or just rely on the user toggling it?
-  // The user request implies automatic display.
-  // Let's force show translation for this question type.
   const translationEl = questionEl.querySelector('.quiz__question-translation');
   if (translationEl) {
-    translationEl.style.display = 'block'; // Override CSS hiding
+    translationEl.style.display = 'block';
     translationEl.style.opacity = '1';
     translationEl.style.height = 'auto';
   }
@@ -861,12 +871,17 @@ function handleDescriptiveSubmit(userAnswer) {
     }
     stats.correct += 1;
     wrongQuestionIds.delete(questionId);
-    feedbackEl.textContent = '正解！';
+    feedbackEl.innerHTML = '<span class="material-symbols-outlined">check_circle</span> 正解！';
     feedbackEl.classList.add('quiz__feedback--correct');
     if (input) input.classList.add('quiz__descriptive-input--correct');
   } else {
     wrongQuestionIds.add(questionId);
-    feedbackEl.innerHTML = `残念！<br>正解: <strong>${escapeHtml(currentQuestion.correctAnswer)}</strong>`;
+    feedbackEl.innerHTML = `
+      <div class="quiz__feedback-wrong-header">
+        <span class="material-symbols-outlined">cancel</span> 残念！
+      </div>
+      <div class="quiz__feedback-correct-answer">正解: <strong>${escapeHtml(currentQuestion.correctAnswer)}</strong></div>
+    `;
     feedbackEl.classList.add('quiz__feedback--wrong');
     if (input) input.classList.add('quiz__descriptive-input--wrong');
   }
@@ -933,11 +948,16 @@ function handleOptionClick(button, selectedOptionIndex) {
     }
     stats.correct += 1;
     wrongQuestionIds.delete(questionId);
-    feedbackEl.textContent = '正解！';
+    feedbackEl.innerHTML = '<span class="material-symbols-outlined">check_circle</span> 正解！';
     feedbackEl.classList.add('quiz__feedback--correct');
   } else {
     wrongQuestionIds.add(questionId);
-    feedbackEl.textContent = '残念！正答を確認しましょう。';
+    feedbackEl.innerHTML = `
+      <div class="quiz__feedback-wrong-header">
+        <span class="material-symbols-outlined">cancel</span> 残念！
+      </div>
+      <div class="quiz__feedback-correct-answer">正解: <strong>${escapeHtml(currentQuestion.options[currentQuestion.answerIndex])}</strong></div>
+    `;
     feedbackEl.classList.add('quiz__feedback--wrong');
   }
   questionStats.set(questionId, stats);
