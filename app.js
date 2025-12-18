@@ -79,6 +79,7 @@ const historyDeleteAllButton = document.querySelector('[data-delete-all-history]
 const historyDatasetSelect = document.querySelector('[data-history-dataset-select]');
 const historyIntervalSelect = document.querySelector('[data-history-interval-select]');
 const historyChartCanvas = document.getElementById('historyChart');
+const overlay = document.querySelector('[data-overlay]');
 // Grammar study shortcut in header; shown only on the dataset selection view
 const grammarLink = document.querySelector('.app__grammar-link');
 
@@ -141,6 +142,10 @@ questionCountSlider?.addEventListener('input', handleQuestionCountInput);
 duplicatesToggle?.addEventListener('change', updateDuplicatesToggleState);
 
 historyButton?.addEventListener('click', handleHistoryButtonClick);
+overlay?.addEventListener('click', () => {
+  closeSettingsPanel();
+  closeHistoryPanel();
+});
 historyCloseButton?.addEventListener('click', closeHistoryPanel);
 historyDeleteAllButton?.addEventListener('click', handleDeleteAllHistory);
 historyDatasetSelect?.addEventListener('change', () => renderHistory());
@@ -482,6 +487,7 @@ function startQuiz(enableTranslations) {
   quizStarted = true;
   wasWrongOnlySession = false;
   closeSettingsPanel();
+  document.body.classList.add('app--quiz-active');
   
   // Transition from start screen to quiz
   translationChoiceSection.classList.add('animate-fade-out');
@@ -1077,6 +1083,7 @@ function openSettingsPanel() {
     return;
   }
   settingsPanel.hidden = false;
+  overlay.hidden = false;
   settingsPanel.classList.remove('animate-close');
   settingsPanel.classList.add('animate-open');
   settingsPanelOpen = true;
@@ -1092,9 +1099,18 @@ function closeSettingsPanel() {
   settingsPanel.classList.remove('animate-open');
   settingsPanel.classList.add('animate-close');
   settingsPanelOpen = false;
+  if (!historyPanelOpen) {
+    overlay.hidden = true;
+  }
   settingsButton?.setAttribute('aria-expanded', 'false');
   document.removeEventListener('click', handleDocumentClick);
   document.removeEventListener('keydown', handleSettingsKeydown);
+  setTimeout(() => {
+    if (!settingsPanelOpen) {
+      settingsPanel.hidden = true;
+    }
+  }, 500);
+}
 
   setTimeout(() => {
     if (!settingsPanelOpen) {
@@ -1304,6 +1320,8 @@ function buildOrderForAllMode(poolIndexes, targetLength) {
 }
 
 function finishSession() {
+  quizStarted = false;
+  document.body.classList.remove('app--quiz-active');
   if (autoAdvanceTimer !== null) {
     window.clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
@@ -1365,6 +1383,7 @@ function returnToStartScreen(goBackToSelection = false) {
   }
   setReadyToRestart(false);
   quizStarted = false;
+  document.body.classList.remove('app--quiz-active');
   // Reset wrong-only session flag for new quiz sessions
   wasWrongOnlySession = false;
   order = [];
@@ -1648,6 +1667,7 @@ function openHistoryPanel() {
     return;
   }
   historyPanel.hidden = false;
+  overlay.hidden = false;
   historyPanel.classList.remove('animate-close');
   historyPanel.classList.add('animate-open');
   historyPanelOpen = true;
@@ -1662,7 +1682,16 @@ function closeHistoryPanel() {
   historyPanel.classList.remove('animate-open');
   historyPanel.classList.add('animate-close');
   historyPanelOpen = false;
+  if (!settingsPanelOpen) {
+    overlay.hidden = true;
+  }
   historyButton?.setAttribute('aria-expanded', 'false');
+  setTimeout(() => {
+    if (!historyPanelOpen) {
+      historyPanel.hidden = true;
+    }
+  }, 500);
+}
   
   setTimeout(() => {
     if (!historyPanelOpen) {

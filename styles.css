@@ -120,21 +120,40 @@ h1, h2, h3 {
 /* Header */
 .app__header {
   text-align: center;
-  margin-bottom: 40px;
-  padding-top: 24px;
+  margin-bottom: 24px;
+  padding-top: 48px;
+  position: relative;
+}
+
+.app--quiz-active .app__header {
+  padding-top: 16px;
+  margin-bottom: 16px;
 }
 
 .app__header h1 {
-  font-size: clamp(2.5rem, 10vw, 3.5rem);
+  font-size: clamp(1.5rem, 6vw, 2.25rem);
   color: var(--md-sys-color-primary);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-weight: 800;
+  transition: all 0.3s var(--md-sys-motion-easing-emphasized);
+}
+
+.app--quiz-active .app__header h1 {
+  font-size: 1.125rem;
+}
+
+.app--quiz-active .app__grammar-link {
+  display: none;
 }
 
 .app__status {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   color: var(--md-sys-color-on-surface-variant);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+}
+
+.app--quiz-active .app__status {
+  margin-bottom: 8px;
 }
 
 .app__status--error {
@@ -143,14 +162,14 @@ h1, h2, h3 {
 }
 
 .app__dataset-nav {
-  margin-bottom: 16px;
-  min-height: 1.5rem;
+  margin-bottom: 8px;
+  min-height: 1.2rem;
 }
 
 .app__dataset-title {
   font-weight: 700;
   color: var(--md-sys-color-secondary);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 /* Material Symbols */
@@ -164,48 +183,62 @@ h1, h2, h3 {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 32px;
+  padding: 12px 24px;
   background: var(--md-sys-color-tertiary-container);
   color: var(--md-sys-color-on-tertiary-container);
   text-decoration: none;
   border-radius: 100px;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   transition: all 0.3s var(--md-sys-motion-easing-emphasized);
   box-shadow: var(--md-sys-elevation-1);
+  margin-bottom: 16px;
 }
 
 .app__grammar-link:hover {
   box-shadow: var(--md-sys-elevation-2);
-  transform: translateY(-4px) scale(1.02);
+  transform: translateY(-2px);
 }
 
 .app__header-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 24px;
+  gap: 8px;
 }
 
 .app__history-button,
 .app__settings-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border: 1px solid var(--md-sys-color-outline);
-  background: transparent;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-primary);
-  border-radius: 100px;
-  font-weight: 600;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s var(--md-sys-motion-easing-standard);
+  font-size: 0;
+}
+
+.app__history-button span,
+.app__settings-button span {
+  font-size: 24px;
 }
 
 .app__history-button:hover,
 .app__settings-button:hover {
   background: var(--md-sys-color-primary-container);
-  border-color: var(--md-sys-color-primary);
+}
+
+/* Hide text in header buttons for compact look */
+.app__history-button,
+.app__settings-button {
+  font-size: 0;
 }
 
 /* Cards */
@@ -259,6 +292,29 @@ h1, h2, h3 {
   transform: scale(1.05);
 }
 
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1500;
+  backdrop-filter: blur(4px);
+  transition: opacity 0.3s ease;
+}
+
+.overlay[hidden] {
+  display: none;
+  opacity: 0;
+}
+
+.overlay:not([hidden]) {
+  display: block;
+  opacity: 1;
+}
+
 /* Panels (Bottom Sheets) */
 .settings-panel,
 .history-panel {
@@ -269,13 +325,14 @@ h1, h2, h3 {
   width: min(100%, 600px);
   background: var(--md-sys-color-surface-container-highest);
   border-radius: 32px 32px 0 0;
-  box-shadow: var(--md-sys-elevation-3);
-  padding: 32px;
-  z-index: 1000;
+  box-shadow: var(--md-sys-elevation-4);
+  padding: 24px;
+  z-index: 2000;
   transition: transform 0.5s var(--md-sys-motion-easing-emphasized);
-  max-height: 90vh;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--md-sys-color-outline-variant);
 }
 
 .settings-panel:not([hidden]),
@@ -289,12 +346,35 @@ h1, h2, h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
 
 .settings-panel__title,
 .history-panel__title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
+.history-panel__close,
+.settings-panel__close {
+  background: transparent;
+  border: none;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.history-panel__close:hover,
+.settings-panel__close:hover {
+  background: var(--md-sys-color-surface-container-highest);
 }
 
 .history-panel__actions {
@@ -882,6 +962,17 @@ input:checked + .toggle-switch__slider:before {
 
 .animate-close {
   animation: slideDown 0.4s var(--md-sys-motion-easing-standard) forwards;
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes fadeIn {
