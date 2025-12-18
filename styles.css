@@ -869,14 +869,21 @@ body.translations-hidden .quiz__option-translation {
 /* Toggle Switch */
 .toggle-switch {
   position: relative;
-  width: 52px;
-  height: 32px;
+  width: 60px;
+  height: 36px;
+  flex-shrink: 0;
 }
 
 .toggle-switch input {
   opacity: 0;
-  width: 0;
-  height: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  cursor: pointer;
+  margin: 0;
 }
 
 .toggle-switch__slider {
@@ -885,15 +892,15 @@ body.translations-hidden .quiz__option-translation {
   inset: 0;
   background-color: var(--md-sys-color-surface-container-highest);
   border: 2px solid var(--md-sys-color-outline);
-  border-radius: 32px;
+  border-radius: 36px;
   transition: .3s;
 }
 
 .toggle-switch__slider:before {
   position: absolute;
   content: "";
-  height: 24px;
-  width: 24px;
+  height: 28px;
+  width: 28px;
   left: 2px;
   bottom: 2px;
   background-color: var(--md-sys-color-outline);
@@ -907,7 +914,7 @@ input:checked + .toggle-switch__slider {
 }
 
 input:checked + .toggle-switch__slider:before {
-  transform: translateX(20px);
+  transform: translateX(24px);
   background-color: var(--md-sys-color-on-primary);
 }
 
