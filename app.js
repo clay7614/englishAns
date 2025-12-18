@@ -1083,7 +1083,7 @@ function openSettingsPanel() {
     return;
   }
   settingsPanel.hidden = false;
-  overlay.hidden = false;
+  if (overlay) overlay.hidden = false;
   settingsPanel.classList.remove('animate-close');
   settingsPanel.classList.add('animate-open');
   settingsPanelOpen = true;
@@ -1099,19 +1099,12 @@ function closeSettingsPanel() {
   settingsPanel.classList.remove('animate-open');
   settingsPanel.classList.add('animate-close');
   settingsPanelOpen = false;
-  if (!historyPanelOpen) {
+  if (!historyPanelOpen && overlay) {
     overlay.hidden = true;
   }
   settingsButton?.setAttribute('aria-expanded', 'false');
   document.removeEventListener('click', handleDocumentClick);
   document.removeEventListener('keydown', handleSettingsKeydown);
-  setTimeout(() => {
-    if (!settingsPanelOpen) {
-      settingsPanel.hidden = true;
-    }
-  }, 500);
-}
-
   setTimeout(() => {
     if (!settingsPanelOpen) {
       settingsPanel.hidden = true;
@@ -1667,7 +1660,7 @@ function openHistoryPanel() {
     return;
   }
   historyPanel.hidden = false;
-  overlay.hidden = false;
+  if (overlay) overlay.hidden = false;
   historyPanel.classList.remove('animate-close');
   historyPanel.classList.add('animate-open');
   historyPanelOpen = true;
@@ -1682,17 +1675,10 @@ function closeHistoryPanel() {
   historyPanel.classList.remove('animate-open');
   historyPanel.classList.add('animate-close');
   historyPanelOpen = false;
-  if (!settingsPanelOpen) {
+  if (!settingsPanelOpen && overlay) {
     overlay.hidden = true;
   }
   historyButton?.setAttribute('aria-expanded', 'false');
-  setTimeout(() => {
-    if (!historyPanelOpen) {
-      historyPanel.hidden = true;
-    }
-  }, 500);
-}
-  
   setTimeout(() => {
     if (!historyPanelOpen) {
       historyPanel.hidden = true;

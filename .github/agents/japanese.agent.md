@@ -81,27 +81,40 @@ git push
 
 ```
 englishAns/
-├── .github/
-│   └── agents/
-│       └── japanese.agent.md   # このファイル
 ├── index.html              # メインのクイズページ
-├── grammar-study.html      # 文法学習ページ
+├── grammar-study.html      # 文法学習ページ（glammer-2A対応）
+├── app.js                  # クイズ機能のメインスクリプト
+├── grammar-study.js        # 文法学習機能のスクリプト
+├── styles.css              # メインのスタイルシート
+├── grammar-study.css       # 文法学習ページ用スタイル
+├── pwa.js                  # PWA機能のスクリプト
 ├── service-worker.js       # サービスワーカー
 ├── manifest.webmanifest    # PWAマニフェスト
 │
-├── src/
-│   ├── js/                 # JavaScriptモジュール
-│   │   ├── app.js          # エントリポイント
-│   │   ├── core/           # ロジック
-│   │   ├── ui/             # UI制御
-│   │   └── utils/          # 共通関数
-│   └── css/                # スタイルシート
+├── 601~750.csv             # 単語テスト 601〜750 問題データ
+├── 601~750_ja.csv          # 単語テスト 601〜750 日本語訳
+├── 751~900.csv             # 単語テスト 751〜900 問題データ
+├── 751~900_ja.csv          # 単語テスト 751〜900 日本語訳
+├── 901~1050.csv            # 単語テスト 901〜1050 問題データ
+├── 901~1050_ja.csv         # 単語テスト 901〜1050 日本語訳
+├── 1051~1200.csv           # 単語テスト 1051〜1200 問題データ
+├── 1051~1200_ja.csv        # 単語テスト 1051〜1200 日本語訳
+├── glammer-2A.csv          # 文法問題 2A 問題データ
+├── glammer-2A_ja.csv       # 文法問題 2A 日本語訳
+├── glammer-2B.csv          # 文法問題 2B 問題データ
+├── glammer-2B_ja.csv       # 文法問題 2B 日本語訳
+├── glammer_ja.csv          # 文法問題 共通日本語訳
 │
-├── data/                   # 問題データ (CSV)
+├── glammer-2A-answer-tips.md  # 文法2A 解答のヒント（Markdown）
 │
 ├── icons/                  # PWA用アイコン
-├── package.json            # プロジェクト設定
-└── README.md               # プロジェクト説明
+│
+├── extract_questions.py    # 問題抽出スクリプト
+├── fix_data.py             # データ修正スクリプト
+├── process_csv.py          # CSV処理スクリプト
+├── transform_data.py       # データ変換スクリプト
+├── run_*.py                # 各種実行スクリプト
+└── serve.py                # ローカルサーバースクリプト
 ```
 
 ### 主要ファイルの説明
