@@ -151,6 +151,11 @@ body * {
   zoom: 1.333; /* 1 / 0.75 */
 }
 
+.settings-panel *,
+.history-panel * {
+  font-size: 1rem; /* Reset compensation since panel is already zoomed back to 1.0 */
+}
+
 .app {
   width: min(100%, 1013px); /* 760px / 0.75 */
   padding: 16px 16px 100px;
@@ -407,7 +412,7 @@ h1, h2, h3 {
 
 .settings-panel__title,
 .history-panel__title {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--md-sys-color-on-surface);
 }
@@ -492,7 +497,7 @@ h1, h2, h3 {
 
 .settings-panel__close,
 .history-panel__close {
-  padding: 12px 24px;
+  padding: 8px 20px;
   background: var(--md-sys-color-secondary-container);
   color: var(--md-sys-color-on-secondary-container);
   border: none;
@@ -511,9 +516,9 @@ h1, h2, h3 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
+  padding: 12px 20px;
   background: var(--md-sys-color-surface-container-high);
-  border-radius: 24px;
+  border-radius: 16px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -523,6 +528,7 @@ h1, h2, h3 {
 }
 
 .settings-panel__item-label {
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--md-sys-color-on-surface);
 }
@@ -917,8 +923,8 @@ body.translations-hidden .quiz__option-translation {
 /* Toggle Switch */
 .toggle-switch {
   position: relative;
-  width: 60px;
-  height: 36px;
+  width: 52px;
+  height: 32px;
   flex-shrink: 0;
 }
 
@@ -940,15 +946,15 @@ body.translations-hidden .quiz__option-translation {
   inset: 0;
   background-color: var(--md-sys-color-surface-container-highest);
   border: 2px solid var(--md-sys-color-outline);
-  border-radius: 36px;
+  border-radius: 32px;
   transition: .3s;
 }
 
 .toggle-switch__slider:before {
   position: absolute;
   content: "";
-  height: 28px;
-  width: 28px;
+  height: 24px;
+  width: 24px;
   left: 2px;
   bottom: 2px;
   background-color: var(--md-sys-color-outline);
@@ -962,7 +968,7 @@ input:checked + .toggle-switch__slider {
 }
 
 input:checked + .toggle-switch__slider:before {
-  transform: translateX(24px);
+  transform: translateX(20px);
   background-color: var(--md-sys-color-on-primary);
 }
 
