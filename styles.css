@@ -260,21 +260,22 @@ h1, h2, h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
   padding: 0;
   border: none;
   background: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-primary);
-  border-radius: 20px;
+  border-radius: 28px;
   cursor: pointer;
   transition: all 0.2s var(--md-sys-motion-easing-standard);
   font-size: 0;
+  box-shadow: var(--md-sys-elevation-1);
 }
 
 .app__history-button span,
 .app__settings-button span {
-  font-size: 24px;
+  font-size: 32px;
 }
 
 .app__history-button:hover,
@@ -735,23 +736,27 @@ body.translations-hidden .quiz__option-translation {
 .quiz__controls {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 16px;
+  width: 100%;
 }
 
 .quiz__control-button {
-  padding: 10px 20px;
+  flex: 1;
+  padding: 16px 20px;
   background: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface-variant);
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 100px;
-  font-weight: 600;
-  font-size: 1.2rem;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.333rem;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .quiz__control-button:hover:not(:disabled) {
