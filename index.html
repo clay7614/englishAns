@@ -7,10 +7,10 @@
   <meta name="theme-color" content="#6750A4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon.png?v=4">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png?v=4">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png?v=4">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png?v=4">
   <title>英語テスト</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,6 +79,20 @@
           <span class="toggle-switch__slider" aria-hidden="true"></span>
         </span>
       </label>
+      <label class="settings-panel__item settings-panel__item--toggle">
+        <span class="settings-panel__item-label">ダークモード</span>
+        <span class="toggle-switch">
+          <input type="checkbox" data-settings-dark-mode>
+          <span class="toggle-switch__slider" aria-hidden="true"></span>
+        </span>
+      </label>
+      <label class="settings-panel__item settings-panel__item--toggle">
+        <span class="settings-panel__item-label">問題の重複を許可</span>
+        <span class="toggle-switch">
+          <input type="checkbox" data-settings-duplicates-toggle>
+          <span class="toggle-switch__slider" aria-hidden="true"></span>
+        </span>
+      </label>
     </div>
   </div>
 
@@ -108,23 +122,14 @@
       <!-- Cards will be injected by app.js -->
     </section>
     <section class="translation-toggle" data-translation-choice hidden>
-      <label class="translation-toggle__row">
+      <div class="translation-toggle__row">
         <span class="translation-toggle__label">日本語訳を表示</span>
         <span class="toggle-switch">
           <input type="checkbox" data-start-translation-toggle>
           <span class="toggle-switch__slider" aria-hidden="true"></span>
         </span>
-      </label>
+      </div>
       <div class="start-options" data-start-options>
-        <div class="start-options__group start-options__group--toggle">
-          <label class="start-options__toggle">
-            <span class="start-options__label">問題の重複</span>
-            <span class="toggle-switch">
-              <input type="checkbox" data-start-duplicates-toggle>
-              <span class="toggle-switch__slider" aria-hidden="true"></span>
-            </span>
-          </label>
-        </div>
         <div class="start-options__group start-options__group--slider">
           <label for="question-count-slider" class="start-options__label">
             出題数: <span data-question-count-display>0</span>問

@@ -60,14 +60,14 @@ const autoAdvanceCheckbox = document.querySelector('[data-settings-auto-advance]
 const autoAdvanceStatus = document.querySelector('[data-auto-advance-status]');
 const translationControlVisibilityCheckbox = document.querySelector('[data-settings-translation-control]');
 const optionShuffleCheckbox = document.querySelector('[data-settings-option-shuffle]');
+const darkModeCheckbox = document.querySelector('[data-settings-dark-mode]');
 const startTranslationToggle = document.querySelector('[data-start-translation-toggle]');
 const startTranslationState = document.querySelector('[data-start-translation-state]');
 const startButton = document.querySelector('[data-start-quiz]');
 const correctEl = document.querySelector('[data-correct]');
 const totalEl = document.querySelector('[data-total]');
 const optionTemplate = document.getElementById('option-button-template');
-const duplicatesToggle = document.querySelector('[data-start-duplicates-toggle]');
-const duplicatesToggleState = document.querySelector('[data-start-duplicates-state]');
+const duplicatesToggle = document.querySelector('[data-settings-duplicates-toggle]');
 const questionCountSlider = document.querySelector('[data-question-count-slider]');
 const questionCountDisplay = document.querySelector('[data-question-count-display]');
 
@@ -117,6 +117,49 @@ let queuedQuestionTransition = false;
 let readyToRestart = false;
 let translationControlVisible = true;
 let shuffleOptionsEnabled = true;
+let darkModeEnabled = false;
+
+const SETTINGS_KEY = 'english_ans_settings';
+
+function saveSettings() {
+  const settings = {
+    autoAdvanceEnabled,
+    translationControlVisible,
+    shuffleOptionsEnabled,
+    darkModeEnabled,
+    allowDuplicates
+  };
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function loadSettings() {
+  const saved = localStorage.getItem(SETTINGS_KEY);
+  if (saved) {
+    try {
+      const settings = JSON.parse(saved);
+      if (settings.autoAdvanceEnabled !== undefined) autoAdvanceEnabled = settings.autoAdvanceEnabled;
+      if (settings.translationControlVisible !== undefined) translationControlVisible = settings.translationControlVisible;
+      if (settings.shuffleOptionsEnabled !== undefined) shuffleOptionsEnabled = settings.shuffleOptionsEnabled;
+      if (settings.darkModeEnabled !== undefined) darkModeEnabled = settings.darkModeEnabled;
+      if (settings.allowDuplicates !== undefined) allowDuplicates = settings.allowDuplicates;
+      
+      // Update UI
+      if (autoAdvanceCheckbox) autoAdvanceCheckbox.checked = autoAdvanceEnabled;
+      if (translationControlVisibilityCheckbox) translationControlVisibilityCheckbox.checked = translationControlVisible;
+      if (optionShuffleCheckbox) optionShuffleCheckbox.checked = shuffleOptionsEnabled;
+      if (darkModeCheckbox) darkModeCheckbox.checked = darkModeEnabled;
+      if (duplicatesToggle) duplicatesToggle.checked = allowDuplicates;
+      
+      updateAutoAdvanceControl();
+      updateTranslationControlVisibility();
+      updateDarkMode();
+    } catch (e) {
+      console.error('Failed to load settings', e);
+    }
+  }
+}
+
+loadSettings();
 
 startButton?.addEventListener('click', handleStartButtonClick);
 translationChoiceSection?.addEventListener('click', (event) => {
@@ -137,9 +180,10 @@ settingsCloseButton?.addEventListener('click', closeSettingsPanel);
 autoAdvanceCheckbox?.addEventListener('change', handleAutoAdvanceChange);
 translationControlVisibilityCheckbox?.addEventListener('change', handleTranslationControlVisibilityChange);
 optionShuffleCheckbox?.addEventListener('change', handleOptionShuffleChange);
+darkModeCheckbox?.addEventListener('change', handleDarkModeChange);
+duplicatesToggle?.addEventListener('change', handleDuplicatesToggleChange);
 settingsPanel?.addEventListener('click', (event) => event.stopPropagation());
 questionCountSlider?.addEventListener('input', handleQuestionCountInput);
-duplicatesToggle?.addEventListener('change', updateDuplicatesToggleState);
 
 historyButton?.addEventListener('click', handleHistoryButtonClick);
 overlay?.addEventListener('click', () => {
@@ -290,7 +334,6 @@ async function loadAndShowStartOptions(dataset, fromPopState = false) {
     updateTranslationToggleLabel();
     updateModeToggleLabel();
     updateStartTranslationState();
-    updateDuplicatesToggleState();
     if (translationControlVisibilityCheckbox) {
       translationControlVisible = Boolean(translationControlVisibilityCheckbox.checked);
     }
@@ -985,8 +1028,8 @@ function handleOptionClick(button, selectedOptionIndex) {
 
   if (quizMode === 'wrong-only') {
     if (wrongQuestionIds.size === 0) {
-      statusEl.textContent = '誤答した問題を解き終わりました。通常モードに戻ります。';
-      setQuizMode('all', { silent: true });
+      statusEl.textContent = '誤答した問題を解き終わりました。';
+      finishSession();
     } else {
       prepareOrder(getActivePoolIndexes());
     }
@@ -1021,6 +1064,7 @@ function handleAutoAdvanceChange() {
     autoAdvanceTimer = null;
   }
   updateAutoAdvanceControl();
+  saveSettings();
   if (quizStarted) {
     statusEl.textContent = `自動で進むを${autoAdvanceEnabled ? 'ON' : 'OFF'}にしました。`;
   }
@@ -1029,6 +1073,7 @@ function handleAutoAdvanceChange() {
 function handleTranslationControlVisibilityChange() {
   translationControlVisible = Boolean(translationControlVisibilityCheckbox?.checked);
   updateTranslationControlVisibility();
+  saveSettings();
   if (quizStarted) {
     statusEl.textContent = translationControlVisible
       ? '「日本語」ボタンを表示しました。'
@@ -1038,10 +1083,33 @@ function handleTranslationControlVisibilityChange() {
 
 function handleOptionShuffleChange() {
   shuffleOptionsEnabled = Boolean(optionShuffleCheckbox?.checked);
+  saveSettings();
   if (quizStarted) {
     statusEl.textContent = shuffleOptionsEnabled
       ? '選択肢の順番をシャッフルします。'
       : '選択肢の順番を固定します。';
+  }
+}
+
+function handleDarkModeChange() {
+  darkModeEnabled = Boolean(darkModeCheckbox?.checked);
+  updateDarkMode();
+  saveSettings();
+}
+
+function handleDuplicatesToggleChange() {
+  allowDuplicates = Boolean(duplicatesToggle?.checked);
+  saveSettings();
+}
+
+function updateDarkMode() {
+  if (darkModeEnabled) {
+    document.documentElement.classList.add('dark-mode');
+  } else {
+    document.documentElement.classList.remove('dark-mode');
+  }
+  if (darkModeCheckbox) {
+    darkModeCheckbox.checked = darkModeEnabled;
   }
 }
 
@@ -1158,14 +1226,6 @@ function updateStartTranslationState() {
   }
   const isOn = Boolean(startTranslationToggle?.checked);
   startTranslationState.textContent = isOn ? 'ON' : 'OFF';
-}
-
-function updateDuplicatesToggleState() {
-  if (!duplicatesToggleState) {
-    return;
-  }
-  const isAllowed = Boolean(duplicatesToggle?.checked);
-  duplicatesToggleState.textContent = isAllowed ? '許可する' : '許可しない';
 }
 
 function updateTranslationToggleLabel() {

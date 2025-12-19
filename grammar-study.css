@@ -1,5 +1,13 @@
 ﻿/* Grammar Study Page Styles - Material 3 Expressive */
 
+body {
+  zoom: 0.75;
+}
+
+body * {
+  font-size: 1.333rem;
+}
+
 .grammar-study__back-link {
   display: inline-flex;
   align-items: center;
@@ -8,7 +16,7 @@
   color: var(--md-sys-color-primary);
   text-decoration: none;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.333rem;
   transition: all 0.2s var(--md-sys-motion-easing-standard);
   padding: 8px 16px;
   border-radius: 100px;
@@ -102,7 +110,7 @@
 
 .grammar-topic__title {
   margin: 0 0 24px;
-  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-size: clamp(2rem, 6.6vw, 2.666rem);
   color: var(--md-sys-color-primary);
   border-bottom: 4px solid var(--md-sys-color-primary-container);
   padding-bottom: 12px;
@@ -132,7 +140,7 @@
 
 .grammar-rule h4 {
   margin: 0 0 16px;
-  font-size: 1.25rem;
+  font-size: 1.666rem;
   color: inherit;
 }
 
@@ -142,7 +150,7 @@
   color: var(--md-sys-color-on-primary-container);
   padding: 16px 24px;
   border-radius: 16px;
-  font-size: 1.1rem;
+  font-size: 1.466rem;
   font-weight: 700;
   margin: 16px 0;
   display: inline-block;
@@ -150,7 +158,7 @@
 
 .grammar-rule__note {
   margin: 16px 0 0;
-  font-size: 0.95rem;
+  font-size: 1.266rem;
   padding: 16px;
   background: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface-variant);
@@ -230,11 +238,11 @@
   font-weight: 800;
   color: var(--md-sys-color-primary);
   margin-right: 8px;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .grammar-example__q-text {
-  font-size: 1.1rem;
+  font-size: 1.466rem;
   font-weight: 600;
   color: var(--md-sys-color-on-surface);
 }
@@ -245,7 +253,7 @@
   background: var(--md-sys-color-tertiary-container);
   color: var(--md-sys-color-on-tertiary-container);
   border-radius: 16px;
-  font-size: 0.95rem;
+  font-size: 1.266rem;
   line-height: 1.6;
 }
 
@@ -260,7 +268,7 @@
   padding: 8px 16px;
   background: var(--md-sys-color-surface-container-highest);
   border-radius: 12px;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   color: var(--md-sys-color-on-surface-variant);
   border: 1px solid var(--md-sys-color-outline-variant);
 }
@@ -279,11 +287,11 @@
 
 .grammar-example__a-label {
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .grammar-example__a-text {
-  font-size: 1.1rem;
+  font-size: 1.466rem;
   font-weight: 700;
 }
 
