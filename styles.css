@@ -652,27 +652,6 @@ input[type="range"] {
   color: var(--md-sys-color-on-surface);
 }
 
-.quiz__speak-button {
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.quiz__speak-button:hover {
-  background: var(--md-sys-color-secondary);
-  color: var(--md-sys-color-on-secondary);
-  transform: scale(1.05);
-}
-
 .quiz__question-translation {
   display: block;
   margin-top: 12px;

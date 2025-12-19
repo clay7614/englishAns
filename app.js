@@ -771,9 +771,6 @@ function renderQuestion(question) {
   let markup = `
     <div class="quiz__question-header">
       <span class="quiz__question-text">${formatText(question.question)}</span>
-      <button type="button" class="quiz__speak-button" aria-label="読み上げ">
-        <span class="material-symbols-outlined">volume_up</span>
-      </button>
     </div>
   `;
   const translationText = question.translation.question;
@@ -781,16 +778,6 @@ function renderQuestion(question) {
     markup += `<span class="quiz__question-translation">${formatText(translationText)}</span>`;
   }
   questionEl.innerHTML = markup;
-
-  // Add speech synthesis event
-  const speakBtn = questionEl.querySelector('.quiz__speak-button');
-  if (speakBtn) {
-    speakBtn.addEventListener('click', () => {
-      const utterance = new SpeechSynthesisUtterance(question.question);
-      utterance.lang = 'en-US';
-      window.speechSynthesis.speak(utterance);
-    });
-  }
 }
 
 function renderOptions(question) {
