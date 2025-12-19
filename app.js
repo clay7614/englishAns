@@ -1,37 +1,37 @@
 const QUESTION_DATASETS = [
   {
     id: 'set-601-750',
-    title: '単語テスト 601〜750',
+    title: '単語 601〜750',
     questionFile: '601~750.csv',
     translationFile: '601~750_ja.csv',
   },
   {
     id: 'set-751-900',
-    title: '単語テスト 751〜900',
+    title: '単語 751〜900',
     questionFile: '751~900.csv',
     translationFile: '751~900_ja.csv',
   },
   {
     id: 'set-901-1050',
-    title: '単語テスト 901〜1050',
+    title: '単語 901〜1050',
     questionFile: '901~1050.csv',
     translationFile: '901~1050_ja.csv',
   },
   {
     id: 'set-1051-1200',
-    title: '単語テスト 1051〜1200',
+    title: '単語 1051〜1200',
     questionFile: '1051~1200.csv',
     translationFile: '1051~1200_ja.csv',
   },
   {
     id: 'set-glammer-2a',
-    title: '文法問題 2A',
+    title: '文法 2A',
     questionFile: 'glammer-2A.csv',
     translationFile: 'glammer-2A_ja.csv',
   },
   {
     id: 'set-glammer-2b',
-    title: '文法問題 2B',
+    title: '文法 2B',
     questionFile: 'glammer-2B.csv',
     translationFile: 'glammer-2B_ja.csv',
   },
@@ -640,7 +640,7 @@ function renderResultPanel() {
   const percent = totalAnswered > 0 ? Math.round((correct / totalAnswered) * 100) : 0;
   const summary = `結果: ${totalAnswered}問中${correct}問正解（${percent}%）`;
   const detail = wrong > 0 ? `誤答: ${wrong}問（「誤答のみ」で復習できます）` : '全問正解です！お疲れさまでした。';
-  resultEl.innerHTML = `<strong>${summary}</strong><br>${detail}`;
+  resultEl.innerHTML = `<div><strong>${summary}</strong></div><div style="font-size: 1.1rem; font-weight: 500; margin-top: 4px; opacity: 0.9;">${detail}</div>`;
   resultEl.hidden = false;
 }
 
@@ -681,9 +681,9 @@ function showNextQuestion() {
     let poolIndexes = getActivePoolIndexes();
     if (!poolIndexes.length) {
       if (quizMode === 'wrong-only') {
-        statusEl.textContent = '誤答した問題はありません。通常モードに戻ります。';
-        setQuizMode('all', { silent: true });
-        poolIndexes = getActivePoolIndexes();
+        statusEl.textContent = '誤答した問題はありません。';
+        finishSession();
+        return;
       }
       if (!poolIndexes.length) {
         questionEl.innerHTML = '<span class="quiz__question-text">出題できる問題がありません。</span>';
@@ -942,8 +942,8 @@ function handleDescriptiveSubmit(userAnswer) {
 
   if (quizMode === 'wrong-only') {
     if (wrongQuestionIds.size === 0) {
-      statusEl.textContent = '誤答した問題を解き終わりました。通常モードに戻ります。';
-      setQuizMode('all', { silent: true });
+      statusEl.textContent = '誤答した問題を解き終わりました。';
+      finishSession();
     } else {
       prepareOrder(getActivePoolIndexes());
     }
