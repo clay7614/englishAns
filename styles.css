@@ -2124,10 +2124,138 @@ input:checked + .toggle-switch__slider:before {
 }
 
 /* ===========================================
+   スコア表示
+   =========================================== */
+
+.score-display {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(30, 30, 30, 0.9));
+  color: white;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transform: translateX(-100px) scale(0.5);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(255, 215, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  min-width: 120px;
+}
+
+.score-display--visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.score-display__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 215, 0, 0.9);
+}
+
+.score-display__value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+.score-display__add {
+  position: absolute;
+  top: 50%;
+  right: -60px;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #4ECDC4;
+  text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.score-display__add--animate {
+  animation: score-add-pop 1s ease-out forwards;
+}
+
+@keyframes score-add-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-20px) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) scale(1.2);
+  }
+  40% {
+    transform: translateY(-50%) translateX(0) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(10px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(30px) scale(0.8);
+  }
+}
+
+/* スコアが高くなると光る */
+.score-display--high {
+  border-color: #FFD700;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(255, 215, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: score-glow 1.5s ease infinite;
+}
+
+@keyframes score-glow {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 0 30px rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 0 50px rgba(255, 215, 0, 0.6);
+  }
+}
+
+/* ===========================================
    モバイル対応（追加）
    =========================================== */
 
 @media (max-width: 600px) {
+  .score-display {
+    top: 60px;
+    left: 10px;
+    padding: 8px 12px;
+    min-width: 90px;
+  }
+  
+  .score-display__value {
+    font-size: 1.4rem;
+  }
+  
+  .score-display__add {
+    right: -50px;
+    font-size: 1rem;
+  }
+  
   .combo-display {
     top: 60px;
     right: 10px;
@@ -2854,3 +2982,4 @@ input:checked + .toggle-switch__slider:before {
   70% { transform: translate(6px, -3px) rotate(0.3deg); }
   80% { transform: translate(-4px, 2px) rotate(-0.1deg); }
   90% { transform: translate(4px, -2px) rotate(0.1deg); }
+}

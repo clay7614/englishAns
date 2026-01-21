@@ -125,6 +125,11 @@ let comboCount = 0;
 let maxCombo = 0;
 let sessionMaxCombo = 0;
 
+// スコアシステム用変数
+let currentScore = 0;
+let sessionHighScore = 0;
+const BASE_SCORE = 100; // 基本スコア
+
 // 間違い統計用ストレージキー
 const MISTAKE_STATS_KEY = 'english_ans_mistake_stats';
 
@@ -584,6 +589,8 @@ function startQuiz(enableTranslations) {
   totalCount = 0;
   comboCount = 0;
   sessionMaxCombo = 0;
+  currentScore = 0; // スコアをリセット
+  resetScore();
   resetResultPanel();
   hideWrongOnlyControl();
   updateScoreboard();
@@ -2127,8 +2134,11 @@ function incrementCombo() {
   }
   updateComboDisplay();
   
+  // スコアを加算
+  addScore();
+  
   // マイルストーンでボーナスポップアップ
-  if (effectsEnabled && [5, 10, 20, 30, 50, 100].includes(comboCount)) {
+  if (effectsEnabled && [5, 10, 20, 30, 40, 50].includes(comboCount)) {
     showComboMilestone(comboCount);
   }
 }
@@ -2145,6 +2155,121 @@ function resetCombo() {
     }
   }
   comboCount = 0;
+}
+
+// ===========================================
+// スコアシステム
+// ===========================================
+
+function calculateScore() {
+  // コンボに応じてスコアが加速度的に増加
+  // 基本スコア × (1 + コンボ数 × 0.2) × コンボボーナス
+  const comboMultiplier = 1 + (comboCount * 0.2);
+  
+  // コンボ数に応じたボーナス倍率
+  let bonusMultiplier = 1;
+  if (comboCount >= 50) {
+    bonusMultiplier = 5.0;
+  } else if (comboCount >= 40) {
+    bonusMultiplier = 4.0;
+  } else if (comboCount >= 30) {
+    bonusMultiplier = 3.0;
+  } else if (comboCount >= 20) {
+    bonusMultiplier = 2.5;
+  } else if (comboCount >= 10) {
+    bonusMultiplier = 2.0;
+  } else if (comboCount >= 5) {
+    bonusMultiplier = 1.5;
+  }
+  
+  const score = Math.floor(BASE_SCORE * comboMultiplier * bonusMultiplier);
+  return score;
+}
+
+function addScore() {
+  const scoreToAdd = calculateScore();
+  currentScore += scoreToAdd;
+  
+  if (currentScore > sessionHighScore) {
+    sessionHighScore = currentScore;
+  }
+  
+  updateScoreDisplay(scoreToAdd);
+}
+
+function updateScoreDisplay(addedScore = 0) {
+  const scoreDisplay = document.querySelector('[data-score-display]');
+  const scoreValue = document.querySelector('[data-score-value]');
+  const scoreAdd = document.querySelector('[data-score-add]');
+  
+  if (!scoreDisplay || !scoreValue) return;
+  
+  // スコア表示を表示
+  if (effectsEnabled && currentScore > 0) {
+    scoreDisplay.hidden = false;
+    scoreDisplay.classList.add('score-display--visible');
+    
+    // スコア値をアニメーション付きで更新
+    animateScoreValue(scoreValue, currentScore);
+    
+    // 加算スコアを表示
+    if (addedScore > 0 && scoreAdd) {
+      scoreAdd.textContent = `+${addedScore.toLocaleString()}`;
+      scoreAdd.hidden = false;
+      scoreAdd.classList.remove('score-display__add--animate');
+      void scoreAdd.offsetWidth;
+      scoreAdd.classList.add('score-display__add--animate');
+      
+      setTimeout(() => {
+        scoreAdd.hidden = true;
+        scoreAdd.classList.remove('score-display__add--animate');
+      }, 1000);
+    }
+  }
+}
+
+function animateScoreValue(element, targetValue) {
+  const currentValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
+  const diff = targetValue - currentValue;
+  const duration = 500;
+  const steps = 20;
+  const increment = diff / steps;
+  let step = 0;
+  
+  const interval = setInterval(() => {
+    step++;
+    const newValue = Math.floor(currentValue + increment * step);
+    element.textContent = newValue.toLocaleString();
+    
+    if (step >= steps) {
+      clearInterval(interval);
+      element.textContent = targetValue.toLocaleString();
+    }
+  }, duration / steps);
+}
+
+function resetScore() {
+  currentScore = 0;
+  const scoreDisplay = document.querySelector('[data-score-display]');
+  const scoreValue = document.querySelector('[data-score-value]');
+  
+  if (scoreDisplay) {
+    scoreDisplay.classList.remove('score-display--visible');
+    scoreDisplay.hidden = true;
+  }
+  if (scoreValue) {
+    scoreValue.textContent = '0';
+  }
+}
+
+function hideScoreDisplay() {
+  const scoreDisplay = document.querySelector('[data-score-display]');
+  if (!scoreDisplay) return;
+  
+  scoreDisplay.classList.remove('score-display--visible');
+  setTimeout(() => {
+    scoreDisplay.hidden = true;
+  }, 300);
 }
 
 function hideComboDisplay() {
@@ -2743,8 +2868,8 @@ function showComboMilestone(count) {
     10: { text: 'GREAT!', style: 'excellent' },
     20: { text: 'AMAZING!', style: 'excellent' },
     30: { text: 'FEVER!', style: 'fever' },
-    50: { text: 'INCREDIBLE!', style: 'perfect' },
-    100: { text: 'JACKPOT!', style: 'jackpot' }
+    40: { text: 'INCREDIBLE!', style: 'perfect' },
+    50: { text: 'JACKPOT!', style: 'jackpot' }
   };
   
   const milestone = messages[count];
@@ -2752,9 +2877,8 @@ function showComboMilestone(count) {
   
   showBigText(milestone.text, milestone.style);
   
-  // マイルストーンに応じた追加演出
+  // マイルストーンに応じた追加演出（フラッシュ削除）
   if (count >= 10) {
-    triggerFlash('golden');
     createFireworks(Math.floor(count / 10));
   }
   
@@ -2762,15 +2886,14 @@ function showComboMilestone(count) {
     playSound('fever');
   }
   
-  if (count >= 50) {
-    triggerFlash('rainbow');
-    createConfetti(50);
+  if (count >= 40) {
+    createConfetti(40);
   }
   
-  if (count === 100) {
+  if (count === 50) {
     playSound('jackpot');
     createLightning();
-    setTimeout(() => createFireworks(10), 500);
+    setTimeout(() => createFireworks(8), 500);
   }
 }
 
