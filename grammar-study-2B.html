@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#6750A4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>文法学習 2B | 英語テスト</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="grammar-study.css">
+</head>
+<body>
+  <main class="app animate-fade-in">
+    <header class="app__header">
+      <h1>文法学習 2B</h1>
+      <p class="app__status">glammer-2Bの英文法ポイントを学習しましょう</p>
+      <a href="index.html" class="grammar-study__back-link">
+        <span class="material-symbols-outlined">arrow_back</span>
+        クイズに戻る
+      </a>
+      <div class="grammar-study__controls">
+        <label class="grammar-study__toggle">
+          <span class="grammar-study__toggle-label">日本語解説</span>
+          <span class="toggle-switch">
+            <input type="checkbox" data-translation-toggle checked aria-label="日本語解説の表示切替">
+            <span class="toggle-switch__slider" aria-hidden="true"></span>
+          </span>
+        </label>
+      </div>
+    </header>
+
+    <nav class="grammar-nav" aria-label="文法トピック">
+      <ul class="grammar-nav__list" id="topicNav">
+        <!-- Topics will be inserted by JavaScript -->
+      </ul>
+    </nav>
+
+    <section class="grammar-content" id="grammarContent">
+      <!-- Content will be inserted by JavaScript -->
+    </section>
+
+    <div class="grammar-study__quick-tips">
+      <h2>迷ったときのチェックポイント</h2>
+      <ol class="grammar-study__checklist">
+        <li><strong>関係代名詞 vs 関係副詞？</strong> → 先行詞の後に「名詞が欠けている」なら関係代名詞、「完全な文」なら関係副詞</li>
+        <li><strong>who vs whom？</strong> → 主格ならwho、目的格ならwhom（前置詞の後は必ずwhom）</li>
+        <li><strong>that vs which？</strong> → 先行詞に最上級/only/allがあればthat、非制限用法ではwhich</li>
+        <li><strong>仮定法過去 vs 過去完了？</strong> → 現在の仮定ならwere/did、過去の仮定ならhad+p.p.</li>
+        <li><strong>I wish の時制？</strong> → 現在の願望は過去形、過去の後悔はhad+p.p.</li>
+        <li><strong>as if の後は？</strong> → 事実に反する場合は仮定法（were/had been）</li>
+        <li><strong>hardly/scarcely？</strong> → 準否定語、「ほとんど〜ない」の意味</li>
+        <li><strong>複合関係詞の選択？</strong> → 名詞節ならwhatever/whoever、副詞節ならhowever/whenever/wherever</li>
+        <li><strong>It's time + 仮定法過去？</strong> → 「もう〜すべき時だ」は過去形を使う</li>
+      </ol>
+    </div>
+  </main>
+
+  <script type="module" src="grammar-study-2B.js"></script>
+  <script type="module" src="pwa.js"></script>
+</body>
+</html>
