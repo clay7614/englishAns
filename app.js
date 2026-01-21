@@ -2167,12 +2167,32 @@ function resetCombo() {
 
 // マイルストーンボーナススコア
 const MILESTONE_BONUS = {
-  5: 500,      // NICE!
-  10: 1500,    // GREAT!
-  20: 5000,    // AMAZING!
-  30: 15000,   // FEVER!
-  40: 50000,   // INCREDIBLE!
-  50: 100000   // JACKPOT!
+  5: 500,       // NICE!
+  10: 1000,     // GREAT!
+  20: 2000,     // AMAZING!
+  30: 5000,     // EXCELLENT!
+  40: 10000,    // FANTASTIC!
+  50: 50000,    // JACKPOT!
+  60: 8000,     // SUPER!
+  70: 12000,    // INCREDIBLE!
+  80: 18000,    // LEGENDARY!
+  90: 25000,    // GODLIKE!
+  100: 100000,  // JACKPOT!!
+  110: 15000,   // UNSTOPPABLE!
+  120: 22000,   // INSANE!
+  130: 30000,   // DIVINE!
+  140: 40000,   // MYTHICAL!
+  150: 200000,  // JACKPOT!!!
+  160: 35000,   // COSMIC!
+  170: 45000,   // SUPREME!
+  180: 55000,   // TRANSCENDENT!
+  190: 70000,   // ETERNAL!
+  200: 500000,  // JACKPOT!!!!
+  210: 60000,   // INFINITE!
+  220: 80000,   // ULTIMATE!
+  230: 100000,  // OMNIPOTENT!
+  240: 150000,  // IMMORTAL!
+  250: 1000000  // MEGA JACKPOT!!!!!
 };
 
 function calculateScore() {
@@ -2180,9 +2200,15 @@ function calculateScore() {
   // 基本スコア × (1 + コンボ数 × 0.2) × コンボボーナス
   const comboMultiplier = 1 + (comboCount * 0.2);
   
-  // コンボ数に応じたボーナス倍率
+  // コンボ数に応じたボーナス倍率（段階的に増加）
   let bonusMultiplier = 1;
-  if (comboCount >= 50) {
+  if (comboCount >= 200) {
+    bonusMultiplier = 15.0;
+  } else if (comboCount >= 150) {
+    bonusMultiplier = 10.0;
+  } else if (comboCount >= 100) {
+    bonusMultiplier = 7.0;
+  } else if (comboCount >= 50) {
     bonusMultiplier = 5.0;
   } else if (comboCount >= 40) {
     bonusMultiplier = 4.0;
@@ -2341,7 +2367,7 @@ function setupAudioOnFirstInteraction() {
   document.addEventListener('keydown', initAudio);
 }
 
-function playSound(type) {
+function playSound(type, options = {}) {
   console.log('playSound called:', type, 'effectsEnabled:', effectsEnabled);
   
   if (!effectsEnabled) {
@@ -2357,18 +2383,18 @@ function playSound(type) {
     if (ctx.state === 'suspended') {
       ctx.resume().then(() => {
         console.log('Resumed, now playing sound');
-        playSoundInternal(ctx, type);
+        playSoundInternal(ctx, type, options);
       });
       return;
     }
     
-    playSoundInternal(ctx, type);
+    playSoundInternal(ctx, type, options);
   } catch (e) {
     console.error('Audio playback failed:', e);
   }
 }
 
-function playSoundInternal(ctx, type) {
+function playSoundInternal(ctx, type, options = {}) {
     // feverとjackpotは別関数で処理
     if (type === 'fever') {
       playFeverFanfare(ctx);
@@ -2379,7 +2405,8 @@ function playSoundInternal(ctx, type) {
       return;
     }
     if (type === 'milestone') {
-      playMilestoneSound(ctx);
+      const level = options.level || 1;
+      playMilestoneSound(ctx, level);
       return;
     }
     
@@ -2465,22 +2492,67 @@ function playJackpotSound(ctx) {
   });
 }
 
-// マイルストーン到達時のコイン音
-function playMilestoneSound(ctx) {
-  // チャリンチャリン音（コインが増える感じ）
-  for (let i = 0; i < 5; i++) {
+// マイルストーン到達時のコイン音（進行度に応じて派手に）
+function playMilestoneSound(ctx, milestoneLevel = 1) {
+  // milestoneLevel: 1-25 (10刻みで250まで)
+  // レベルが高いほど音が長く、派手になる
+  
+  const coinCount = Math.min(5 + milestoneLevel * 3, 50); // 8〜50個のコイン音
+  const baseDelay = Math.max(0.03, 0.08 - milestoneLevel * 0.002); // 間隔が狭くなる
+  
+  for (let i = 0; i < coinCount; i++) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.frequency.value = 2000 + Math.random() * 1000;
+    
+    // コイン音: 高周波のキラキラ音
+    // レベルが上がると周波数のバリエーションが増える
+    const baseFreq = 2500 + Math.random() * 1500;
+    const freqVariation = milestoneLevel * 100;
+    osc.frequency.value = baseFreq + Math.random() * freqVariation;
     osc.type = 'sine';
-    const startTime = ctx.currentTime + i * 0.08;
+    
+    const startTime = ctx.currentTime + i * baseDelay;
+    const volume = Math.min(0.3 + milestoneLevel * 0.02, 0.6);
+    
     gain.gain.setValueAtTime(0, startTime);
-    gain.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.12);
+    
     osc.start(startTime);
-    osc.stop(startTime + 0.15);
+    osc.stop(startTime + 0.12);
+  }
+  
+  // JACKPOTレベル（50の倍数）はさらに派手なコイン音を追加
+  if (milestoneLevel % 5 === 0 && milestoneLevel > 0) {
+    playJackpotCoinShower(ctx, milestoneLevel);
+  }
+}
+
+// JACKPOTレベル用の大量コイン音
+function playJackpotCoinShower(ctx, level) {
+  const showerCount = Math.min(level * 2, 100);
+  
+  for (let i = 0; i < showerCount; i++) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    // より高く、キラキラした音
+    osc.frequency.value = 3000 + Math.random() * 2000;
+    osc.type = 'sine';
+    
+    const startTime = ctx.currentTime + 0.5 + i * 0.025;
+    const volume = 0.2 + Math.random() * 0.2;
+    
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+    
+    osc.start(startTime);
+    osc.stop(startTime + 0.1);
   }
 }
 
@@ -2956,15 +3028,36 @@ function createLightning() {
   }
 }
 
-// コンボマイルストーン演出（強化版）
+// コンボマイルストーン演出（大幅拡張版）
 function showComboMilestone(count) {
+  // 10刻みで250まで、50毎にJACKPOT
   const messages = {
     5: { text: 'NICE!', style: 'combo-bonus' },
     10: { text: 'GREAT!', style: 'excellent' },
     20: { text: 'AMAZING!', style: 'excellent' },
-    30: { text: 'FEVER!', style: 'fever' },
-    40: { text: 'INCREDIBLE!', style: 'perfect' },
-    50: { text: 'JACKPOT!', style: 'jackpot' }
+    30: { text: 'EXCELLENT!', style: 'excellent' },
+    40: { text: 'FANTASTIC!', style: 'perfect' },
+    50: { text: 'JACKPOT!', style: 'jackpot' },
+    60: { text: 'SUPER!', style: 'excellent' },
+    70: { text: 'INCREDIBLE!', style: 'excellent' },
+    80: { text: 'LEGENDARY!', style: 'perfect' },
+    90: { text: 'GODLIKE!', style: 'fever' },
+    100: { text: 'JACKPOT!!', style: 'jackpot' },
+    110: { text: 'UNSTOPPABLE!', style: 'excellent' },
+    120: { text: 'INSANE!', style: 'perfect' },
+    130: { text: 'DIVINE!', style: 'fever' },
+    140: { text: 'MYTHICAL!', style: 'perfect' },
+    150: { text: 'JACKPOT!!!', style: 'jackpot' },
+    160: { text: 'COSMIC!', style: 'excellent' },
+    170: { text: 'SUPREME!', style: 'fever' },
+    180: { text: 'TRANSCENDENT!', style: 'perfect' },
+    190: { text: 'ETERNAL!', style: 'fever' },
+    200: { text: 'JACKPOT!!!!', style: 'jackpot' },
+    210: { text: 'INFINITE!', style: 'fever' },
+    220: { text: 'ULTIMATE!', style: 'perfect' },
+    230: { text: 'OMNIPOTENT!', style: 'fever' },
+    240: { text: 'IMMORTAL!', style: 'perfect' },
+    250: { text: 'MEGA JACKPOT!!!!!', style: 'jackpot' }
   };
   
   const milestone = messages[count];
@@ -2972,26 +3065,59 @@ function showComboMilestone(count) {
   
   showBigText(milestone.text, milestone.style);
   
-  // マイルストーン音（コインが増える音）
-  playSound('milestone');
+  // マイルストーンレベル（1〜25）を計算
+  const milestoneLevel = Math.floor(count / 10);
   
-  // マイルストーンに応じた追加演出
-  if (count >= 5 && count < 30) {
-    createFireworks(Math.floor(count / 5));
+  // マイルストーン音（レベルに応じて派手に）
+  playSound('milestone', { level: milestoneLevel });
+  
+  // 基本演出（レベルに応じてスケール）
+  const fireworkCount = Math.min(Math.floor(count / 15), 15);
+  const confettiCount = Math.min(count, 200);
+  
+  if (count >= 10) {
+    createFireworks(fireworkCount);
   }
   
-  if (count >= 30 && count < 50) {
-    playSound('fever');
-    createFireworks(count / 10);
-    createConfetti(count);
+  if (count >= 30) {
+    createConfetti(confettiCount);
   }
   
-  if (count === 50) {
+  // JACKPOTレベル（50の倍数）の特別演出
+  if (count % 50 === 0) {
     playSound('jackpot');
     createLightning();
-    createConfetti(100);
-    setTimeout(() => createFireworks(10), 300);
-    setTimeout(() => createFireworks(10), 600);
+    
+    // 連続花火
+    const jackpotLevel = count / 50;
+    for (let i = 0; i < jackpotLevel * 2; i++) {
+      setTimeout(() => createFireworks(10), i * 200);
+    }
+    
+    // 大量紙吹雪
+    createConfetti(jackpotLevel * 50);
+  }
+  
+  // 100以上はさらに派手に
+  if (count >= 100) {
+    setTimeout(() => createLightning(), 300);
+  }
+  
+  // 200以上は超派手
+  if (count >= 200) {
+    setTimeout(() => createLightning(), 600);
+    setTimeout(() => createFireworks(15), 400);
+  }
+  
+  // 250達成時は最大級の演出
+  if (count === 250) {
+    for (let i = 0; i < 10; i++) {
+      setTimeout(() => {
+        createLightning();
+        createFireworks(20);
+        createConfetti(100);
+      }, i * 150);
+    }
   }
 }
 
