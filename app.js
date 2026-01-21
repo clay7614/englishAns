@@ -118,6 +118,15 @@ let readyToRestart = false;
 let translationControlVisible = true;
 let shuffleOptionsEnabled = true;
 let darkModeEnabled = false;
+let effectsEnabled = true;
+
+// コンボシステム用変数
+let comboCount = 0;
+let maxCombo = 0;
+let sessionMaxCombo = 0;
+
+// 間違い統計用ストレージキー
+const MISTAKE_STATS_KEY = 'english_ans_mistake_stats';
 
 const SETTINGS_KEY = 'english_ans_settings';
 
@@ -127,7 +136,8 @@ function saveSettings() {
     translationControlVisible,
     shuffleOptionsEnabled,
     darkModeEnabled,
-    allowDuplicates
+    allowDuplicates,
+    effectsEnabled
   };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
@@ -142,6 +152,7 @@ function loadSettings() {
       if (settings.shuffleOptionsEnabled !== undefined) shuffleOptionsEnabled = settings.shuffleOptionsEnabled;
       if (settings.darkModeEnabled !== undefined) darkModeEnabled = settings.darkModeEnabled;
       if (settings.allowDuplicates !== undefined) allowDuplicates = settings.allowDuplicates;
+      if (settings.effectsEnabled !== undefined) effectsEnabled = settings.effectsEnabled;
       
       // Update UI
       if (autoAdvanceCheckbox) autoAdvanceCheckbox.checked = autoAdvanceEnabled;
@@ -149,6 +160,10 @@ function loadSettings() {
       if (optionShuffleCheckbox) optionShuffleCheckbox.checked = shuffleOptionsEnabled;
       if (darkModeCheckbox) darkModeCheckbox.checked = darkModeEnabled;
       if (duplicatesToggle) duplicatesToggle.checked = allowDuplicates;
+      
+      // コンボ・エフェクト設定
+      const effectsToggle = document.querySelector('[data-settings-effects-toggle]');
+      if (effectsToggle) effectsToggle.checked = effectsEnabled;
       
       updateAutoAdvanceControl();
       updateTranslationControlVisibility();
@@ -189,12 +204,30 @@ historyButton?.addEventListener('click', handleHistoryButtonClick);
 overlay?.addEventListener('click', () => {
   closeSettingsPanel();
   closeHistoryPanel();
+  closeMistakeRankingPanel();
 });
 historyCloseButton?.addEventListener('click', closeHistoryPanel);
 historyDeleteAllButton?.addEventListener('click', handleDeleteAllHistory);
 historyDatasetSelect?.addEventListener('change', () => renderHistory());
 historyIntervalSelect?.addEventListener('change', () => renderHistory());
 historyPanel?.addEventListener('click', (event) => event.stopPropagation());
+
+// コンボ・エフェクト設定のイベントリスナー
+const effectsToggle = document.querySelector('[data-settings-effects-toggle]');
+effectsToggle?.addEventListener('change', handleEffectsToggleChange);
+
+// 間違いランキング関連のイベントリスナー
+const mistakeRankingButton = document.querySelector('[data-open-mistake-ranking]');
+const mistakeRankingPanel = document.querySelector('[data-mistake-ranking-panel]');
+const mistakeRankingCloseButton = document.querySelector('[data-close-mistake-ranking]');
+const mistakeRankingDatasetSelect = document.querySelector('[data-mistake-ranking-dataset-select]');
+const practiceMistakesButton = document.querySelector('[data-practice-mistakes]');
+
+mistakeRankingButton?.addEventListener('click', handleMistakeRankingButtonClick);
+mistakeRankingCloseButton?.addEventListener('click', closeMistakeRankingPanel);
+mistakeRankingDatasetSelect?.addEventListener('change', () => renderMistakeRanking());
+practiceMistakesButton?.addEventListener('click', handlePracticeMistakes);
+mistakeRankingPanel?.addEventListener('click', (event) => event.stopPropagation());
 
 document.addEventListener('click', (event) => {
   if (settingsPanelOpen && !settingsPanel.contains(event.target) && !settingsButton.contains(event.target)) {
@@ -549,11 +582,14 @@ function startQuiz(enableTranslations) {
   nextButton.disabled = true;
   correctCount = 0;
   totalCount = 0;
+  comboCount = 0;
+  sessionMaxCombo = 0;
   resetResultPanel();
   hideWrongOnlyControl();
   updateScoreboard();
   updateTranslationToggleLabel();
   updateAutoAdvanceControl();
+  updateComboDisplay();
   const canContinue = setQuizMode('all', { silent: true });
   statusEl.textContent = `${questionLimit} 問を出題します。`;
   if (canContinue) {
@@ -910,6 +946,10 @@ function handleDescriptiveSubmit(userAnswer) {
     feedbackEl.innerHTML = '<span class="material-symbols-outlined">check_circle</span> 正解！';
     feedbackEl.classList.add('quiz__feedback--correct');
     if (input) input.classList.add('quiz__descriptive-input--correct');
+    
+    // コンボシステム - 正解時
+    incrementCombo();
+    playCorrectEffects();
   } else {
     wrongQuestionIds.add(questionId);
     feedbackEl.innerHTML = `
@@ -920,6 +960,13 @@ function handleDescriptiveSubmit(userAnswer) {
     `;
     feedbackEl.classList.add('quiz__feedback--wrong');
     if (input) input.classList.add('quiz__descriptive-input--wrong');
+    
+    // コンボシステム - 不正解時
+    resetCombo();
+    playWrongEffects();
+    
+    // 間違い統計を保存
+    saveMistakeStats(questionId);
   }
   questionStats.set(questionId, stats);
 
@@ -986,6 +1033,10 @@ function handleOptionClick(button, selectedOptionIndex) {
     wrongQuestionIds.delete(questionId);
     feedbackEl.innerHTML = '<span class="material-symbols-outlined">check_circle</span> 正解！';
     feedbackEl.classList.add('quiz__feedback--correct');
+    
+    // コンボシステム - 正解時
+    incrementCombo();
+    playCorrectEffects();
   } else {
     wrongQuestionIds.add(questionId);
     feedbackEl.innerHTML = `
@@ -995,6 +1046,13 @@ function handleOptionClick(button, selectedOptionIndex) {
       <div class="quiz__feedback-correct-answer">正解: <strong>${escapeHtml(currentQuestion.options[currentQuestion.answerIndex])}</strong></div>
     `;
     feedbackEl.classList.add('quiz__feedback--wrong');
+    
+    // コンボシステム - 不正解時
+    resetCombo();
+    playWrongEffects();
+    
+    // 間違い統計を保存
+    saveMistakeStats(questionId);
   }
   questionStats.set(questionId, stats);
 
@@ -1374,7 +1432,16 @@ function finishSession() {
     saveResult(activeDataset, correctCount, totalCount);
   }
 
-  statusEl.textContent = `指定した ${questionLimit} 問の出題が完了しました。`;
+  // セッションの最大コンボを含めた完了メッセージ
+  let finishMessage = `指定した ${questionLimit} 問の出題が完了しました。`;
+  if (sessionMaxCombo >= 3) {
+    finishMessage += ` 最大コンボ: ${sessionMaxCombo}`;
+  }
+  statusEl.textContent = finishMessage;
+  
+  // コンボ表示を隠す
+  hideComboDisplay();
+  
   nextButton.disabled = false;
   order = [];
   orderPointer = 0;
@@ -1440,6 +1507,9 @@ function returnToStartScreen(goBackToSelection = false) {
   wrongQuestionIds.clear();
   correctCount = 0;
   totalCount = 0;
+  comboCount = 0;
+  sessionMaxCombo = 0;
+  hideComboDisplay();
   updateScoreboard();
   resetResultPanel();
   hideWrongOnlyControl();
@@ -2041,5 +2111,452 @@ function handleDeleteAllHistory() {
   } catch (e) {
     console.error('Failed to delete history', e);
     alert('履歴の削除に失敗しました。');
+  }
+}
+// ===========================================
+// コンボシステム
+// ===========================================
+
+function incrementCombo() {
+  comboCount += 1;
+  if (comboCount > maxCombo) {
+    maxCombo = comboCount;
+  }
+  if (comboCount > sessionMaxCombo) {
+    sessionMaxCombo = comboCount;
+  }
+  updateComboDisplay();
+  
+  // マイルストーンでボーナスポップアップ
+  if (effectsEnabled && [5, 10, 20, 30, 50, 100].includes(comboCount)) {
+    showComboMilestone(comboCount);
+  }
+}
+
+function resetCombo() {
+  if (comboCount > 0 && effectsEnabled) {
+    // コンボが途切れた演出
+    hideComboDisplay();
+  }
+  comboCount = 0;
+}
+
+function updateComboDisplay() {
+  const comboDisplay = document.querySelector('[data-combo-display]');
+  const comboCountEl = document.querySelector('[data-combo-count]');
+  
+  if (!comboDisplay || !comboCountEl) return;
+  
+  if (comboCount >= 2 && effectsEnabled) {
+    comboCountEl.textContent = comboCount;
+    comboDisplay.hidden = false;
+    comboDisplay.classList.add('combo-display--visible');
+    comboDisplay.classList.add('combo-display--pulse');
+    
+    // マイルストーンクラスの適用
+    comboDisplay.classList.remove('combo-display--milestone-5', 'combo-display--milestone-10', 'combo-display--milestone-20', 'combo-display--milestone-50');
+    if (comboCount >= 50) {
+      comboDisplay.classList.add('combo-display--milestone-50');
+    } else if (comboCount >= 20) {
+      comboDisplay.classList.add('combo-display--milestone-20');
+    } else if (comboCount >= 10) {
+      comboDisplay.classList.add('combo-display--milestone-10');
+    } else if (comboCount >= 5) {
+      comboDisplay.classList.add('combo-display--milestone-5');
+    }
+    
+    setTimeout(() => {
+      comboDisplay.classList.remove('combo-display--pulse');
+    }, 300);
+  } else {
+    hideComboDisplay();
+  }
+}
+
+function hideComboDisplay() {
+  const comboDisplay = document.querySelector('[data-combo-display]');
+  if (!comboDisplay) return;
+  
+  comboDisplay.classList.remove('combo-display--visible');
+  setTimeout(() => {
+    comboDisplay.hidden = true;
+  }, 300);
+}
+
+function showComboMilestone(count) {
+  const messages = {
+    5: 'NICE!',
+    10: 'GREAT!',
+    20: 'AMAZING!',
+    30: 'FANTASTIC!',
+    50: 'INCREDIBLE!',
+    100: 'LEGENDARY!'
+  };
+  
+  const popup = document.createElement('div');
+  popup.className = 'combo-bonus-popup';
+  popup.textContent = messages[count] || `${count} COMBO!`;
+  document.body.appendChild(popup);
+  
+  // パーティクルを発生させる
+  createParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 20);
+  
+  setTimeout(() => {
+    popup.remove();
+  }, 1000);
+}
+
+// ===========================================
+// エフェクトシステム
+// ===========================================
+
+function playCorrectEffects() {
+  if (!effectsEnabled) return;
+  
+  // 正解フラッシュ
+  const quizCard = document.querySelector('.quiz__card');
+  if (quizCard) {
+    quizCard.classList.add('correct-flash');
+    setTimeout(() => quizCard.classList.remove('correct-flash'), 500);
+  }
+  
+  // パーティクル
+  const rect = feedbackEl.getBoundingClientRect();
+  createParticleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);
+  
+  // コンボ5以上で追加エフェクト
+  if (comboCount >= 5) {
+    createStarBurst(window.innerWidth / 2, window.innerHeight / 2, Math.min(comboCount, 15));
+  }
+}
+
+function playWrongEffects() {
+  if (!effectsEnabled) return;
+  
+  // 不正解フラッシュ
+  const quizCard = document.querySelector('.quiz__card');
+  if (quizCard) {
+    quizCard.classList.add('incorrect-flash');
+    setTimeout(() => quizCard.classList.remove('incorrect-flash'), 500);
+  }
+  
+  // スクリーンシェイク
+  document.body.classList.add('screen-shake');
+  setTimeout(() => document.body.classList.remove('screen-shake'), 400);
+}
+
+function createParticleBurst(x, y, count) {
+  const container = document.querySelector('[data-particle-container]');
+  if (!container) return;
+  
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#A8E6CF', '#FFB7B2'];
+  
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle particle--circle';
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    
+    // ランダムな方向に飛ばす
+    const angle = (Math.PI * 2 * i) / count;
+    const distance = 50 + Math.random() * 100;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+    
+    particle.style.setProperty('--dx', `${dx}px`);
+    particle.style.setProperty('--dy', `${dy}px`);
+    particle.style.animation = `particle-explode 0.8s ease-out forwards`;
+    
+    container.appendChild(particle);
+    
+    setTimeout(() => particle.remove(), 800);
+  }
+}
+
+function createStarBurst(x, y, count) {
+  const container = document.querySelector('[data-particle-container]');
+  if (!container) return;
+  
+  const stars = ['*', '+', 'x'];
+  
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle particle--star';
+    particle.textContent = stars[Math.floor(Math.random() * stars.length)];
+    particle.style.color = '#FFD700';
+    particle.style.left = `${x + (Math.random() - 0.5) * 200}px`;
+    particle.style.top = `${y + (Math.random() - 0.5) * 100}px`;
+    particle.style.fontSize = `${1 + Math.random() * 1.5}rem`;
+    
+    container.appendChild(particle);
+    
+    setTimeout(() => particle.remove(), 1500);
+  }
+}
+
+function handleEffectsToggleChange() {
+  const effectsToggle = document.querySelector('[data-settings-effects-toggle]');
+  effectsEnabled = Boolean(effectsToggle?.checked);
+  saveSettings();
+  
+  if (!effectsEnabled) {
+    hideComboDisplay();
+  } else if (comboCount >= 2) {
+    updateComboDisplay();
+  }
+}
+
+// ===========================================
+// 間違いランキング
+// ===========================================
+
+let mistakeRankingPanelOpen = false;
+
+function getMistakeStats() {
+  try {
+    const data = localStorage.getItem(MISTAKE_STATS_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch (e) {
+    console.error('Failed to load mistake stats', e);
+    return {};
+  }
+}
+
+function saveMistakeStats(questionId) {
+  if (!activeDataset || !currentQuestion) return;
+  
+  try {
+    const stats = getMistakeStats();
+    const key = `${activeDataset.id}:${questionId}`;
+    
+    if (!stats[key]) {
+      stats[key] = {
+        datasetId: activeDataset.id,
+        questionId: questionId,
+        questionText: currentQuestion.question,
+        correctAnswer: currentQuestion.correctAnswer || 
+          (currentQuestion.options ? currentQuestion.options[currentQuestion.answerIndex] : ''),
+        mistakeCount: 0,
+        lastMistake: null
+      };
+    }
+    
+    stats[key].mistakeCount += 1;
+    stats[key].lastMistake = Date.now();
+    
+    localStorage.setItem(MISTAKE_STATS_KEY, JSON.stringify(stats));
+  } catch (e) {
+    console.error('Failed to save mistake stats', e);
+  }
+}
+
+function handleMistakeRankingButtonClick() {
+  closeSettingsPanel();
+  openMistakeRankingPanel();
+}
+
+function openMistakeRankingPanel() {
+  const panel = document.querySelector('[data-mistake-ranking-panel]');
+  const overlay = document.querySelector('[data-overlay]');
+  
+  if (!panel) return;
+  
+  mistakeRankingPanelOpen = true;
+  panel.hidden = false;
+  overlay.hidden = false;
+  
+  // データセット選択肢を更新
+  updateMistakeRankingDatasetSelect();
+  renderMistakeRanking();
+}
+
+function closeMistakeRankingPanel() {
+  const panel = document.querySelector('[data-mistake-ranking-panel]');
+  const overlay = document.querySelector('[data-overlay]');
+  
+  if (!panel) return;
+  
+  mistakeRankingPanelOpen = false;
+  panel.hidden = true;
+  
+  if (!settingsPanelOpen && !historyPanelOpen) {
+    overlay.hidden = true;
+  }
+}
+
+function updateMistakeRankingDatasetSelect() {
+  const select = document.querySelector('[data-mistake-ranking-dataset-select]');
+  if (!select) return;
+  
+  select.innerHTML = '<option value="all">すべての問題集</option>';
+  
+  QUESTION_DATASETS.forEach(dataset => {
+    const option = document.createElement('option');
+    option.value = dataset.id;
+    option.textContent = dataset.title;
+    select.appendChild(option);
+  });
+}
+
+function renderMistakeRanking() {
+  const content = document.querySelector('[data-mistake-ranking-content]');
+  const select = document.querySelector('[data-mistake-ranking-dataset-select]');
+  const practiceBtn = document.querySelector('[data-practice-mistakes]');
+  
+  if (!content) return;
+  
+  const selectedDataset = select?.value || 'all';
+  const stats = getMistakeStats();
+  
+  // フィルタリングとソート
+  let items = Object.values(stats);
+  
+  if (selectedDataset !== 'all') {
+    items = items.filter(item => item.datasetId === selectedDataset);
+  }
+  
+  // 間違い回数で降順ソート
+  items.sort((a, b) => b.mistakeCount - a.mistakeCount);
+  
+  // 上位50件に制限
+  items = items.slice(0, 50);
+  
+  if (items.length === 0) {
+    content.innerHTML = '<p class="mistake-ranking-panel__empty">間違えた問題はありません。</p>';
+    if (practiceBtn) practiceBtn.disabled = true;
+    return;
+  }
+  
+  if (practiceBtn) practiceBtn.disabled = false;
+  
+  content.innerHTML = items.map((item, index) => {
+    const dataset = QUESTION_DATASETS.find(d => d.id === item.datasetId);
+    const datasetTitle = dataset ? dataset.title : item.datasetId;
+    const rankClass = index < 3 ? `mistake-ranking-item__rank--${index + 1}` : '';
+    
+    return `
+      <div class="mistake-ranking-item">
+        <div class="mistake-ranking-item__rank ${rankClass}">${index + 1}</div>
+        <div class="mistake-ranking-item__content">
+          <div class="mistake-ranking-item__question">${escapeHtml(item.questionText)}</div>
+          <div class="mistake-ranking-item__meta">
+            <span class="mistake-ranking-item__count">
+              <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
+              ${item.mistakeCount}回
+            </span>
+            <span class="mistake-ranking-item__dataset">${escapeHtml(datasetTitle)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function handlePracticeMistakes() {
+  const select = document.querySelector('[data-mistake-ranking-dataset-select]');
+  const selectedDataset = select?.value || 'all';
+  const stats = getMistakeStats();
+  
+  // 練習する問題を取得
+  let items = Object.values(stats);
+  
+  if (selectedDataset !== 'all') {
+    items = items.filter(item => item.datasetId === selectedDataset);
+  }
+  
+  if (items.length === 0) {
+    alert('練習する問題がありません。');
+    return;
+  }
+  
+  // 間違い回数が多い順にソート
+  items.sort((a, b) => b.mistakeCount - a.mistakeCount);
+  
+  // 上位20問に制限
+  items = items.slice(0, 20);
+  
+  closeMistakeRankingPanel();
+  
+  // 選択されたデータセットがある場合、そのデータセットで練習開始
+  if (selectedDataset !== 'all') {
+    const dataset = QUESTION_DATASETS.find(d => d.id === selectedDataset);
+    if (dataset) {
+      // 間違えた問題IDのセットを作成
+      const mistakeIds = new Set(items.map(item => item.questionId));
+      startMistakePractice(dataset, mistakeIds);
+    }
+  } else {
+    // 全体の場合は最初のデータセットで開始（改善の余地あり）
+    alert('特定の問題集を選択してから「間違えた問題を練習」を押してください。');
+  }
+}
+
+async function startMistakePractice(dataset, mistakeQuestionIds) {
+  // データセットを選択して読み込み
+  activeDataset = dataset;
+  
+  try {
+    statusEl.textContent = '読み込み中...';
+    const questions = await loadQuestions(dataset.questionFile);
+    const translations = await loadTranslations(dataset.translationFile);
+    
+    if (questions.length === 0) {
+      statusEl.textContent = '問題データがありません。';
+      return;
+    }
+    
+    // 全問題を設定
+    allQuestions = questions.map((q, index) => {
+      q.id = index;
+      q.translation = translations[index] || null;
+      return q;
+    });
+    
+    questionIndexById.clear();
+    allQuestions.forEach((q, idx) => questionIndexById.set(q.id, idx));
+    questionStats.clear();
+    
+    // 間違えた問題のIDをwrongQuestionIdsにセット
+    wrongQuestionIds.clear();
+    mistakeQuestionIds.forEach(id => {
+      if (questionIndexById.has(id)) {
+        wrongQuestionIds.add(id);
+      }
+    });
+    
+    if (wrongQuestionIds.size === 0) {
+      statusEl.textContent = '該当する問題が見つかりませんでした。';
+      return;
+    }
+    
+    // wrong-onlyモードで開始
+    quizMode = 'wrong-only';
+    wasWrongOnlySession = true;
+    quizStarted = true;
+    correctCount = 0;
+    totalCount = 0;
+    comboCount = 0;
+    sessionMaxCombo = 0;
+    
+    datasetSelectionSection.hidden = true;
+    translationChoiceSection.hidden = true;
+    quizSection.hidden = false;
+    
+    if (datasetTitleEl) {
+      datasetTitleEl.textContent = `${dataset.title} - 間違い練習`;
+    }
+    
+    showTranslations = userTranslationPreference;
+    updateTranslationState();
+    
+    prepareOrder(getActivePoolIndexes());
+    showNextQuestion();
+    
+    statusEl.textContent = `間違えた問題 ${wrongQuestionIds.size}問を練習します。`;
+    
+  } catch (error) {
+    console.error('Failed to start mistake practice', error);
+    statusEl.textContent = '読み込みに失敗しました。';
   }
 }

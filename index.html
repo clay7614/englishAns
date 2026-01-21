@@ -22,6 +22,37 @@
 <body>
   <div class="overlay" data-overlay hidden></div>
 
+  <!-- コンボ表示 -->
+  <div class="combo-display" data-combo-display hidden>
+    <div class="combo-display__count" data-combo-count>0</div>
+    <div class="combo-display__label">COMBO</div>
+  </div>
+
+  <!-- パーティクルコンテナ -->
+  <div class="particle-container" data-particle-container></div>
+
+  <!-- 間違いランキングパネル -->
+  <div class="mistake-ranking-panel" data-mistake-ranking-panel hidden>
+    <div class="mistake-ranking-panel__header">
+      <span class="mistake-ranking-panel__title">間違いランキング</span>
+      <button type="button" class="mistake-ranking-panel__close" data-close-mistake-ranking>
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="mistake-ranking-panel__controls">
+      <select class="mistake-ranking-panel__dataset-select" data-mistake-ranking-dataset-select aria-label="問題集でフィルタリング">
+        <option value="all">すべての問題集</option>
+      </select>
+      <button type="button" class="mistake-ranking-panel__practice-btn" data-practice-mistakes>
+        <span class="material-symbols-outlined">replay</span>
+        間違えた問題を練習
+      </button>
+    </div>
+    <div class="mistake-ranking-panel__content" data-mistake-ranking-content>
+      <p class="mistake-ranking-panel__empty">間違えた問題はありません。</p>
+    </div>
+  </div>
+
   <div class="history-panel" data-history-panel hidden>
     <div class="history-panel__header">
       <span class="history-panel__title">学習履歴</span>
@@ -93,6 +124,18 @@
           <span class="toggle-switch__slider" aria-hidden="true"></span>
         </span>
       </label>
+      <div class="settings-panel__divider"></div>
+      <label class="settings-panel__item settings-panel__item--toggle">
+        <span class="settings-panel__item-label">コンボ・演出効果</span>
+        <span class="toggle-switch">
+          <input type="checkbox" data-settings-effects-toggle checked>
+          <span class="toggle-switch__slider" aria-hidden="true"></span>
+        </span>
+      </label>
+      <button type="button" class="settings-panel__button" data-open-mistake-ranking>
+        <span class="material-symbols-outlined">leaderboard</span>
+        間違いランキング
+      </button>
     </div>
   </div>
 
