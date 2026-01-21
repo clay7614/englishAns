@@ -255,6 +255,7 @@ init().catch((error) => {
 
 async function init() {
   await loadFallbackData();
+  setupAudioOnFirstInteraction(); // 効果音の初期化
   handlePopState();
 }
 
@@ -2161,6 +2162,16 @@ function resetCombo() {
 // スコアシステム
 // ===========================================
 
+// マイルストーンボーナススコア
+const MILESTONE_BONUS = {
+  5: 500,      // NICE!
+  10: 1500,    // GREAT!
+  20: 5000,    // AMAZING!
+  30: 15000,   // FEVER!
+  40: 50000,   // INCREDIBLE!
+  50: 100000   // JACKPOT!
+};
+
 function calculateScore() {
   // コンボに応じてスコアが加速度的に増加
   // 基本スコア × (1 + コンボ数 × 0.2) × コンボボーナス
@@ -2182,7 +2193,13 @@ function calculateScore() {
     bonusMultiplier = 1.5;
   }
   
-  const score = Math.floor(BASE_SCORE * comboMultiplier * bonusMultiplier);
+  let score = Math.floor(BASE_SCORE * comboMultiplier * bonusMultiplier);
+  
+  // マイルストーンボーナスを追加
+  if (MILESTONE_BONUS[comboCount]) {
+    score += MILESTONE_BONUS[comboCount];
+  }
+  
   return score;
 }
 
@@ -2231,18 +2248,27 @@ function updateScoreDisplay(addedScore = 0) {
 function animateScoreValue(element, targetValue) {
   const currentValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
   const diff = targetValue - currentValue;
-  const duration = 500;
-  const steps = 20;
+  const duration = 2000; // 2秒かけてアニメーション
+  const steps = 60;
   const increment = diff / steps;
   let step = 0;
   
-  const interval = setInterval(() => {
+  // 既存のアニメーションをキャンセル
+  if (element._scoreAnimationInterval) {
+    clearInterval(element._scoreAnimationInterval);
+  }
+  
+  element._scoreAnimationInterval = setInterval(() => {
     step++;
-    const newValue = Math.floor(currentValue + increment * step);
+    // イージング（最初は速く、後半はゆっくり）
+    const progress = step / steps;
+    const easedProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const newValue = Math.floor(currentValue + diff * easedProgress);
     element.textContent = newValue.toLocaleString();
     
     if (step >= steps) {
-      clearInterval(interval);
+      clearInterval(element._scoreAnimationInterval);
+      element._scoreAnimationInterval = null;
       element.textContent = targetValue.toLocaleString();
     }
   }, duration / steps);
@@ -2288,7 +2314,24 @@ function initAudioContext() {
   if (!audioContext) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
   }
+  // サスペンド状態の場合は再開
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
   return audioContext;
+}
+
+// 最初のユーザー操作でAudioContextを初期化
+function setupAudioOnFirstInteraction() {
+  const initAudio = () => {
+    initAudioContext();
+    document.removeEventListener('click', initAudio);
+    document.removeEventListener('touchstart', initAudio);
+    document.removeEventListener('keydown', initAudio);
+  };
+  document.addEventListener('click', initAudio, { once: true });
+  document.addEventListener('touchstart', initAudio, { once: true });
+  document.addEventListener('keydown', initAudio, { once: true });
 }
 
 function playSound(type) {
@@ -2296,8 +2339,19 @@ function playSound(type) {
   
   try {
     const ctx = initAudioContext();
-    if (ctx.state === 'suspended') {
-      ctx.resume();
+    
+    // feverとjackpotは別関数で処理
+    if (type === 'fever') {
+      playFeverFanfare(ctx);
+      return;
+    }
+    if (type === 'jackpot') {
+      playJackpotSound(ctx);
+      return;
+    }
+    if (type === 'milestone') {
+      playMilestoneSound(ctx);
+      return;
     }
     
     const oscillator = ctx.createOscillator();
@@ -2312,7 +2366,7 @@ function playSound(type) {
         oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
         oscillator.frequency.exponentialRampToValueAtTime(784, ctx.currentTime + 0.1); // G5
         oscillator.type = 'sine';
-        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
         oscillator.start(ctx.currentTime);
         oscillator.stop(ctx.currentTime + 0.2);
@@ -2323,15 +2377,10 @@ function playSound(type) {
         oscillator.frequency.setValueAtTime(659, ctx.currentTime); // E5
         oscillator.frequency.exponentialRampToValueAtTime(1047, ctx.currentTime + 0.15); // C6
         oscillator.type = 'sine';
-        gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
         oscillator.start(ctx.currentTime);
         oscillator.stop(ctx.currentTime + 0.25);
-        break;
-        
-      case 'fever':
-        // フィーバー音: 複数音のファンファーレ風
-        playFeverFanfare(ctx);
         break;
         
       case 'wrong':
@@ -2339,19 +2388,14 @@ function playSound(type) {
         oscillator.frequency.setValueAtTime(400, ctx.currentTime);
         oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.3);
         oscillator.type = 'sawtooth';
-        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
         oscillator.start(ctx.currentTime);
         oscillator.stop(ctx.currentTime + 0.3);
         break;
-        
-      case 'jackpot':
-        // ジャックポット音
-        playJackpotSound(ctx);
-        break;
     }
   } catch (e) {
-    // Audio API が使えない環境では無視
+    console.warn('Audio playback failed:', e);
   }
 }
 
@@ -2365,10 +2409,10 @@ function playFeverFanfare(ctx) {
     osc.frequency.value = freq;
     osc.type = 'sine';
     gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
-    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + i * 0.1 + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.3);
+    gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + i * 0.1 + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.4);
     osc.start(ctx.currentTime + i * 0.1);
-    osc.stop(ctx.currentTime + i * 0.1 + 0.3);
+    osc.stop(ctx.currentTime + i * 0.1 + 0.4);
   });
 }
 
@@ -2381,12 +2425,31 @@ function playJackpotSound(ctx) {
     gain.connect(ctx.destination);
     osc.frequency.value = freq;
     osc.type = 'sine';
-    gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.08);
-    gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + i * 0.08 + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.08 + 0.2);
-    osc.start(ctx.currentTime + i * 0.08);
-    osc.stop(ctx.currentTime + i * 0.08 + 0.2);
+    gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
+    gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + i * 0.1 + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.3);
+    osc.start(ctx.currentTime + i * 0.1);
+    osc.stop(ctx.currentTime + i * 0.1 + 0.3);
   });
+}
+
+// マイルストーン到達時のコイン音
+function playMilestoneSound(ctx) {
+  // チャリンチャリン音（コインが増える感じ）
+  for (let i = 0; i < 5; i++) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 2000 + Math.random() * 1000;
+    osc.type = 'sine';
+    const startTime = ctx.currentTime + i * 0.08;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.3, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
+    osc.start(startTime);
+    osc.stop(startTime + 0.15);
+  }
 }
 
 // 大テキスト演出
@@ -2877,23 +2940,26 @@ function showComboMilestone(count) {
   
   showBigText(milestone.text, milestone.style);
   
-  // マイルストーンに応じた追加演出（フラッシュ削除）
-  if (count >= 10) {
-    createFireworks(Math.floor(count / 10));
+  // マイルストーン音（コインが増える音）
+  playSound('milestone');
+  
+  // マイルストーンに応じた追加演出
+  if (count >= 5 && count < 30) {
+    createFireworks(Math.floor(count / 5));
   }
   
-  if (count >= 30) {
+  if (count >= 30 && count < 50) {
     playSound('fever');
-  }
-  
-  if (count >= 40) {
-    createConfetti(40);
+    createFireworks(count / 10);
+    createConfetti(count);
   }
   
   if (count === 50) {
     playSound('jackpot');
     createLightning();
-    setTimeout(() => createFireworks(8), 500);
+    createConfetti(100);
+    setTimeout(() => createFireworks(10), 300);
+    setTimeout(() => createFireworks(10), 600);
   }
 }
 
