@@ -2137,6 +2137,12 @@ function resetCombo() {
   if (comboCount > 0 && effectsEnabled) {
     // コンボが途切れた演出
     hideComboDisplay();
+    // 常時演出も停止
+    stopAmbientParticles();
+    const ambientOverlay = document.querySelector('[data-rainbow-overlay]');
+    if (ambientOverlay && !feverMode) {
+      ambientOverlay.classList.remove('rainbow-overlay--active');
+    }
   }
   comboCount = 0;
 }
@@ -2311,26 +2317,147 @@ function activateFeverMode() {
   if (rainbowOverlay) {
     rainbowOverlay.style.background = `linear-gradient(
       45deg,
-      rgba(255, 0, 0, 0.15) 0%,
-      rgba(255, 154, 0, 0.15) 10%,
-      rgba(208, 222, 33, 0.15) 20%,
-      rgba(79, 220, 74, 0.15) 30%,
-      rgba(63, 218, 216, 0.15) 40%,
-      rgba(47, 201, 226, 0.15) 50%,
-      rgba(28, 127, 238, 0.15) 60%,
-      rgba(95, 21, 242, 0.15) 70%,
-      rgba(186, 12, 248, 0.15) 80%,
-      rgba(251, 7, 217, 0.15) 90%,
-      rgba(255, 0, 0, 0.15) 100%
+      rgba(255, 0, 0, 0.1) 0%,
+      rgba(255, 154, 0, 0.1) 10%,
+      rgba(208, 222, 33, 0.1) 20%,
+      rgba(79, 220, 74, 0.1) 30%,
+      rgba(63, 218, 216, 0.1) 40%,
+      rgba(47, 201, 226, 0.1) 50%,
+      rgba(28, 127, 238, 0.1) 60%,
+      rgba(95, 21, 242, 0.1) 70%,
+      rgba(186, 12, 248, 0.1) 80%,
+      rgba(251, 7, 217, 0.1) 90%,
+      rgba(255, 0, 0, 0.1) 100%
     )`;
     rainbowOverlay.classList.add('rainbow-overlay--active');
   }
   
-  // フィーバー演出
+  // フィーバー演出（フラッシュなし）
   showBigText('FEVER!', 'fever');
   playSound('fever');
-  triggerFlash('rainbow');
-  createFireworks(5);
+  createFireworks(3);
+}
+
+// 常時背景演出システム
+let ambientParticleInterval = null;
+
+function updateAmbientEffects() {
+  if (!effectsEnabled) return;
+  
+  const level = getComboLevel(comboCount);
+  const ambientOverlay = document.querySelector('[data-rainbow-overlay]');
+  
+  // コンボレベルに応じて常時背景を表示
+  if (level >= 2 && !feverMode) {
+    if (ambientOverlay) {
+      const opacity = level === 'max' ? 0.12 : level >= 3 ? 0.08 : 0.05;
+      ambientOverlay.style.background = getAmbientGradient(level, opacity);
+      ambientOverlay.classList.add('rainbow-overlay--active');
+    }
+    
+    // 常時パーティクル発生
+    startAmbientParticles(level);
+  } else if (!feverMode) {
+    if (ambientOverlay) {
+      ambientOverlay.classList.remove('rainbow-overlay--active');
+    }
+    stopAmbientParticles();
+  }
+}
+
+function getAmbientGradient(level, opacity) {
+  if (level === 'max' || level >= 3) {
+    return `linear-gradient(
+      45deg,
+      rgba(255, 0, 0, ${opacity}) 0%,
+      rgba(255, 154, 0, ${opacity}) 15%,
+      rgba(208, 222, 33, ${opacity}) 30%,
+      rgba(79, 220, 74, ${opacity}) 45%,
+      rgba(63, 218, 216, ${opacity}) 60%,
+      rgba(28, 127, 238, ${opacity}) 75%,
+      rgba(186, 12, 248, ${opacity}) 90%,
+      rgba(255, 0, 0, ${opacity}) 100%
+    )`;
+  } else {
+    return `linear-gradient(
+      135deg,
+      rgba(255, 215, 0, ${opacity}) 0%,
+      rgba(255, 165, 0, ${opacity}) 50%,
+      rgba(255, 215, 0, ${opacity}) 100%
+    )`;
+  }
+}
+
+function startAmbientParticles(level) {
+  if (ambientParticleInterval) return;
+  
+  const interval = level === 'max' ? 300 : level >= 3 ? 500 : 800;
+  
+  ambientParticleInterval = setInterval(() => {
+    if (!effectsEnabled) {
+      stopAmbientParticles();
+      return;
+    }
+    
+    // 画面端からパーティクルを発生
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    
+    switch (side) {
+      case 0: // 上
+        x = Math.random() * window.innerWidth;
+        y = -10;
+        break;
+      case 1: // 右
+        x = window.innerWidth + 10;
+        y = Math.random() * window.innerHeight;
+        break;
+      case 2: // 下
+        x = Math.random() * window.innerWidth;
+        y = window.innerHeight + 10;
+        break;
+      case 3: // 左
+        x = -10;
+        y = Math.random() * window.innerHeight;
+        break;
+    }
+    
+    createFloatingParticle(x, y, level);
+  }, interval);
+}
+
+function stopAmbientParticles() {
+  if (ambientParticleInterval) {
+    clearInterval(ambientParticleInterval);
+    ambientParticleInterval = null;
+  }
+}
+
+function createFloatingParticle(x, y, level) {
+  const container = document.querySelector('[data-particle-container]');
+  if (!container) return;
+  
+  const particle = document.createElement('div');
+  particle.className = 'particle particle--floating';
+  
+  const colors = level === 'max' || level >= 3 
+    ? ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#8B00FF']
+    : ['#FFD700', '#FFA500', '#FF8C00'];
+  
+  particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+  particle.style.left = `${x}px`;
+  particle.style.top = `${y}px`;
+  particle.style.width = `${6 + Math.random() * 8}px`;
+  particle.style.height = particle.style.width;
+  
+  // 画面中央方向に移動
+  const targetX = window.innerWidth / 2 + (Math.random() - 0.5) * 400;
+  const targetY = window.innerHeight / 2 + (Math.random() - 0.5) * 300;
+  particle.style.setProperty('--target-x', `${targetX - x}px`);
+  particle.style.setProperty('--target-y', `${targetY - y}px`);
+  
+  container.appendChild(particle);
+  setTimeout(() => particle.remove(), 3000);
 }
 
 function deactivateFeverMode() {
@@ -2412,13 +2539,13 @@ function playCorrectEffects() {
   // 基本の正解音
   playSound(comboCount >= 3 ? 'combo' : 'correct');
   
-  // カードフラッシュ
+  // カードの控えめなハイライト（フラッシュではなく縁のみ）
   if (quizCard) {
-    quizCard.classList.remove('correct-flash', 'correct-flash-enhanced');
+    quizCard.classList.remove('correct-glow', 'correct-glow-enhanced');
     void quizCard.offsetWidth;
-    quizCard.classList.add(level >= 1 ? 'correct-flash-enhanced' : 'correct-flash');
+    quizCard.classList.add(level >= 1 ? 'correct-glow-enhanced' : 'correct-glow');
     setTimeout(() => {
-      quizCard.classList.remove('correct-flash', 'correct-flash-enhanced');
+      quizCard.classList.remove('correct-glow', 'correct-glow-enhanced');
     }, 600);
   }
   
@@ -2427,24 +2554,21 @@ function playCorrectEffects() {
   const particleCount = 8 + Math.min(comboCount * 2, 30);
   createParticleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, particleCount);
   
-  // コンボレベルに応じた追加演出
+  // コンボレベルに応じた追加演出（フラッシュは削除）
   if (level >= 1) {
-    triggerFlash('normal');
     createStarBurst(window.innerWidth / 2, window.innerHeight / 2, 10 + comboCount);
   }
   
   if (level >= 2) {
-    triggerFlash('golden');
-    createConfetti(20);
+    createConfetti(15);
   }
   
   if (level >= 3) {
-    createFireworks(2);
+    createFireworks(1);
   }
   
-  if (level === 'max') {
-    createLightning();
-  }
+  // 常時背景演出の更新
+  updateAmbientEffects();
 }
 
 // 不正解時のエフェクト（強化版）
