@@ -1306,7 +1306,7 @@ input:checked + .toggle-switch__slider:before {
   background: var(--md-sys-color-surface);
   border-radius: 24px;
   box-shadow: var(--md-sys-elevation-5);
-  z-index: 1001;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
