@@ -1,14 +1,15 @@
 'use strict';
 
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `english-ans-cache-${CACHE_VERSION}`;
 const APP_SHELL = [
   './',
-  './index.html?v=4',
-  './styles.css?v=4',
-  './app.js?v=4',
-  './pwa.js?v=4',
-  './manifest.webmanifest?v=4',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './pwa.js',
+  './manifest.webmanifest',
+  './translation-fallbacks-ja.json',
   './601~750.csv',
   './601~750_ja.csv',
   './751~900.csv',
@@ -21,8 +22,8 @@ const APP_SHELL = [
   './glammer-2A_ja.csv',
   './glammer-2B.csv',
   './glammer-2B_ja.csv',
-  './icons/icon-192.png?v=3',
-  './icons/icon-512.png?v=3'
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
 ];
 
 self.addEventListener('install', (event) => {
