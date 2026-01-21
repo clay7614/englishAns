@@ -130,6 +130,9 @@ let currentScore = 0;
 let sessionHighScore = 0;
 const BASE_SCORE = 100; // 基本スコア
 
+// 効果音システム用変数
+let audioContext = null;
+
 // 間違い統計用ストレージキー
 const MISTAKE_STATS_KEY = 'english_ans_mistake_stats';
 
