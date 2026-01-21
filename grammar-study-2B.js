@@ -5,6 +5,41 @@ const GRAMMAR_TIPS = [
   {
     id: 'relative-pronouns',
     title: '1. 関係代名詞（who/which/that/whom/whose）',
+    // 練習中に参照できる表のHTML
+    referenceTable: `
+      <div class="reference-table">
+        <h4>関係代名詞の使い分け</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>先行詞</th>
+              <th>主格</th>
+              <th>目的格</th>
+              <th>所有格</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>人</strong></td>
+              <td>who / that</td>
+              <td>whom / who / that</td>
+              <td>whose</td>
+            </tr>
+            <tr>
+              <td><strong>物・動物</strong></td>
+              <td>which / that</td>
+              <td>which / that</td>
+              <td>whose / of which</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>主格:</strong> 関係詞が動詞の主語になる（〜が/〜は）</p>
+          <p><strong>目的格:</strong> 関係詞が動詞・前置詞の目的語になる（〜を/〜に）</p>
+          <p><strong>所有格:</strong> 「〜の」という所有関係を表す</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>関係代名詞とは？</h4>
@@ -41,6 +76,25 @@ const GRAMMAR_TIPS = [
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="grammar-rule grammar-rule--special">
+        <h4>主格・目的格・所有格の見分け方</h4>
+        <div class="grammar-rule__example-box">
+          <p><strong>【主格】</strong>関係詞の後に<span class="highlight">動詞</span>が来る → 関係詞が主語の役割</p>
+          <p>The man <span class="highlight">who</span> <u>is standing</u> there is my brother.（あそこに立っている男性は兄です）</p>
+          <p>→ who が is standing の主語</p>
+        </div>
+        <div class="grammar-rule__example-box">
+          <p><strong>【目的格】</strong>関係詞の後に<span class="highlight">S+V</span>が来る → 関係詞が目的語の役割</p>
+          <p>The book <span class="highlight">which</span> <u>I bought</u> yesterday is interesting.（昨日買った本は面白い）</p>
+          <p>→ which が bought の目的語（I bought the book の the book）</p>
+          <p class="grammar-rule__note">目的格の関係代名詞は省略可能！</p>
+        </div>
+        <div class="grammar-rule__example-box">
+          <p><strong>【所有格】</strong>関係詞の後に<span class="highlight">名詞</span>が来る → 「〜の」という所有関係</p>
+          <p>I have a friend <span class="highlight">whose</span> <u>father</u> is a doctor.（父親が医者の友人がいます）</p>
+          <p>→ whose father = my friend's father</p>
+        </div>
       </div>
       <div class="grammar-rule grammar-rule--special">
         <h4>thatを優先して使う場合</h4>
@@ -130,6 +184,46 @@ const GRAMMAR_TIPS = [
   {
     id: 'relative-adverbs',
     title: '2. 関係副詞（where/when/why/how）',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>関係副詞の種類と先行詞</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>関係副詞</th>
+              <th>先行詞</th>
+              <th>= 前置詞 + which</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>where</strong></td>
+              <td>場所（place, house, city等）</td>
+              <td>in/at/to which</td>
+            </tr>
+            <tr>
+              <td><strong>when</strong></td>
+              <td>時（time, day, year等）</td>
+              <td>in/on/at which</td>
+            </tr>
+            <tr>
+              <td><strong>why</strong></td>
+              <td>理由（the reason）</td>
+              <td>for which</td>
+            </tr>
+            <tr>
+              <td><strong>how</strong></td>
+              <td>方法（the way）※両方は使わない</td>
+              <td>in which</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>ポイント:</strong> 関係副詞の後は完全な文（S+V+...が揃っている）</p>
+          <p>関係代名詞の後は不完全な文（名詞が欠けている）</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>関係副詞とは？</h4>
@@ -249,6 +343,33 @@ const GRAMMAR_TIPS = [
   {
     id: 'subjunctive-past',
     title: '3. 仮定法過去（現在の事実に反する仮定）',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>仮定法過去の形</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>条件節（If節）</th>
+              <th>帰結節</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>If + S + <strong>動詞の過去形</strong></td>
+              <td>S + <strong>would/could/might</strong> + 動詞原形</td>
+            </tr>
+            <tr>
+              <td>If I <span class="highlight">were</span> you,</td>
+              <td>I <span class="highlight">would</span> apologize.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>ポイント:</strong> be動詞は主語に関係なく <span class="highlight">were</span> を使う</p>
+          <p><strong>意味:</strong> 現在の事実に反する仮定（形は過去形だが意味は現在）</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>仮定法過去とは？</h4>
@@ -360,6 +481,33 @@ const GRAMMAR_TIPS = [
   {
     id: 'subjunctive-past-perfect',
     title: '4. 仮定法過去完了（過去の事実に反する仮定）',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>仮定法過去完了の形</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>条件節（If節）</th>
+              <th>帰結節</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>If + S + <strong>had + 過去分詞</strong></td>
+              <td>S + <strong>would/could/might + have + 過去分詞</strong></td>
+            </tr>
+            <tr>
+              <td>If I <span class="highlight">had known</span>,</td>
+              <td>I <span class="highlight">would have come</span> earlier.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>意味:</strong> 過去の事実に反する仮定「あの時〜だったら、〜だったのに」</p>
+          <p><strong>倒置形:</strong> If he had listened → Had he listened</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>仮定法過去完了とは？</h4>
@@ -447,6 +595,42 @@ const GRAMMAR_TIPS = [
   {
     id: 'wish-as-if',
     title: '5. I wish / as if 構文',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>I wish / as if の時制</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>構文</th>
+              <th>現在の仮定</th>
+              <th>過去の仮定</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>I wish</strong></td>
+              <td>過去形（were/had等）</td>
+              <td>過去完了形（had + p.p.）</td>
+            </tr>
+            <tr>
+              <td><strong>as if/though</strong></td>
+              <td>過去形（were/knew等）</td>
+              <td>過去完了形（had + p.p.）</td>
+            </tr>
+            <tr>
+              <td><strong>It's time</strong></td>
+              <td>過去形（went/started等）</td>
+              <td>-</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>I wish:</strong> 実現不可能な願望「〜だったらなあ」</p>
+          <p><strong>as if:</strong> 「まるで〜であるかのように」</p>
+          <p><strong>It's time:</strong> 「もう〜すべき時だ」</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>I wish + 仮定法</h4>
@@ -561,6 +745,51 @@ const GRAMMAR_TIPS = [
   {
     id: 'compound-relatives',
     title: '6. 複合関係詞（whatever/whoever/wherever等）',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>複合関係詞一覧</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>種類</th>
+              <th>複合関係詞</th>
+              <th>意味</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3"><strong>名詞節</strong></td>
+              <td>whatever</td>
+              <td>〜するものは何でも</td>
+            </tr>
+            <tr>
+              <td>whoever</td>
+              <td>〜する人は誰でも</td>
+            </tr>
+            <tr>
+              <td>whichever</td>
+              <td>〜するものはどれでも</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>副詞節</strong></td>
+              <td>wherever</td>
+              <td>どこで〜しても</td>
+            </tr>
+            <tr>
+              <td>whenever</td>
+              <td>いつ〜しても</td>
+            </tr>
+            <tr>
+              <td>however</td>
+              <td>どんなに〜しても</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>however の語順:</strong> However + 形容詞/副詞 + S + V</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>複合関係詞とは？</h4>
@@ -687,6 +916,46 @@ const GRAMMAR_TIPS = [
   {
     id: 'conditionals-variations',
     title: '7. 仮定法の応用表現',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>仮定法の応用表現</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>表現</th>
+              <th>意味</th>
+              <th>例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Without / But for</strong></td>
+              <td>〜がなければ</td>
+              <td>Without your help, I couldn't...</td>
+            </tr>
+            <tr>
+              <td><strong>Were it not for</strong></td>
+              <td>もし〜がなければ（現在）</td>
+              <td>Were it not for water, ...</td>
+            </tr>
+            <tr>
+              <td><strong>Had it not been for</strong></td>
+              <td>もし〜がなかったら（過去）</td>
+              <td>Had it not been for your help, ...</td>
+            </tr>
+            <tr>
+              <td><strong>Otherwise</strong></td>
+              <td>さもなければ</td>
+              <td>...; otherwise, I couldn't have...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>倒置形:</strong> If it were not for → Were it not for</p>
+          <p><strong>倒置形:</strong> If I had known → Had I known</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>Without / But for + 仮定法</h4>
@@ -810,6 +1079,46 @@ const GRAMMAR_TIPS = [
   {
     id: 'negation-expressions',
     title: '8. 否定・準否定表現',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>準否定語一覧</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>語</th>
+              <th>意味</th>
+              <th>用法</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>hardly / scarcely</strong></td>
+              <td>ほとんど〜ない</td>
+              <td>動詞を修飾</td>
+            </tr>
+            <tr>
+              <td><strong>rarely / seldom</strong></td>
+              <td>めったに〜ない</td>
+              <td>頻度を表す</td>
+            </tr>
+            <tr>
+              <td><strong>few</strong></td>
+              <td>ほとんどない</td>
+              <td>可算名詞に使う</td>
+            </tr>
+            <tr>
+              <td><strong>little</strong></td>
+              <td>ほとんどない</td>
+              <td>不可算名詞に使う</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>hardly ever:</strong> 「ほとんど〜しない」の強調形</p>
+          <p><strong>部分否定:</strong> not all = 全部が〜というわけではない</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>準否定語とは？</h4>
@@ -920,6 +1229,41 @@ const GRAMMAR_TIPS = [
   {
     id: 'conjunctions-prepositions',
     title: '9. 接続詞と前置詞の使い分け',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>接続詞と前置詞の使い分け</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>意味</th>
+              <th>接続詞（+節）</th>
+              <th>前置詞（+名詞）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>〜にもかかわらず</td>
+              <td>although, though</td>
+              <td>despite, in spite of</td>
+            </tr>
+            <tr>
+              <td>〜なので</td>
+              <td>because, since, as</td>
+              <td>because of, due to</td>
+            </tr>
+            <tr>
+              <td>〜の間</td>
+              <td>while</td>
+              <td>during</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>as long as:</strong> 〜する限り（条件）</p>
+          <p><strong>as far as:</strong> 〜する限り（範囲・知識）</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>接続詞 vs 前置詞</h4>
@@ -1061,6 +1405,39 @@ const GRAMMAR_TIPS = [
   {
     id: 'non-restrictive-clauses',
     title: '10. 非制限用法・継続用法',
+    referenceTable: `
+      <div class="reference-table">
+        <h4>制限用法 vs 非制限用法</h4>
+        <table class="grammar-table">
+          <thead>
+            <tr>
+              <th>用法</th>
+              <th>コンマ</th>
+              <th>that</th>
+              <th>役割</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>制限用法</strong></td>
+              <td>なし</td>
+              <td>使える</td>
+              <td>先行詞を限定</td>
+            </tr>
+            <tr>
+              <td><strong>非制限用法</strong></td>
+              <td>あり</td>
+              <td>使えない</td>
+              <td>補足説明</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="reference-table__note">
+          <p><strong>非制限用法の which:</strong> 前の文全体を受けることができる</p>
+          <p>例: He didn't cry, <span class="highlight">which</span> was very brave.</p>
+        </div>
+      </div>
+    `,
     content: `
       <div class="grammar-rule grammar-rule--important">
         <h4>制限用法 vs 非制限用法</h4>
@@ -1234,6 +1611,7 @@ function renderPracticeMode() {
   
   const example = currentTopic.examples[practiceIndex];
   const progress = `${practiceIndex + 1} / ${currentTopic.examples.length}`;
+  const hasReferenceTable = Boolean(currentTopic.referenceTable);
   
   grammarContent.innerHTML = `
     <div class="grammar-practice">
@@ -1243,9 +1621,30 @@ function renderPracticeMode() {
           <span>解説に戻る</span>
         </button>
         <span class="grammar-practice__progress">${progress}</span>
+        ${hasReferenceTable ? `
+        <button class="grammar-practice__show-table" aria-label="表を見る">
+          <span class="material-symbols-outlined">table_chart</span>
+          <span>表を見る</span>
+        </button>
+        ` : ''}
       </div>
       
       <h2 class="grammar-practice__topic">${escapeHtml(currentTopic.title)}</h2>
+      
+      <!-- 参照表（非表示状態で準備） -->
+      ${hasReferenceTable ? `
+      <div class="grammar-practice__reference-panel" data-reference-panel hidden>
+        <div class="grammar-practice__reference-header">
+          <span>参考表</span>
+          <button class="grammar-practice__reference-close" aria-label="閉じる">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="grammar-practice__reference-content">
+          ${currentTopic.referenceTable}
+        </div>
+      </div>
+      ` : ''}
       
       <div class="grammar-practice__question">
         <p class="grammar-practice__question-text">${escapeHtml(example.question)}</p>
@@ -1270,6 +1669,25 @@ function renderPracticeMode() {
   // イベントリスナーの設定
   grammarContent.querySelector('.grammar-practice__back').addEventListener('click', exitPracticeMode);
   grammarContent.querySelector('.grammar-practice__next')?.addEventListener('click', handleNextQuestion);
+  
+  // 「表を見る」ボタンのイベント
+  const showTableBtn = grammarContent.querySelector('.grammar-practice__show-table');
+  const referencePanel = grammarContent.querySelector('[data-reference-panel]');
+  const referenceCloseBtn = grammarContent.querySelector('.grammar-practice__reference-close');
+  
+  if (showTableBtn && referencePanel) {
+    showTableBtn.addEventListener('click', () => {
+      referencePanel.hidden = !referencePanel.hidden;
+      showTableBtn.classList.toggle('grammar-practice__show-table--active', !referencePanel.hidden);
+    });
+  }
+  
+  if (referenceCloseBtn && referencePanel) {
+    referenceCloseBtn.addEventListener('click', () => {
+      referencePanel.hidden = true;
+      showTableBtn?.classList.remove('grammar-practice__show-table--active');
+    });
+  }
   
   // 選択肢または入力フィールドのイベント
   if (example.options) {
