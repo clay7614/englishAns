@@ -2313,10 +2313,13 @@ function hideComboDisplay() {
 function initAudioContext() {
   if (!audioContext) {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    console.log('AudioContext created, state:', audioContext.state);
   }
   // サスペンド状態の場合は再開
   if (audioContext.state === 'suspended') {
-    audioContext.resume();
+    audioContext.resume().then(() => {
+      console.log('AudioContext resumed, state:', audioContext.state);
+    });
   }
   return audioContext;
 }
@@ -2324,22 +2327,45 @@ function initAudioContext() {
 // 最初のユーザー操作でAudioContextを初期化
 function setupAudioOnFirstInteraction() {
   const initAudio = () => {
+    console.log('First interaction detected, initializing audio...');
     initAudioContext();
     document.removeEventListener('click', initAudio);
     document.removeEventListener('touchstart', initAudio);
     document.removeEventListener('keydown', initAudio);
   };
-  document.addEventListener('click', initAudio, { once: true });
-  document.addEventListener('touchstart', initAudio, { once: true });
-  document.addEventListener('keydown', initAudio, { once: true });
+  document.addEventListener('click', initAudio);
+  document.addEventListener('touchstart', initAudio);
+  document.addEventListener('keydown', initAudio);
 }
 
 function playSound(type) {
-  if (!effectsEnabled) return;
+  console.log('playSound called:', type, 'effectsEnabled:', effectsEnabled);
+  
+  if (!effectsEnabled) {
+    console.log('Effects disabled, skipping sound');
+    return;
+  }
   
   try {
     const ctx = initAudioContext();
+    console.log('AudioContext state:', ctx.state);
     
+    // stateがsuspendedの場合は再開を待つ
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(() => {
+        console.log('Resumed, now playing sound');
+        playSoundInternal(ctx, type);
+      });
+      return;
+    }
+    
+    playSoundInternal(ctx, type);
+  } catch (e) {
+    console.error('Audio playback failed:', e);
+  }
+}
+
+function playSoundInternal(ctx, type) {
     // feverとjackpotは別関数で処理
     if (type === 'fever') {
       playFeverFanfare(ctx);
@@ -2370,6 +2396,7 @@ function playSound(type) {
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
         oscillator.start(ctx.currentTime);
         oscillator.stop(ctx.currentTime + 0.2);
+        console.log('Playing correct sound');
         break;
         
       case 'combo':
@@ -2381,6 +2408,7 @@ function playSound(type) {
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
         oscillator.start(ctx.currentTime);
         oscillator.stop(ctx.currentTime + 0.25);
+        console.log('Playing combo sound');
         break;
         
       case 'wrong':
@@ -2392,11 +2420,12 @@ function playSound(type) {
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
         oscillator.start(ctx.currentTime);
         oscillator.stop(ctx.currentTime + 0.3);
+        console.log('Playing wrong sound');
         break;
+        
+      default:
+        console.log('Unknown sound type:', type);
     }
-  } catch (e) {
-    console.warn('Audio playback failed:', e);
-  }
 }
 
 function playFeverFanfare(ctx) {
