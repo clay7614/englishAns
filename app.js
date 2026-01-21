@@ -119,6 +119,7 @@ let translationControlVisible = true;
 let shuffleOptionsEnabled = true;
 let darkModeEnabled = false;
 let effectsEnabled = true;
+let easyModeEnabled = false;
 
 // コンボシステム用変数
 let comboCount = 0;
@@ -145,7 +146,8 @@ function saveSettings() {
     shuffleOptionsEnabled,
     darkModeEnabled,
     allowDuplicates,
-    effectsEnabled
+    effectsEnabled,
+    easyModeEnabled
   };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
 }
@@ -161,6 +163,7 @@ function loadSettings() {
       if (settings.darkModeEnabled !== undefined) darkModeEnabled = settings.darkModeEnabled;
       if (settings.allowDuplicates !== undefined) allowDuplicates = settings.allowDuplicates;
       if (settings.effectsEnabled !== undefined) effectsEnabled = settings.effectsEnabled;
+      if (settings.easyModeEnabled !== undefined) easyModeEnabled = settings.easyModeEnabled;
       
       // Update UI
       if (autoAdvanceCheckbox) autoAdvanceCheckbox.checked = autoAdvanceEnabled;
@@ -172,6 +175,10 @@ function loadSettings() {
       // コンボ・エフェクト設定
       const effectsToggle = document.querySelector('[data-settings-effects-toggle]');
       if (effectsToggle) effectsToggle.checked = effectsEnabled;
+      
+      // イージーモード設定
+      const easyModeToggle = document.querySelector('[data-settings-easy-mode]');
+      if (easyModeToggle) easyModeToggle.checked = easyModeEnabled;
       
       updateAutoAdvanceControl();
       updateTranslationControlVisibility();
@@ -223,6 +230,10 @@ historyPanel?.addEventListener('click', (event) => event.stopPropagation());
 // コンボ・エフェクト設定のイベントリスナー
 const effectsToggle = document.querySelector('[data-settings-effects-toggle]');
 effectsToggle?.addEventListener('change', handleEffectsToggleChange);
+
+// イージーモード設定のイベントリスナー
+const easyModeToggle = document.querySelector('[data-settings-easy-mode]');
+easyModeToggle?.addEventListener('change', handleEasyModeChange);
 
 // 間違いランキング関連のイベントリスナー
 const mistakeRankingButton = document.querySelector('[data-open-mistake-ranking]');
@@ -595,6 +606,7 @@ function startQuiz(enableTranslations) {
   sessionMaxCombo = 0;
   currentScore = 0; // スコアをリセット
   resetScore();
+  resetMilestones(); // マイルストーン達成状態をリセット
   resetResultPanel();
   hideWrongOnlyControl();
   updateScoreboard();
@@ -1520,6 +1532,7 @@ function returnToStartScreen(goBackToSelection = false) {
   totalCount = 0;
   comboCount = 0;
   sessionMaxCombo = 0;
+  resetMilestones(); // マイルストーン達成状態をリセット
   hideComboDisplay();
   updateScoreboard();
   resetResultPanel();
@@ -2142,9 +2155,9 @@ function incrementCombo() {
   addScore();
   
   // マイルストーンでボーナスポップアップ
-  if (effectsEnabled && [5, 10, 20, 30, 40, 50].includes(comboCount)) {
-    showComboMilestone(comboCount);
-  }
+  // イージーモードでは実際のコンボ数を2倍として判定（必要コンボ数が半減）
+  const effectiveCombo = easyModeEnabled ? comboCount * 2 : comboCount;
+  checkAndShowMilestone(effectiveCombo, comboCount);
 }
 
 function resetCombo() {
@@ -2159,6 +2172,43 @@ function resetCombo() {
     }
   }
   comboCount = 0;
+}
+
+// ===========================================
+// マイルストーンチェック
+// ===========================================
+
+// マイルストーン判定用の閾値リスト（10刻みで250まで、5も含む）
+const MILESTONE_THRESHOLDS = [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250];
+
+// 達成済みマイルストーンを追跡（セッションごとにリセット）
+let achievedMilestones = new Set();
+
+// マイルストーンをチェックして演出を表示
+// effectiveCombo: 判定用のコンボ数（イージーモードでは2倍）
+// actualCombo: 実際のコンボ数（表示やスコア計算用）
+function checkAndShowMilestone(effectiveCombo, actualCombo) {
+  if (!effectsEnabled) return;
+  
+  // 達成可能なマイルストーンをチェック
+  for (const threshold of MILESTONE_THRESHOLDS) {
+    // 既に達成済みならスキップ
+    if (achievedMilestones.has(threshold)) continue;
+    
+    // effectiveComboがthreshold以上なら達成
+    if (effectiveCombo >= threshold) {
+      achievedMilestones.add(threshold);
+      showComboMilestone(threshold);
+      
+      // 同時に複数達成した場合は最高のものだけ演出
+      // （ただしスコアは全て加算）
+    }
+  }
+}
+
+// セッション開始時にマイルストーン達成状態をリセット
+function resetMilestones() {
+  achievedMilestones.clear();
 }
 
 // ===========================================
@@ -3131,6 +3181,16 @@ function handleEffectsToggleChange() {
   } else if (comboCount >= 2) {
     updateComboDisplay();
   }
+}
+
+function handleEasyModeChange() {
+  const easyModeToggle = document.querySelector('[data-settings-easy-mode]');
+  easyModeEnabled = Boolean(easyModeToggle?.checked);
+  saveSettings();
+  
+  // イージーモード切り替え時にマイルストーン達成状態をリセット
+  // （切り替え後に再達成できるように）
+  resetMilestones();
 }
 
 // ===========================================

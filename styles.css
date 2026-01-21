@@ -521,6 +521,8 @@ h1, h2, h3 {
   border-radius: 16px;
   cursor: pointer;
   transition: background 0.2s ease;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .settings-panel__item:hover {
@@ -531,6 +533,13 @@ h1, h2, h3 {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--md-sys-color-on-surface);
+}
+
+.settings-panel__item-description {
+  font-size: 0.85rem;
+  color: var(--md-sys-color-on-surface-variant);
+  width: 100%;
+  order: 3;
 }
 
 /* Start Options Section */
