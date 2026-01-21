@@ -22,10 +22,27 @@
 <body>
   <div class="overlay" data-overlay hidden></div>
 
+  <!-- フルスクリーンエフェクトレイヤー -->
+  <div class="effect-layer" data-effect-layer>
+    <!-- 虹色オーバーレイ -->
+    <div class="rainbow-overlay" data-rainbow-overlay></div>
+    <!-- フラッシュ -->
+    <div class="flash-overlay" data-flash-overlay></div>
+    <!-- フィーバー背景 -->
+    <div class="fever-background" data-fever-background></div>
+  </div>
+
+  <!-- 大テキスト演出 -->
+  <div class="big-text-container" data-big-text-container></div>
+
   <!-- コンボ表示 -->
   <div class="combo-display" data-combo-display hidden>
+    <div class="combo-display__multiplier" data-combo-multiplier></div>
     <div class="combo-display__count" data-combo-count>0</div>
     <div class="combo-display__label">COMBO</div>
+    <div class="combo-display__bar">
+      <div class="combo-display__bar-fill" data-combo-bar></div>
+    </div>
   </div>
 
   <!-- パーティクルコンテナ -->

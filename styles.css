@@ -1482,6 +1482,609 @@ input:checked + .toggle-switch__slider:before {
 }
 
 /* ===========================================
+   パチスロ風 派手エフェクト
+   =========================================== */
+
+/* エフェクトレイヤー */
+.effect-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: hidden;
+}
+
+/* 虹色オーバーレイ */
+.rainbow-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0) 0%,
+    rgba(255, 154, 0, 0) 10%,
+    rgba(208, 222, 33, 0) 20%,
+    rgba(79, 220, 74, 0) 30%,
+    rgba(63, 218, 216, 0) 40%,
+    rgba(47, 201, 226, 0) 50%,
+    rgba(28, 127, 238, 0) 60%,
+    rgba(95, 21, 242, 0) 70%,
+    rgba(186, 12, 248, 0) 80%,
+    rgba(251, 7, 217, 0) 90%,
+    rgba(255, 0, 0, 0) 100%
+  );
+  background-size: 400% 400%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.rainbow-overlay--active {
+  opacity: 1;
+  animation: rainbow-wave 1s linear infinite;
+}
+
+@keyframes rainbow-wave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* フラッシュオーバーレイ */
+.flash-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.flash-overlay--flash {
+  animation: screen-flash 0.15s ease-out;
+}
+
+.flash-overlay--golden {
+  background: linear-gradient(45deg, #FFD700, #FFA500, #FF8C00);
+  animation: golden-flash 0.3s ease-out;
+}
+
+.flash-overlay--rainbow {
+  background: linear-gradient(
+    90deg,
+    #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0088ff, #8800ff, #ff00ff
+  );
+  animation: rainbow-flash 0.5s ease-out;
+}
+
+@keyframes screen-flash {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+@keyframes golden-flash {
+  0% { opacity: 0.6; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+
+@keyframes rainbow-flash {
+  0% { opacity: 0.5; background-position: 0% 50%; }
+  50% { opacity: 0.3; background-position: 100% 50%; }
+  100% { opacity: 0; }
+}
+
+/* フィーバー背景 */
+.fever-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.fever-background--active {
+  opacity: 1;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 0, 128, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
+  animation: fever-pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fever-pulse {
+  0% { 
+    filter: hue-rotate(0deg) brightness(1);
+    transform: scale(1);
+  }
+  100% { 
+    filter: hue-rotate(30deg) brightness(1.2);
+    transform: scale(1.05);
+  }
+}
+
+/* 大テキスト演出コンテナ */
+.big-text-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+/* 大テキスト演出 */
+.big-text {
+  position: absolute;
+  font-size: clamp(3rem, 15vw, 8rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.big-text--excellent {
+  color: #FFD700;
+  text-shadow: 
+    0 0 10px #FFD700,
+    0 0 20px #FFA500,
+    0 0 40px #FF8C00,
+    0 0 80px #FF4500,
+    4px 4px 0 #B8860B;
+  animation: text-excellent 1.2s ease-out forwards;
+}
+
+.big-text--perfect {
+  background: linear-gradient(
+    90deg,
+    #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0088ff, #ff00ff
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+  animation: text-perfect 1.5s ease-out forwards, rainbow-text 0.5s linear infinite;
+}
+
+.big-text--fever {
+  color: #FF1493;
+  text-shadow: 
+    0 0 20px #FF1493,
+    0 0 40px #FF69B4,
+    0 0 60px #FFB6C1,
+    0 0 100px #FF1493;
+  animation: text-fever 1.5s ease-out forwards;
+}
+
+.big-text--jackpot {
+  color: #FFD700;
+  text-shadow: 
+    0 0 30px #FFD700,
+    0 0 60px #FFA500,
+    0 0 90px #FF4500,
+    0 0 120px #FF0000;
+  animation: text-jackpot 2s ease-out forwards;
+}
+
+.big-text--combo-bonus {
+  color: #00FFFF;
+  text-shadow: 
+    0 0 20px #00FFFF,
+    0 0 40px #00CED1,
+    0 0 60px #20B2AA;
+  animation: text-combo-bonus 1s ease-out forwards;
+}
+
+@keyframes text-excellent {
+  0% {
+    transform: scale(0) rotate(-15deg);
+    opacity: 0;
+  }
+  20% {
+    transform: scale(1.5) rotate(5deg);
+    opacity: 1;
+  }
+  40% {
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    transform: scale(0.8) translateY(-50px);
+    opacity: 0;
+  }
+}
+
+@keyframes text-perfect {
+  0% {
+    transform: scale(0) rotateY(180deg);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1.3) rotateY(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1) rotateY(0deg);
+  }
+  100% {
+    transform: scale(1.2) translateY(-30px);
+    opacity: 0;
+  }
+}
+
+@keyframes text-fever {
+  0% {
+    transform: translateY(100vh) scale(2);
+    opacity: 0;
+  }
+  30% {
+    transform: translateY(0) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(0.5) translateY(-100px);
+    opacity: 0;
+  }
+}
+
+@keyframes text-jackpot {
+  0% {
+    transform: scale(0) rotate(720deg);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1.5) rotate(0deg);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(1) rotate(0deg);
+  }
+  80% {
+    transform: scale(1.2) rotate(5deg);
+  }
+  100% {
+    transform: scale(0) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes text-combo-bonus {
+  0% {
+    transform: scale(3) translateY(-50px);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.5) translateY(-100px);
+    opacity: 0;
+  }
+}
+
+@keyframes rainbow-text {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* 強化されたコンボ表示 */
+.combo-display {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(30, 30, 50, 0.95));
+  padding: 16px 24px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.3),
+    0 0 40px rgba(255, 0, 255, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  transform: scale(0.8) translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.combo-display::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.1) 60deg,
+    transparent 120deg
+  );
+  animation: combo-rotate 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.combo-display--visible::before {
+  opacity: 1;
+}
+
+@keyframes combo-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.combo-display--visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.combo-display--pulse {
+  animation: combo-pulse-enhanced 0.4s ease-out;
+}
+
+@keyframes combo-pulse-enhanced {
+  0% { transform: scale(1); filter: brightness(1); }
+  30% { transform: scale(1.3); filter: brightness(1.5); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.combo-display__multiplier {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, #FF4500, #FFD700);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(255, 69, 0, 0.5);
+  display: none;
+}
+
+.combo-display__multiplier--visible {
+  display: block;
+  animation: multiplier-bounce 0.5s ease-out;
+}
+
+@keyframes multiplier-bounce {
+  0% { transform: scale(0) rotate(-20deg); }
+  50% { transform: scale(1.3) rotate(10deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.combo-display__count {
+  font-size: 3.5rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(180deg, #FFFFFF 0%, #00FFFF 50%, #FF00FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+}
+
+.combo-display__label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #00FFFF;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 10px #00FFFF;
+  margin-top: 4px;
+}
+
+.combo-display__bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.combo-display__bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00FFFF, #FF00FF, #FFD700);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* コンボレベルによる色変化 */
+.combo-display--level-1 {
+  border-color: #00FFFF;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+.combo-display--level-2 {
+  border-color: #FFD700;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+}
+
+.combo-display--level-2 .combo-display__count {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFD700 50%, #FF8C00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.combo-display--level-3 {
+  border-color: #FF1493;
+  box-shadow: 0 0 50px rgba(255, 20, 147, 0.7);
+  animation: combo-glow-pink 0.5s ease-in-out infinite alternate;
+}
+
+.combo-display--level-3 .combo-display__count {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FF1493 50%, #FF69B4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@keyframes combo-glow-pink {
+  from { box-shadow: 0 0 50px rgba(255, 20, 147, 0.7); }
+  to { box-shadow: 0 0 80px rgba(255, 20, 147, 1); }
+}
+
+.combo-display--level-max {
+  border-color: transparent;
+  background: linear-gradient(135deg, #000, #111) padding-box,
+              linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0088ff, #ff00ff) border-box;
+  border: 3px solid transparent;
+  animation: combo-rainbow-border 1s linear infinite;
+}
+
+.combo-display--level-max .combo-display__count {
+  background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00ff00, #00ffff, #0088ff, #ff00ff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: rainbow-text 0.5s linear infinite;
+}
+
+@keyframes combo-rainbow-border {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+/* 強化されたパーティクル */
+.particle--firework {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor, 0 0 12px currentColor;
+}
+
+.particle--confetti {
+  width: 10px;
+  height: 20px;
+  animation: confetti-fall 2s ease-out forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(720deg) scale(0.5);
+  }
+}
+
+.particle--lightning {
+  width: 3px;
+  height: 100px;
+  background: linear-gradient(to bottom, #FFD700, transparent);
+  animation: lightning-strike 0.2s ease-out forwards;
+}
+
+@keyframes lightning-strike {
+  0% { opacity: 1; transform: scaleY(0); }
+  50% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+
+/* 画面揺れ強化 */
+.screen-shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.screen-shake--heavy {
+  animation: shake-heavy 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.screen-shake--extreme {
+  animation: shake-extreme 0.6s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake-heavy {
+  10%, 90% { transform: translate3d(-3px, 0, 0); }
+  20%, 80% { transform: translate3d(5px, 2px, 0); }
+  30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+  40%, 60% { transform: translate3d(8px, -2px, 0); }
+}
+
+@keyframes shake-extreme {
+  10%, 90% { transform: translate3d(-5px, 2px, 0) rotate(-1deg); }
+  20%, 80% { transform: translate3d(8px, -3px, 0) rotate(1deg); }
+  30%, 50%, 70% { transform: translate3d(-12px, 0, 0) rotate(-2deg); }
+  40%, 60% { transform: translate3d(12px, 3px, 0) rotate(2deg); }
+}
+
+/* 正解時のカード演出強化 */
+.correct-flash-enhanced {
+  animation: correct-flash-enhanced 0.6s ease-out;
+}
+
+@keyframes correct-flash-enhanced {
+  0% { 
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.8);
+    filter: brightness(1);
+  }
+  25% { 
+    box-shadow: 0 0 50px 20px rgba(76, 175, 80, 0.6);
+    filter: brightness(1.3);
+  }
+  50% {
+    box-shadow: 0 0 80px 30px rgba(255, 215, 0, 0.4);
+    filter: brightness(1.5);
+  }
+  100% { 
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    filter: brightness(1);
+  }
+}
+
+/* 不正解時の演出強化 */
+.incorrect-flash-enhanced {
+  animation: incorrect-flash-enhanced 0.6s ease-out;
+}
+
+@keyframes incorrect-flash-enhanced {
+  0%, 100% { 
+    filter: brightness(1) saturate(1);
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    filter: brightness(0.7) saturate(0.5);
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    filter: brightness(1.2) saturate(1.5);
+    transform: translateX(5px);
+  }
+}
+
+/* ===========================================
    モバイル対応（追加）
    =========================================== */
 
@@ -1489,11 +2092,11 @@ input:checked + .toggle-switch__slider:before {
   .combo-display {
     top: 60px;
     right: 10px;
-    padding: 8px 14px;
+    padding: 12px 16px;
   }
   
   .combo-display__count {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
   
   .mistake-ranking-panel {
@@ -1508,4 +2111,707 @@ input:checked + .toggle-switch__slider:before {
   .combo-bonus-popup {
     font-size: 2rem;
   }
+  
+  .big-text {
+    font-size: clamp(2rem, 12vw, 5rem);
+  }
 }
+
+/* ===========================================
+   パチスロ風 派手演出システム
+   =========================================== */
+
+/* フルスクリーンエフェクトレイヤー */
+.effect-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9000;
+  overflow: hidden;
+}
+
+/* 虹色オーバーレイ */
+.rainbow-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background-size: 400% 400%;
+  animation: rainbow-wave 3s ease infinite;
+}
+
+.rainbow-overlay--active {
+  opacity: 1;
+}
+
+@keyframes rainbow-wave {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* フラッシュオーバーレイ */
+.flash-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.flash-overlay--flash {
+  background: white;
+  animation: flash-white 0.3s ease-out;
+}
+
+.flash-overlay--golden {
+  background: linear-gradient(135deg, #FFD700, #FFA500, #FF8C00);
+  animation: flash-golden 0.5s ease-out;
+}
+
+.flash-overlay--rainbow {
+  background: linear-gradient(
+    45deg,
+    rgba(255, 0, 0, 0.7),
+    rgba(255, 154, 0, 0.7),
+    rgba(208, 222, 33, 0.7),
+    rgba(79, 220, 74, 0.7),
+    rgba(63, 218, 216, 0.7),
+    rgba(47, 201, 226, 0.7),
+    rgba(28, 127, 238, 0.7),
+    rgba(95, 21, 242, 0.7),
+    rgba(186, 12, 248, 0.7),
+    rgba(251, 7, 217, 0.7)
+  );
+  background-size: 400% 400%;
+  animation: flash-rainbow 1s ease-out;
+}
+
+@keyframes flash-white {
+  0% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+@keyframes flash-golden {
+  0% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+@keyframes flash-rainbow {
+  0% { opacity: 0.7; background-position: 0% 50%; }
+  50% { opacity: 0.5; background-position: 100% 50%; }
+  100% { opacity: 0; background-position: 200% 50%; }
+}
+
+/* フィーバー背景 */
+.fever-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(255, 0, 255, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(0, 255, 255, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(255, 255, 0, 0.3) 0%, transparent 50%);
+  animation: fever-pulse 1s ease infinite;
+}
+
+.fever-background--active {
+  opacity: 1;
+}
+
+@keyframes fever-pulse {
+  0%, 100% { filter: brightness(1) hue-rotate(0deg); }
+  50% { filter: brightness(1.3) hue-rotate(30deg); }
+}
+
+/* 大テキスト演出コンテナ */
+.big-text-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 9500;
+}
+
+/* 大テキスト基本スタイル */
+.big-text {
+  position: absolute;
+  font-size: clamp(3rem, 15vw, 8rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 
+    0 0 20px currentColor,
+    0 0 40px currentColor,
+    0 0 60px currentColor,
+    4px 4px 0 rgba(0, 0, 0, 0.5);
+  animation: big-text-base 1.2s ease-out forwards;
+}
+
+@keyframes big-text-base {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-10deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2) rotate(5deg);
+  }
+  40% {
+    transform: scale(0.9) rotate(-3deg);
+  }
+  60% {
+    transform: scale(1.1) rotate(2deg);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5) rotate(0deg);
+  }
+}
+
+/* NICE! / GREAT! スタイル */
+.big-text--combo-bonus {
+  color: #00FFFF;
+  text-shadow: 
+    0 0 20px #00FFFF,
+    0 0 40px #00FFFF,
+    0 0 80px #00FFFF,
+    4px 4px 0 rgba(0, 0, 0, 0.7);
+}
+
+/* EXCELLENT! スタイル */
+.big-text--excellent {
+  color: #FFD700;
+  text-shadow: 
+    0 0 30px #FFD700,
+    0 0 60px #FFA500,
+    0 0 90px #FF8C00,
+    5px 5px 0 rgba(0, 0, 0, 0.7);
+  animation: big-text-excellent 1.2s ease-out forwards;
+}
+
+@keyframes big-text-excellent {
+  0% {
+    opacity: 0;
+    transform: scale(0.1) rotate(-20deg);
+    filter: brightness(3);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.3) rotate(10deg);
+    filter: brightness(1.5);
+  }
+  30% {
+    transform: scale(0.85) rotate(-5deg);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.15) rotate(3deg);
+    filter: brightness(1.3);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2) rotate(0deg);
+    filter: brightness(2);
+  }
+}
+
+/* FEVER! スタイル */
+.big-text--fever {
+  background: linear-gradient(
+    90deg,
+    #FF0000, #FF7F00, #FFFF00, #00FF00, #00FFFF, #0000FF, #8B00FF
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: big-text-fever 1.5s ease-out forwards, rainbow-text 0.5s linear infinite;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8))
+          drop-shadow(0 0 40px rgba(255, 0, 255, 0.6))
+          drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.5));
+}
+
+@keyframes big-text-fever {
+  0% {
+    opacity: 0;
+    transform: scale(0.1) rotate(-30deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.5) rotate(15deg);
+  }
+  40% {
+    transform: scale(0.8) rotate(-10deg);
+  }
+  60% {
+    transform: scale(1.3) rotate(5deg);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5) rotate(0deg);
+  }
+}
+
+@keyframes rainbow-text {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* PERFECT! スタイル */
+.big-text--perfect {
+  color: #FF1493;
+  text-shadow: 
+    0 0 30px #FF1493,
+    0 0 60px #FF69B4,
+    0 0 90px #FFB6C1,
+    5px 5px 0 rgba(0, 0, 0, 0.7);
+  animation: big-text-perfect 1.2s ease-out forwards;
+}
+
+@keyframes big-text-perfect {
+  0% {
+    opacity: 0;
+    transform: scale(0.1) translateY(100px);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.4) translateY(-30px);
+  }
+  50% {
+    transform: scale(0.9) translateY(10px);
+  }
+  75% {
+    opacity: 1;
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2) translateY(-50px);
+  }
+}
+
+/* JACKPOT! スタイル */
+.big-text--jackpot {
+  font-size: clamp(4rem, 20vw, 12rem);
+  background: linear-gradient(
+    135deg,
+    #FFD700 0%,
+    #FFFF00 25%,
+    #FFD700 50%,
+    #FFA500 75%,
+    #FFD700 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: big-text-jackpot 2s ease-out forwards, golden-shimmer 0.3s linear infinite;
+  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1))
+          drop-shadow(0 0 60px rgba(255, 165, 0, 0.8))
+          drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.7));
+}
+
+@keyframes big-text-jackpot {
+  0% {
+    opacity: 0;
+    transform: scale(0.05) rotate(-45deg);
+  }
+  10% {
+    opacity: 1;
+    transform: scale(1.8) rotate(20deg);
+  }
+  20% {
+    transform: scale(0.6) rotate(-15deg);
+  }
+  30% {
+    transform: scale(1.5) rotate(10deg);
+  }
+  40% {
+    transform: scale(0.8) rotate(-5deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(3deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3) rotate(0deg);
+  }
+}
+
+@keyframes golden-shimmer {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
+}
+
+/* コンボ表示（強化版） */
+.combo-display {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(30, 30, 30, 0.9));
+  color: white;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(100px) scale(0.5);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 3px solid transparent;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.combo-display--visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.combo-display--pulse {
+  animation: combo-pulse-enhanced 0.4s ease-out;
+}
+
+@keyframes combo-pulse-enhanced {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.2); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* コンボレベル1: 水色 */
+.combo-display--level-1 {
+  border-color: #00FFFF;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(0, 255, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.combo-display--level-1 .combo-display__count {
+  color: #00FFFF;
+  text-shadow: 0 0 20px #00FFFF;
+}
+
+/* コンボレベル2: ゴールド */
+.combo-display--level-2 {
+  border-color: #FFD700;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(255, 215, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: combo-glow-gold 1s ease infinite;
+}
+
+.combo-display--level-2 .combo-display__count {
+  color: #FFD700;
+  text-shadow: 0 0 20px #FFD700, 0 0 40px #FFA500;
+}
+
+@keyframes combo-glow-gold {
+  0%, 100% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.5); }
+  50% { box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 50px rgba(255, 215, 0, 0.8); }
+}
+
+/* コンボレベル3: ピンク */
+.combo-display--level-3 {
+  border-color: #FF1493;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(255, 20, 147, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: combo-glow-pink 0.8s ease infinite;
+}
+
+.combo-display--level-3 .combo-display__count {
+  color: #FF1493;
+  text-shadow: 0 0 20px #FF1493, 0 0 40px #FF69B4;
+}
+
+@keyframes combo-glow-pink {
+  0%, 100% { 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 20, 147, 0.6);
+    transform: translateX(0) scale(1);
+  }
+  50% { 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 60px rgba(255, 20, 147, 0.9);
+    transform: translateX(0) scale(1.05);
+  }
+}
+
+/* コンボレベルMAX: 虹色 */
+.combo-display--level-max {
+  border: 4px solid transparent;
+  background: 
+    linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(30, 30, 30, 0.95)) padding-box,
+    linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #00FFFF, #0000FF, #8B00FF, #FF0000) border-box;
+  background-size: 100% 100%, 300% 100%;
+  animation: combo-rainbow-border 2s linear infinite, combo-max-pulse 0.5s ease infinite;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(255, 0, 255, 0.5),
+    0 0 80px rgba(0, 255, 255, 0.3);
+}
+
+.combo-display--level-max .combo-display__count {
+  background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #00FFFF, #0000FF, #8B00FF);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-text-fast 1s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+}
+
+@keyframes combo-rainbow-border {
+  0% { background-position: 100% 100%, 0% 50%; }
+  100% { background-position: 100% 100%, 300% 50%; }
+}
+
+@keyframes combo-max-pulse {
+  0%, 100% { transform: translateX(0) scale(1); }
+  50% { transform: translateX(0) scale(1.08); }
+}
+
+@keyframes rainbow-text-fast {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* コンボバー */
+.combo-display__bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.combo-display__bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4ECDC4, #44CF6C);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.combo-display--level-2 .combo-display__bar-fill {
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+}
+
+.combo-display--level-3 .combo-display__bar-fill {
+  background: linear-gradient(90deg, #FF1493, #FF69B4);
+}
+
+.combo-display--level-max .combo-display__bar-fill {
+  background: linear-gradient(90deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #00FFFF, #0000FF, #8B00FF);
+  background-size: 300% 100%;
+  animation: rainbow-bar 1s linear infinite;
+}
+
+@keyframes rainbow-bar {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+/* マルチプライヤー表示 */
+.combo-display__multiplier {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #FFD700;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.combo-display__multiplier--visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* コンボカウント */
+.combo-display__count {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.combo-display__label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+
+/* パーティクル（強化版） */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.particle--firework {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+.particle--star {
+  font-weight: bold;
+  animation: star-twinkle 1.5s ease-out forwards;
+}
+
+@keyframes star-twinkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2) rotate(90deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(360deg) translateY(-100px);
+  }
+}
+
+.particle--confetti {
+  width: 12px;
+  height: 18px;
+  animation: confetti-fall 2s ease-out forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(720deg);
+  }
+}
+
+.particle--lightning {
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 20%,
+    rgba(200, 200, 255, 1) 50%,
+    rgba(255, 255, 255, 1) 80%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(100, 100, 255, 0.6);
+  animation: lightning-flash 0.2s ease-out;
+}
+
+@keyframes lightning-flash {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  20% { opacity: 0.3; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes particle-explode {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0);
+  }
+}
+
+/* スクリーンシェイク（強化版） */
+.screen-shake {
+  animation: screen-shake 0.4s ease-out;
+}
+
+.screen-shake--heavy {
+  animation: screen-shake-heavy 0.5s ease-out;
+}
+
+.screen-shake--extreme {
+  animation: screen-shake-extreme 0.6s ease-out;
+}
+
+@keyframes screen-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes screen-shake-heavy {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-10px, -5px) rotate(-1deg); }
+  20% { transform: translate(10px, 5px) rotate(1deg); }
+  30% { transform: translate(-8px, 3px) rotate(-0.5deg); }
+  40% { transform: translate(8px, -3px) rotate(0.5deg); }
+  50% { transform: translate(-6px, 2px) rotate(-0.3deg); }
+  60% { transform: translate(6px, -2px) rotate(0.3deg); }
+  70% { transform: translate(-4px, 1px) rotate(-0.1deg); }
+  80% { transform: translate(4px, -1px) rotate(0.1deg); }
+  90% { transform: translate(-2px, 0) rotate(0deg); }
+}
+
+@keyframes screen-shake-extreme {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); filter: none; }
+  5% { transform: translate(-15px, -10px) rotate(-2deg); filter: brightness(0.7); }
+  10% { transform: translate(15px, 10px) rotate(2deg); filter: brightness(1.3); }
+  15% { transform: translate(-12px, 8px) rotate(-1.5deg); filter: brightness(0.8); }
+  20% { transform: translate(12px, -8px) rotate(1.5deg); filter: brightness(1.2); }
+  25% { transform: translate(-10px, 6px) rotate(-1deg); }
+  30% { transform: translate(10px, -6px) rotate(1deg); }
+  40% { transform: translate(-8px, 4px) rotate(-0.5deg); }
+  50% { transform: translate(8px, -4px) rotate(0.5deg); }
+  60% { transform: translate(-6px, 3px) rotate(-0.3deg); }
+  70% { transform: translate(6px, -3px) rotate(0.3deg); }
+  80% { transform: translate(-4px, 2px) rotate(-0.1deg); }
+  90% { transform: translate(4px, -2px) rotate(0.1deg); }

@@ -2141,38 +2141,6 @@ function resetCombo() {
   comboCount = 0;
 }
 
-function updateComboDisplay() {
-  const comboDisplay = document.querySelector('[data-combo-display]');
-  const comboCountEl = document.querySelector('[data-combo-count]');
-  
-  if (!comboDisplay || !comboCountEl) return;
-  
-  if (comboCount >= 2 && effectsEnabled) {
-    comboCountEl.textContent = comboCount;
-    comboDisplay.hidden = false;
-    comboDisplay.classList.add('combo-display--visible');
-    comboDisplay.classList.add('combo-display--pulse');
-    
-    // マイルストーンクラスの適用
-    comboDisplay.classList.remove('combo-display--milestone-5', 'combo-display--milestone-10', 'combo-display--milestone-20', 'combo-display--milestone-50');
-    if (comboCount >= 50) {
-      comboDisplay.classList.add('combo-display--milestone-50');
-    } else if (comboCount >= 20) {
-      comboDisplay.classList.add('combo-display--milestone-20');
-    } else if (comboCount >= 10) {
-      comboDisplay.classList.add('combo-display--milestone-10');
-    } else if (comboCount >= 5) {
-      comboDisplay.classList.add('combo-display--milestone-5');
-    }
-    
-    setTimeout(() => {
-      comboDisplay.classList.remove('combo-display--pulse');
-    }, 300);
-  } else {
-    hideComboDisplay();
-  }
-}
-
 function hideComboDisplay() {
   const comboDisplay = document.querySelector('[data-combo-display]');
   if (!comboDisplay) return;
@@ -2183,115 +2151,502 @@ function hideComboDisplay() {
   }, 300);
 }
 
-function showComboMilestone(count) {
-  const messages = {
-    5: 'NICE!',
-    10: 'GREAT!',
-    20: 'AMAZING!',
-    30: 'FANTASTIC!',
-    50: 'INCREDIBLE!',
-    100: 'LEGENDARY!'
-  };
-  
-  const popup = document.createElement('div');
-  popup.className = 'combo-bonus-popup';
-  popup.textContent = messages[count] || `${count} COMBO!`;
-  document.body.appendChild(popup);
-  
-  // パーティクルを発生させる
-  createParticleBurst(window.innerWidth / 2, window.innerHeight / 2, 20);
-  
-  setTimeout(() => {
-    popup.remove();
-  }, 1000);
+
+
+function initAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return audioContext;
 }
 
-// ===========================================
-// エフェクトシステム
-// ===========================================
+function playSound(type) {
+  if (!effectsEnabled) return;
+  
+  try {
+    const ctx = initAudioContext();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    switch (type) {
+      case 'correct':
+        // 正解音: 上昇するピッチ
+        oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
+        oscillator.frequency.exponentialRampToValueAtTime(784, ctx.currentTime + 0.1); // G5
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.2);
+        break;
+        
+      case 'combo':
+        // コンボ音: より高いピッチ
+        oscillator.frequency.setValueAtTime(659, ctx.currentTime); // E5
+        oscillator.frequency.exponentialRampToValueAtTime(1047, ctx.currentTime + 0.15); // C6
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.4, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.25);
+        break;
+        
+      case 'fever':
+        // フィーバー音: 複数音のファンファーレ風
+        playFeverFanfare(ctx);
+        break;
+        
+      case 'wrong':
+        // 不正解音: 下降するピッチ
+        oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.3);
+        oscillator.type = 'sawtooth';
+        gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.3);
+        break;
+        
+      case 'jackpot':
+        // ジャックポット音
+        playJackpotSound(ctx);
+        break;
+    }
+  } catch (e) {
+    // Audio API が使えない環境では無視
+  }
+}
 
+function playFeverFanfare(ctx) {
+  const notes = [523, 659, 784, 1047]; // C5, E5, G5, C6
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + i * 0.1 + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.1 + 0.3);
+    osc.start(ctx.currentTime + i * 0.1);
+    osc.stop(ctx.currentTime + i * 0.1 + 0.3);
+  });
+}
+
+function playJackpotSound(ctx) {
+  const notes = [523, 659, 784, 880, 1047, 1319, 1568]; // 上昇音階
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.08);
+    gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + i * 0.08 + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.08 + 0.2);
+    osc.start(ctx.currentTime + i * 0.08);
+    osc.stop(ctx.currentTime + i * 0.08 + 0.2);
+  });
+}
+
+// 大テキスト演出
+function showBigText(text, style = 'excellent') {
+  if (!effectsEnabled) return;
+  
+  const container = document.querySelector('[data-big-text-container]');
+  if (!container) return;
+  
+  const textEl = document.createElement('div');
+  textEl.className = `big-text big-text--${style}`;
+  textEl.textContent = text;
+  container.appendChild(textEl);
+  
+  // アニメーション終了後に削除
+  const duration = style === 'jackpot' ? 2000 : style === 'fever' ? 1500 : 1200;
+  setTimeout(() => textEl.remove(), duration);
+}
+
+// フラッシュエフェクト
+function triggerFlash(type = 'normal') {
+  if (!effectsEnabled) return;
+  
+  const flashEl = document.querySelector('[data-flash-overlay]');
+  if (!flashEl) return;
+  
+  flashEl.classList.remove('flash-overlay--flash', 'flash-overlay--golden', 'flash-overlay--rainbow');
+  void flashEl.offsetWidth; // リフロー強制
+  
+  switch (type) {
+    case 'golden':
+      flashEl.classList.add('flash-overlay--golden');
+      break;
+    case 'rainbow':
+      flashEl.classList.add('flash-overlay--rainbow');
+      break;
+    default:
+      flashEl.classList.add('flash-overlay--flash');
+  }
+}
+
+// フィーバーモード
+let feverMode = false;
+
+function activateFeverMode() {
+  if (!effectsEnabled || feverMode) return;
+  
+  feverMode = true;
+  const feverBg = document.querySelector('[data-fever-background]');
+  const rainbowOverlay = document.querySelector('[data-rainbow-overlay]');
+  
+  if (feverBg) feverBg.classList.add('fever-background--active');
+  if (rainbowOverlay) {
+    rainbowOverlay.style.background = `linear-gradient(
+      45deg,
+      rgba(255, 0, 0, 0.15) 0%,
+      rgba(255, 154, 0, 0.15) 10%,
+      rgba(208, 222, 33, 0.15) 20%,
+      rgba(79, 220, 74, 0.15) 30%,
+      rgba(63, 218, 216, 0.15) 40%,
+      rgba(47, 201, 226, 0.15) 50%,
+      rgba(28, 127, 238, 0.15) 60%,
+      rgba(95, 21, 242, 0.15) 70%,
+      rgba(186, 12, 248, 0.15) 80%,
+      rgba(251, 7, 217, 0.15) 90%,
+      rgba(255, 0, 0, 0.15) 100%
+    )`;
+    rainbowOverlay.classList.add('rainbow-overlay--active');
+  }
+  
+  // フィーバー演出
+  showBigText('FEVER!', 'fever');
+  playSound('fever');
+  triggerFlash('rainbow');
+  createFireworks(5);
+}
+
+function deactivateFeverMode() {
+  feverMode = false;
+  const feverBg = document.querySelector('[data-fever-background]');
+  const rainbowOverlay = document.querySelector('[data-rainbow-overlay]');
+  
+  if (feverBg) feverBg.classList.remove('fever-background--active');
+  if (rainbowOverlay) rainbowOverlay.classList.remove('rainbow-overlay--active');
+}
+
+// コンボレベルに応じた演出
+function getComboLevel(combo) {
+  if (combo >= 30) return 'max';
+  if (combo >= 20) return 3;
+  if (combo >= 10) return 2;
+  if (combo >= 5) return 1;
+  return 0;
+}
+
+function updateComboDisplay() {
+  const comboDisplay = document.querySelector('[data-combo-display]');
+  const comboCountEl = document.querySelector('[data-combo-count]');
+  const comboBar = document.querySelector('[data-combo-bar]');
+  const comboMultiplier = document.querySelector('[data-combo-multiplier]');
+  
+  if (!comboDisplay || !comboCountEl) return;
+  
+  if (comboCount >= 2 && effectsEnabled) {
+    comboCountEl.textContent = comboCount;
+    comboDisplay.hidden = false;
+    comboDisplay.classList.add('combo-display--visible');
+    comboDisplay.classList.add('combo-display--pulse');
+    
+    // コンボバーの更新
+    if (comboBar) {
+      const nextMilestone = [5, 10, 20, 30, 50, 100].find(m => m > comboCount) || 100;
+      const prevMilestone = [0, 5, 10, 20, 30, 50].reverse().find(m => m < comboCount) || 0;
+      const progress = ((comboCount - prevMilestone) / (nextMilestone - prevMilestone)) * 100;
+      comboBar.style.width = `${Math.min(progress, 100)}%`;
+    }
+    
+    // マルチプライヤー表示
+    if (comboMultiplier && comboCount >= 5) {
+      const multiplier = Math.floor(comboCount / 5);
+      comboMultiplier.textContent = `x${1 + multiplier * 0.5}`;
+      comboMultiplier.classList.add('combo-display__multiplier--visible');
+    } else if (comboMultiplier) {
+      comboMultiplier.classList.remove('combo-display__multiplier--visible');
+    }
+    
+    // レベルクラスの適用
+    const level = getComboLevel(comboCount);
+    comboDisplay.classList.remove('combo-display--level-1', 'combo-display--level-2', 'combo-display--level-3', 'combo-display--level-max');
+    
+    if (level === 'max') {
+      comboDisplay.classList.add('combo-display--level-max');
+      if (!feverMode) activateFeverMode();
+    } else if (level >= 1) {
+      comboDisplay.classList.add(`combo-display--level-${level}`);
+    }
+    
+    setTimeout(() => {
+      comboDisplay.classList.remove('combo-display--pulse');
+    }, 400);
+  } else {
+    hideComboDisplay();
+    if (feverMode) deactivateFeverMode();
+  }
+}
+
+// 正解時のエフェクト（強化版）
 function playCorrectEffects() {
   if (!effectsEnabled) return;
   
-  // 正解フラッシュ
+  const level = getComboLevel(comboCount);
   const quizCard = document.querySelector('.quiz__card');
+  
+  // 基本の正解音
+  playSound(comboCount >= 3 ? 'combo' : 'correct');
+  
+  // カードフラッシュ
   if (quizCard) {
-    quizCard.classList.add('correct-flash');
-    setTimeout(() => quizCard.classList.remove('correct-flash'), 500);
+    quizCard.classList.remove('correct-flash', 'correct-flash-enhanced');
+    void quizCard.offsetWidth;
+    quizCard.classList.add(level >= 1 ? 'correct-flash-enhanced' : 'correct-flash');
+    setTimeout(() => {
+      quizCard.classList.remove('correct-flash', 'correct-flash-enhanced');
+    }, 600);
   }
   
-  // パーティクル
+  // パーティクル（コンボに応じて増加）
   const rect = feedbackEl.getBoundingClientRect();
-  createParticleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);
+  const particleCount = 8 + Math.min(comboCount * 2, 30);
+  createParticleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, particleCount);
   
-  // コンボ5以上で追加エフェクト
-  if (comboCount >= 5) {
-    createStarBurst(window.innerWidth / 2, window.innerHeight / 2, Math.min(comboCount, 15));
+  // コンボレベルに応じた追加演出
+  if (level >= 1) {
+    triggerFlash('normal');
+    createStarBurst(window.innerWidth / 2, window.innerHeight / 2, 10 + comboCount);
+  }
+  
+  if (level >= 2) {
+    triggerFlash('golden');
+    createConfetti(20);
+  }
+  
+  if (level >= 3) {
+    createFireworks(2);
+  }
+  
+  if (level === 'max') {
+    createLightning();
   }
 }
 
+// 不正解時のエフェクト（強化版）
 function playWrongEffects() {
   if (!effectsEnabled) return;
   
-  // 不正解フラッシュ
+  playSound('wrong');
+  
   const quizCard = document.querySelector('.quiz__card');
   if (quizCard) {
-    quizCard.classList.add('incorrect-flash');
-    setTimeout(() => quizCard.classList.remove('incorrect-flash'), 500);
+    quizCard.classList.remove('incorrect-flash', 'incorrect-flash-enhanced');
+    void quizCard.offsetWidth;
+    quizCard.classList.add('incorrect-flash-enhanced');
+    setTimeout(() => quizCard.classList.remove('incorrect-flash-enhanced'), 600);
   }
   
-  // スクリーンシェイク
-  document.body.classList.add('screen-shake');
-  setTimeout(() => document.body.classList.remove('screen-shake'), 400);
+  // コンボが高かった場合は激しいシェイク
+  const shakeClass = comboCount >= 10 ? 'screen-shake--extreme' : 
+                     comboCount >= 5 ? 'screen-shake--heavy' : 'screen-shake';
+  
+  document.body.classList.add(shakeClass);
+  setTimeout(() => {
+    document.body.classList.remove('screen-shake', 'screen-shake--heavy', 'screen-shake--extreme');
+  }, 600);
+  
+  // フィーバーモード解除
+  if (feverMode) {
+    deactivateFeverMode();
+  }
 }
 
+// パーティクルバースト（強化版）
 function createParticleBurst(x, y, count) {
   const container = document.querySelector('[data-particle-container]');
   if (!container) return;
   
-  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#A8E6CF', '#FFB7B2'];
+  const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#A8E6CF', '#FFB7B2', '#FF1493', '#00FFFF', '#FF8C00'];
   
   for (let i = 0; i < count; i++) {
     const particle = document.createElement('div');
-    particle.className = 'particle particle--circle';
+    particle.className = 'particle particle--firework';
     particle.style.left = `${x}px`;
     particle.style.top = `${y}px`;
-    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.background = color;
+    particle.style.color = color;
     
-    // ランダムな方向に飛ばす
-    const angle = (Math.PI * 2 * i) / count;
-    const distance = 50 + Math.random() * 100;
+    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+    const distance = 80 + Math.random() * 150;
     const dx = Math.cos(angle) * distance;
     const dy = Math.sin(angle) * distance;
     
     particle.style.setProperty('--dx', `${dx}px`);
     particle.style.setProperty('--dy', `${dy}px`);
-    particle.style.animation = `particle-explode 0.8s ease-out forwards`;
+    particle.style.animation = `particle-explode 1s ease-out forwards`;
     
     container.appendChild(particle);
-    
-    setTimeout(() => particle.remove(), 800);
+    setTimeout(() => particle.remove(), 1000);
   }
 }
 
+// スターバースト
 function createStarBurst(x, y, count) {
   const container = document.querySelector('[data-particle-container]');
   if (!container) return;
   
-  const stars = ['*', '+', 'x'];
+  const stars = ['★', '☆', '✦', '✧', '⭐'];
+  const colors = ['#FFD700', '#FFA500', '#FF8C00', '#FFFF00', '#FFE4B5'];
   
   for (let i = 0; i < count; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle particle--star';
     particle.textContent = stars[Math.floor(Math.random() * stars.length)];
-    particle.style.color = '#FFD700';
-    particle.style.left = `${x + (Math.random() - 0.5) * 200}px`;
-    particle.style.top = `${y + (Math.random() - 0.5) * 100}px`;
-    particle.style.fontSize = `${1 + Math.random() * 1.5}rem`;
+    particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+    particle.style.left = `${x + (Math.random() - 0.5) * 300}px`;
+    particle.style.top = `${y + (Math.random() - 0.5) * 200}px`;
+    particle.style.fontSize = `${1.5 + Math.random() * 2}rem`;
+    particle.style.textShadow = `0 0 10px currentColor, 0 0 20px currentColor`;
     
     container.appendChild(particle);
-    
     setTimeout(() => particle.remove(), 1500);
+  }
+}
+
+// 紙吹雪
+function createConfetti(count) {
+  const container = document.querySelector('[data-particle-container]');
+  if (!container) return;
+  
+  const colors = ['#FF6B6B', '#4ECDC4', '#FFD93D', '#6BCB77', '#4D96FF', '#FF6B9D'];
+  
+  for (let i = 0; i < count; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'particle particle--confetti';
+    confetti.style.left = `${Math.random() * window.innerWidth}px`;
+    confetti.style.top = `-20px`;
+    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+    confetti.style.animationDuration = `${1.5 + Math.random() * 1}s`;
+    confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+    
+    container.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
+
+// 花火エフェクト
+function createFireworks(count) {
+  const container = document.querySelector('[data-particle-container]');
+  if (!container) return;
+  
+  for (let fw = 0; fw < count; fw++) {
+    setTimeout(() => {
+      const x = 100 + Math.random() * (window.innerWidth - 200);
+      const y = 100 + Math.random() * (window.innerHeight / 2);
+      
+      const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFD700'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      
+      // 花火の爆発
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle particle--firework';
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.background = color;
+        particle.style.color = color;
+        particle.style.width = '4px';
+        particle.style.height = '4px';
+        
+        const angle = (Math.PI * 2 * i) / 30;
+        const distance = 50 + Math.random() * 100;
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance;
+        
+        particle.style.setProperty('--dx', `${dx}px`);
+        particle.style.setProperty('--dy', `${dy}px`);
+        particle.style.animation = `particle-explode 1.2s ease-out forwards`;
+        
+        container.appendChild(particle);
+        setTimeout(() => particle.remove(), 1200);
+      }
+    }, fw * 200);
+  }
+}
+
+// 雷エフェクト
+function createLightning() {
+  const container = document.querySelector('[data-particle-container]');
+  if (!container) return;
+  
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      const lightning = document.createElement('div');
+      lightning.className = 'particle particle--lightning';
+      lightning.style.left = `${100 + Math.random() * (window.innerWidth - 200)}px`;
+      lightning.style.top = '0px';
+      lightning.style.height = `${window.innerHeight}px`;
+      
+      container.appendChild(lightning);
+      triggerFlash('normal');
+      
+      setTimeout(() => lightning.remove(), 200);
+    }, i * 100);
+  }
+}
+
+// コンボマイルストーン演出（強化版）
+function showComboMilestone(count) {
+  const messages = {
+    5: { text: 'NICE!', style: 'combo-bonus' },
+    10: { text: 'GREAT!', style: 'excellent' },
+    20: { text: 'AMAZING!', style: 'excellent' },
+    30: { text: 'FEVER!', style: 'fever' },
+    50: { text: 'INCREDIBLE!', style: 'perfect' },
+    100: { text: 'JACKPOT!', style: 'jackpot' }
+  };
+  
+  const milestone = messages[count];
+  if (!milestone) return;
+  
+  showBigText(milestone.text, milestone.style);
+  
+  // マイルストーンに応じた追加演出
+  if (count >= 10) {
+    triggerFlash('golden');
+    createFireworks(Math.floor(count / 10));
+  }
+  
+  if (count >= 30) {
+    playSound('fever');
+  }
+  
+  if (count >= 50) {
+    triggerFlash('rainbow');
+    createConfetti(50);
+  }
+  
+  if (count === 100) {
+    playSound('jackpot');
+    createLightning();
+    setTimeout(() => createFireworks(10), 500);
   }
 }
 
