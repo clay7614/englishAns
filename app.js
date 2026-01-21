@@ -1225,7 +1225,7 @@ function closeSettingsPanel() {
   settingsPanel.classList.remove('animate-open');
   settingsPanel.classList.add('animate-close');
   settingsPanelOpen = false;
-  if (!historyPanelOpen && overlay) {
+  if (!historyPanelOpen && !mistakeRankingPanelOpen && overlay) {
     overlay.hidden = true;
   }
   settingsButton?.setAttribute('aria-expanded', 'false');
@@ -1805,7 +1805,7 @@ function closeHistoryPanel() {
   historyPanel.classList.remove('animate-open');
   historyPanel.classList.add('animate-close');
   historyPanelOpen = false;
-  if (!settingsPanelOpen && overlay) {
+  if (!settingsPanelOpen && !mistakeRankingPanelOpen && overlay) {
     overlay.hidden = true;
   }
   historyButton?.setAttribute('aria-expanded', 'false');
@@ -3178,8 +3178,21 @@ function saveMistakeStats(questionId) {
 }
 
 function handleMistakeRankingButtonClick() {
-  closeSettingsPanel();
+  // 先に間違いランキングパネルを開く（overlayを表示状態に保つため）
   openMistakeRankingPanel();
+  // その後で設定パネルを閉じる
+  if (settingsPanelOpen) {
+    settingsPanel.classList.remove('animate-open');
+    settingsPanel.classList.add('animate-close');
+    settingsPanelOpen = false;
+    settingsButton?.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('click', handleDocumentClick);
+    document.removeEventListener('keydown', handleSettingsKeydown);
+    setTimeout(() => {
+      settingsPanel.hidden = true;
+      settingsPanel.classList.remove('animate-close');
+    }, 400);
+  }
 }
 
 function openMistakeRankingPanel() {
@@ -3206,7 +3219,8 @@ function closeMistakeRankingPanel() {
   mistakeRankingPanelOpen = false;
   panel.hidden = true;
   
-  if (!settingsPanelOpen && !historyPanelOpen) {
+  // 他のパネルが開いていない場合のみオーバーレイを非表示
+  if (!settingsPanelOpen && !historyPanelOpen && overlay) {
     overlay.hidden = true;
   }
 }
